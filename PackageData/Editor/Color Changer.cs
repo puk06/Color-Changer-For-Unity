@@ -273,7 +273,7 @@ namespace net.puk06.ColorChanger {
                 Debug.LogError("ターゲットテクスチャが選択されていません。");
                 return;
             }
-            
+
             Texture2D originalTexture = ConvertToNonCompressed(colorChangerComponent.targetTexture);
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
@@ -293,18 +293,19 @@ namespace net.puk06.ColorChanger {
 
             imageProcessor.ProcessAllPixels(originalTexture, newTexture);
 
-            SaveTextureWithUniqueName(colorChangerComponent.targetTexture, newTexture);
-
-            TextureReplacer.ReplaceTextureInMaterials(colorChangerComponent.targetTexture, newTexture);
+            string savedPath = SaveTextureWithUniqueName(colorChangerComponent.targetTexture, newTexture);
+            
+            if (string.IsNullOrEmpty(savedPath)) return;
+            TextureReplacer.ReplaceTextureInMaterials(colorChangerComponent.targetTexture, savedPath);
         }
 
-        private void SaveTextureWithUniqueName(Texture2D originalTexture, Texture2D newTexture)
+        private string SaveTextureWithUniqueName(Texture2D originalTexture, Texture2D newTexture)
         {
             string originalPath = AssetDatabase.GetAssetPath(originalTexture);
             if (string.IsNullOrEmpty(originalPath))
             {
                 Debug.LogError("元テクスチャのパスが取得できません");
-                return;
+                return string.Empty;
             }
 
             string directory = Path.GetDirectoryName(originalPath);
@@ -324,7 +325,7 @@ namespace net.puk06.ColorChanger {
             if (pngData == null)
             {
                 Debug.LogError("PNGデータのエンコードに失敗しました");
-                return;
+                return string.Empty;
             }
 
             File.WriteAllBytes(savePath, pngData);
@@ -332,6 +333,8 @@ namespace net.puk06.ColorChanger {
 
             AssetDatabase.ImportAsset(savePath);
             AssetDatabase.Refresh();
+
+            return savePath;
         }
 
         private Texture2D ConvertToNonCompressed(Texture2D source)

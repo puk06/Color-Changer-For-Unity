@@ -7,20 +7,27 @@ namespace net.puk06.ColorChanger.Utils
     {
         /// <summary>
         /// project内のすべてのマテリアルを検索し、
-        /// oldTexを参照しているマテリアルのテクスチャをnewTexに置き換える
-        /// Undo対応付き
+        /// oldTexを参照しているマテリアルのテクスチャを
+        /// newTexPath のテクスチャに置き換える（Undo対応）
         /// </summary>
-        public static void ReplaceTextureInMaterials(Texture2D oldTex, Texture2D newTex)
+        public static void ReplaceTextureInMaterials(Texture2D oldTex, string newTexPath)
         {
-            if (oldTex == null || newTex == null)
+            if (oldTex == null || string.IsNullOrEmpty(newTexPath))
             {
-                Debug.LogError("oldTex または newTex が null です");
+                Debug.LogError("oldTexがnull、または newTexPath が空です。");
+                return;
+            }
+
+            // newTexをパスから読み込む
+            Texture2D newTex = AssetDatabase.LoadAssetAtPath<Texture2D>(newTexPath);
+            if (newTex == null)
+            {
+                Debug.LogError($"指定されたパスからテクスチャを読み込めませんでした: {newTexPath}");
                 return;
             }
 
             // プロジェクト内のすべてのマテリアルを取得
             string[] materialGuids = AssetDatabase.FindAssets("t:Material");
-
             int replacedCount = 0;
 
             foreach (var guid in materialGuids)
@@ -29,8 +36,6 @@ namespace net.puk06.ColorChanger.Utils
                 Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
 
                 if (mat == null) continue;
-
-                // Undo登録
                 Undo.RecordObject(mat, "Replace Texture");
 
                 bool replaced = false;
