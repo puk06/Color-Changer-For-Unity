@@ -1,6 +1,6 @@
-# ツールメニュー
+# コンポーネント
 
-Tools/ぷこのつーる/SmileyClip
+"Color Changer For Unity"
 
 # パッケージのビルド
 `npm i`
