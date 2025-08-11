@@ -4,7 +4,6 @@ using Unity.Collections;
 using UnityEngine;
 using MathUtils = ColorChanger.Utils.MathUtils;
 
-
 namespace ColorChanger.ImageProcessing
 {
     public class ImageProcessor
