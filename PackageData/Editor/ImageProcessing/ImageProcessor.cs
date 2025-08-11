@@ -47,10 +47,7 @@ namespace net.puk06.ColorChanger.ImageProcessing
             }
 
             if (_isAdvancedColorMode)
-            {
-                if (_isAdvancedColorMode)
-                        source = ColorUtils.AdvancedColorAdjustment(source, _advancedColorConfiguration);
-            }
+                source = ColorUtils.AdvancedColorAdjustment(source, _advancedColorConfiguration);
 
             return source;
         }
