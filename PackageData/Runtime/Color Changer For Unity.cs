@@ -9,6 +9,7 @@ namespace net.puk06.ColorChanger
 
         public Color previousColor;
         public Color newColor;
+        
         public BalanceModeConfiguration balanceModeConfiguration = new BalanceModeConfiguration();
         public AdvancedColorConfiguration advancedColorConfiguration = new AdvancedColorConfiguration();
     }

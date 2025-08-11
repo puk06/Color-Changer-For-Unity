@@ -30,7 +30,7 @@ namespace net.puk06.ColorChanger {
 
         void OnEnable()
         {
-            logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Color Changer For Unity/Editor/Assets/logo.png");
+            logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/logo.png");
         }
 
         public override void OnInspectorGUI()
@@ -47,7 +47,6 @@ namespace net.puk06.ColorChanger {
                 float displayHeight = displayWidth * aspectRatio;
 
                 Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(true));
-                //rect.x = 0;
 
                 GUI.DrawTexture(rect, logoTexture, ScaleMode.ScaleToFit);
             }
@@ -269,6 +268,12 @@ namespace net.puk06.ColorChanger {
 
         private void GenerateTexture(ColorChangerForUnity colorChangerComponent)
         {
+            if (colorChangerComponent.targetTexture == null)
+            {
+                Debug.LogError("ターゲットテクスチャが選択されていません。");
+                return;
+            }
+            
             Texture2D originalTexture = ConvertToNonCompressed(colorChangerComponent.targetTexture);
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
@@ -295,7 +300,6 @@ namespace net.puk06.ColorChanger {
 
         private void SaveTextureWithUniqueName(Texture2D originalTexture, Texture2D newTexture)
         {
-            // 元テクスチャのパス
             string originalPath = AssetDatabase.GetAssetPath(originalTexture);
             if (string.IsNullOrEmpty(originalPath))
             {
@@ -307,7 +311,6 @@ namespace net.puk06.ColorChanger {
             string originalFileName = Path.GetFileNameWithoutExtension(originalPath);
             string extension = ".png";
 
-            // 連番を付けて被らないファイル名を探す
             int index = 1;
             string savePath;
             do
@@ -317,7 +320,6 @@ namespace net.puk06.ColorChanger {
                 index++;
             } while (File.Exists(savePath));
 
-            // PNGエンコード
             byte[] pngData = newTexture.EncodeToPNG();
             if (pngData == null)
             {
@@ -325,35 +327,26 @@ namespace net.puk06.ColorChanger {
                 return;
             }
 
-            // ファイル書き込み
             File.WriteAllBytes(savePath, pngData);
             Debug.Log($"テクスチャを保存しました: {savePath}");
 
-            // Unityにインポートさせる
             AssetDatabase.ImportAsset(savePath);
             AssetDatabase.Refresh();
         }
 
         private Texture2D ConvertToNonCompressed(Texture2D source)
         {
-            // RenderTextureを作成（sourceと同じサイズ）
             RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
-
-            // sourceをRenderTextureに描画
             Graphics.Blit(source, rt);
 
-            // 現在のRenderTextureを保存
             RenderTexture previous = RenderTexture.active;
             RenderTexture.active = rt;
 
-            // 非圧縮フォーマットでTexture2Dを作成
             Texture2D readableTexture = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
 
-            // RenderTextureの内容を読み込む
             readableTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
             readableTexture.Apply();
 
-            // 後片付け
             RenderTexture.active = previous;
             RenderTexture.ReleaseTemporary(rt);
 
