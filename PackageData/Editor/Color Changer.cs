@@ -1,12 +1,11 @@
 using UnityEditor;
 using UnityEngine;
-using ColorChanger.ImageProcessing;
-using ColorChanger.Models;
-using ColorChanger.Utils;
+using net.puk06.ColorChanger.ImageProcessing;
+using net.puk06.ColorChanger.Models;
+using net.puk06.ColorChanger.Utils;
 using System.IO;
 
-namespace ColorChanger {
-
+namespace net.puk06.ColorChanger {
     [CustomEditor(typeof(ColorChangerForUnity))]
     public class ColorChanger : Editor
     {

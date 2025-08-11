@@ -1,10 +1,10 @@
-using ColorChanger.Models;
-using ColorChanger.Utils;
+using net.puk06.ColorChanger.Models;
+using net.puk06.ColorChanger.Utils;
 using Unity.Collections;
 using UnityEngine;
-using MathUtils = ColorChanger.Utils.MathUtils;
+using MathUtils = net.puk06.ColorChanger.Utils.MathUtils;
 
-namespace ColorChanger.ImageProcessing
+namespace net.puk06.ColorChanger.ImageProcessing
 {
     public class ImageProcessor
     {

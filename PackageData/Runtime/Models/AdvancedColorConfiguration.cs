@@ -1,4 +1,4 @@
-namespace ColorChanger.Models
+namespace net.puk06.ColorChanger.Models
 {
     public class AdvancedColorConfiguration
     {

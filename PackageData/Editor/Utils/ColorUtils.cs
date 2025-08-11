@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ColorChanger.Models;
+using net.puk06.ColorChanger.Models;
 using UnityEngine;
 
-namespace ColorChanger.Utils
+namespace net.puk06.ColorChanger.Utils
 {
     public static class ColorUtils
     {

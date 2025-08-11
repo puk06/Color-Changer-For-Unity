@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace ColorChanger.Utils
+namespace net.puk06.ColorChanger.Utils
 {
     public static class MathUtils
     {

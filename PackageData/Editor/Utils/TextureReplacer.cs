@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace ColorChanger.Utils
+namespace net.puk06.ColorChanger.Utils
 {
     public static class TextureReplacer
     {

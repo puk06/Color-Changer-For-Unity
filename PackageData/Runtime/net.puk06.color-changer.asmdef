@@ -1,9 +1,7 @@
 {
-    "name": "net.puk06.color-changer",
+    "name": "net.puk06.color-changer.runtime",
     "references": [],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

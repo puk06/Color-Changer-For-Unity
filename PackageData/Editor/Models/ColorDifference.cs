@@ -1,7 +1,7 @@
-using ColorChanger.Utils;
+using net.puk06.ColorChanger.Utils;
 using UnityEngine;
 
-namespace ColorChanger.Models
+namespace net.puk06.ColorChanger.Models
 {
     public class ColorDifference
     {
