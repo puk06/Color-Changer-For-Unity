@@ -87,7 +87,12 @@ namespace net.puk06.ColorChanger {
             int prevIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 1;
 
-            showTextureSettings = EditorGUILayout.Foldout(showTextureSettings, "テクスチャ設定", titleStyle);
+            showTextureSettings = EditorGUILayout.Foldout(
+                showTextureSettings,
+                "テクスチャ設定",
+                true,
+                titleStyle
+            );
 
             if (showTextureSettings)
             {
@@ -124,7 +129,12 @@ namespace net.puk06.ColorChanger {
             int prevIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 1;
 
-            showColorSettings = EditorGUILayout.Foldout(showColorSettings, "色設定", titleStyle);
+            showColorSettings = EditorGUILayout.Foldout(
+                showColorSettings,
+                "色設定",
+                true,
+                titleStyle
+            );
 
             if (showColorSettings)
             {
