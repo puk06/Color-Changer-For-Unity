@@ -91,7 +91,8 @@ float3 BalanceColorAdjustment(
     float v2Weight,
     float v2MinimumValue,
     bool v2IncludeOutside,
-    Texture2D v3Gradient
+    RWTexture2D<float4> v3Gradient,
+    int v3PreviewResolution
 )
 {
     float adjustmentFactor = 0.0;
@@ -111,8 +112,6 @@ float3 BalanceColorAdjustment(
             v1Weight,
             v1MinimumValue
         );
-        
-        adjustmentFactor = 1.0;
     }
     else if (modeVersion == 2)
     {
@@ -138,11 +137,16 @@ float3 BalanceColorAdjustment(
         const float grayScaleWeightB = 0.114;
 
         float grayScale =
-            grayScaleWeightR * pixel.r +
-            grayScaleWeightG * pixel.g +
-            grayScaleWeightB * pixel.b;
+            grayScaleWeightR * (pixel.r / 255.0) +
+            grayScaleWeightG * (pixel.g / 255.0) +
+            grayScaleWeightB * (pixel.b / 255.0);
         
-        return pixel;
+        int x = (int) (saturate(grayScale) * (v3PreviewResolution - 1));
+        int y = 0;
+        
+        float4 gradientColor = v3Gradient[int2(x, y)];
+        
+        return gradientColor.rgb * 255.0;
     }
     
     pixel.r = pixel.r + (diff.r * adjustmentFactor);

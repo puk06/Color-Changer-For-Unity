@@ -18,7 +18,8 @@ float _balanceModeV2Weight;
 float _balanceModeV2Radius;
 float _balanceModeV2MinimumValue;
 bool _balanceModeV2IncludeOutside;
-Texture2D _balanceModeV3Gradient;
+RWTexture2D<float4> _balanceModeV3Gradient;
+int _balanceModeV3GradientResolution;
 
 // Advanced Color Settings
 bool _advancedColorModeEnabled;
@@ -55,7 +56,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             _balanceModeV2Weight,
             _balanceModeV2MinimumValue,
             _balanceModeV2IncludeOutside,
-            _balanceModeV3Gradient
+            _balanceModeV3Gradient,
+            _balanceModeV3GradientResolution
         );
     }
     else

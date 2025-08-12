@@ -1,6 +1,7 @@
 using nadena.dev.ndmf.preview;
 using net.puk06.ColorChanger.ImageProcessing;
 using net.puk06.ColorChanger.Models;
+using net.puk06.ColorChanger.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -88,7 +89,7 @@ namespace net.puk06.ColorChanger.NDMF
                 foreach (var proxyPair in proxyPairs)
                 {
                     var proxyMaterials = proxyPair.Item2.sharedMaterials;
-                    var matchingMaterials = FindMaterialsWithTexturePath(proxyMaterials, targetTexture);
+                    var matchingMaterials = TextureUtils.FindMaterialsWithTexture(proxyMaterials, targetTexture);
 
                     foreach (var matchingMaterial in matchingMaterials)
                     {
@@ -123,35 +124,6 @@ namespace net.puk06.ColorChanger.NDMF
                 Debug.LogException(ex);
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(materialDict));
             }
-        }
-
-        private List<Material> FindMaterialsWithTexturePath(Material[] materials, Texture2D targetTexture)
-        {
-            List<Material> result = new List<Material>();
-
-            foreach (Material material in materials)
-            {
-                if (material == null) continue;
-                var shader = material.shader;
-                int count = ShaderUtil.GetPropertyCount(shader);
-
-                for (int i = 0; i < count; i++)
-                {
-                    if (ShaderUtil.GetPropertyType(shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
-                        continue;
-
-                    string propName = ShaderUtil.GetPropertyName(shader, i);
-                    Texture currentTex = material.GetTexture(propName);
-
-                    if (currentTex == targetTexture)
-                    {
-                        result.Add(material);
-                        break;
-                    }
-                }
-            }
-
-            return result;
         }
 
         private static RenderTexture ComputeTextureOverrides(ColorChangerForUnity component)

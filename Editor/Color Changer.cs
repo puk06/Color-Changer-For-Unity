@@ -244,7 +244,10 @@ namespace net.puk06.ColorChanger {
                 {
                     EditorGUI.indentLevel++;
                     SerializedProperty v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
+                    SerializedProperty v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
+
                     v3GradientProp.gradientValue = EditorGUILayout.GradientField("グラデーション", v3GradientProp.gradientValue);
+                    v3GradientResolutionProp.intValue = EditorGUILayout.IntField("プレビュー解像度", v3GradientResolutionProp.intValue);
                     EditorGUI.indentLevel--;
                 }
             }

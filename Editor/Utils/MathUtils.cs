@@ -2,7 +2,7 @@ using System;
 
 namespace net.puk06.ColorChanger.Utils
 {
-    public static class MathUtils
+    internal static class MathUtils
     {
         /// <summary>
         /// 浮動小数点の比較に使用する許容誤差

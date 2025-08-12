@@ -91,7 +91,10 @@ namespace net.puk06.ColorChanger.ImageProcessing
             colorComputeShader.SetFloat("_balanceModeV2Radius", _balanceModeConfiguration.V2Radius);
             colorComputeShader.SetFloat("_balanceModeV2MinimumValue", _balanceModeConfiguration.V2MinimumValue);
             colorComputeShader.SetBool("_balanceModeV2IncludeOutside", _balanceModeConfiguration.V2IncludeOutside);
-            colorComputeShader.SetTexture(0, "_balanceModeV3Gradient", GradientToTexture(_balanceModeConfiguration.V3GradientColor));
+
+            var gradientRenderTexture = GradientToRenderTexture(_balanceModeConfiguration.V3GradientColor, _balanceModeConfiguration.V3GradientPreviewResolution);
+            colorComputeShader.SetTexture(kernel, "_balanceModeV3Gradient", gradientRenderTexture);
+            colorComputeShader.SetInt("_balanceModeV3GradientResolution", _balanceModeConfiguration.V3GradientPreviewResolution);
 
             // 追加設定
             colorComputeShader.SetBool("_advancedColorModeEnabled", _isAdvancedColorMode);
@@ -104,22 +107,35 @@ namespace net.puk06.ColorChanger.ImageProcessing
             int threadGroupX = Mathf.CeilToInt(source.width / 16.0f);
             int threadGroupY = Mathf.CeilToInt(source.height / 16.0f);
             colorComputeShader.Dispatch(kernel, threadGroupX, threadGroupY, 1);
+
+            if (RenderTexture.active == gradientRenderTexture) RenderTexture.active = null;
+            gradientRenderTexture.DiscardContents();
+            Object.DestroyImmediate(gradientRenderTexture);
         }
 
-        public Texture2D GradientToTexture(Gradient gradient, int width = 256)
+        private RenderTexture GradientToRenderTexture(Gradient gradient, int resolution = 256)
         {
-            var texture = new Texture2D(width, 1, TextureFormat.RGBA32, false, true);
-            texture.wrapMode = TextureWrapMode.Clamp;
+            var tex2D = new Texture2D(resolution, 1, TextureFormat.RGBA32, false);
+            tex2D.wrapMode = TextureWrapMode.Clamp;
 
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < resolution; i++)
             {
-                float t = i / (float)(width - 1);
+                float t = i / (float)(resolution - 1);
                 Color col = gradient.Evaluate(t);
-                texture.SetPixel(i, 0, col);
+                tex2D.SetPixel(i, 0, col);
             }
+            tex2D.Apply();
 
-            texture.Apply();
-            return texture;
+            var renderTexture = new RenderTexture(resolution, 1, 0, RenderTextureFormat.ARGB32);
+            renderTexture.enableRandomWrite = true;
+            renderTexture.wrapMode = TextureWrapMode.Clamp;
+            renderTexture.Create();
+
+            Graphics.Blit(tex2D, renderTexture);
+
+            Object.DestroyImmediate(tex2D);
+
+            return renderTexture;
         }
     }
 }

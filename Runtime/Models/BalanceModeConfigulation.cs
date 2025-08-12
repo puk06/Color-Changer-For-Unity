@@ -17,5 +17,6 @@ namespace net.puk06.ColorChanger.Models
         public bool V2IncludeOutside = false;
 
         public Gradient V3GradientColor = new Gradient();
+        public int V3GradientPreviewResolution = 256;
     }
 }

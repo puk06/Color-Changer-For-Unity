@@ -1,6 +1,9 @@
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.ImageProcessing;
 using net.puk06.ColorChanger.Models;
+using net.puk06.ColorChanger.Utils;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,6 +14,8 @@ namespace net.puk06.ColorChanger.NDMF
         protected override void Execute(BuildContext buildContext)
         {
             var avatar = buildContext.AvatarRootObject;
+
+            Dictionary<Texture2D, Texture2D> processedDictionary = new();
 
             foreach (var component in avatar.GetComponentsInChildren<ColorChangerForUnity>())
             {
@@ -30,39 +35,66 @@ namespace net.puk06.ColorChanger.NDMF
 
                 AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
 
-                Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>();
-                ReplaceTextures(renderers, component.targetTexture, newTexture);
+                processedDictionary.Add(component.targetTexture, newTexture);
 
+                Object.DestroyImmediate(originalTexture);
+            }
+
+            Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>();
+            ReplaceTextures(renderers, processedDictionary);
+
+            foreach (var component in avatar.GetComponentsInChildren<ColorChangerForUnity>())
+            {
                 Object.DestroyImmediate(component);
             }
         }
 
-        private void ReplaceTextures(Renderer[] renderers, Texture2D oldTexture, Texture2D newTexture)
+        private void ReplaceTextures(Renderer[] renderers, Dictionary<Texture2D, Texture2D> processedTextureDictionary)
         {
             foreach (var renderer in renderers)
             {
-                Material[] materials = renderer.materials;
+                Material[] materials = renderer.sharedMaterials;
+                Material[] newMaterials = new Material[materials.Length];
 
-                foreach (var material in materials)
+                var materialsToChange = processedTextureDictionary.Keys
+                    .SelectMany(tex => TextureUtils.FindMaterialsWithTexture(materials, tex))
+                    .ToList();
+
+                for (int i = 0; i < materials.Length; i++)
                 {
-                    Shader shader = material.shader;
-                    int count = ShaderUtil.GetPropertyCount(shader);
-
-                    for (int i = 0; i < count; i++)
+                    if (materialsToChange.Contains(materials[i]))
                     {
-                        if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-                        {
-                            string propName = ShaderUtil.GetPropertyName(shader, i);
-                            Texture currentTex = material.GetTexture(propName);
+                        newMaterials[i] = new Material(materials[i]);
 
-                            if (currentTex != oldTexture) continue;
-                            material.SetTexture(propName, newTexture);
+                        Shader shader = newMaterials[i].shader;
+                        int count = ShaderUtil.GetPropertyCount(shader);
+
+                        for (int j = 0; j < count; j++)
+                        {
+                            if (ShaderUtil.GetPropertyType(shader, j) == ShaderUtil.ShaderPropertyType.TexEnv)
+                            {
+                                string propName = ShaderUtil.GetPropertyName(shader, j);
+                                Texture currentTex = newMaterials[i].GetTexture(propName);
+                                var tex2D = currentTex as Texture2D;
+
+                                if (tex2D == null) continue;
+
+                                if (!processedTextureDictionary.TryGetValue(tex2D, out Texture2D newTexture)) continue;
+
+                                newMaterials[i].SetTexture(propName, newTexture);
+                            }
                         }
                     }
+                    else
+                    {
+                        newMaterials[i] = materials[i];
+                    }
                 }
+
+                renderer.sharedMaterials = newMaterials;
             }
         }
-        
+
         private Texture2D GetRawTexture(Texture2D source)
         {
             RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.Default);
