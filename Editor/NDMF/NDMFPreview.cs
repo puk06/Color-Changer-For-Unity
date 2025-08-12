@@ -1,4 +1,4 @@
-using nadena.dev.ndmf.preview;
+﻿using nadena.dev.ndmf.preview;
 using net.puk06.ColorChanger.ImageProcessing;
 using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
@@ -33,13 +33,19 @@ namespace net.puk06.ColorChanger.NDMF
                         .Where(e => RendererHasTexture(e, component.targetTexture));
 
                     resultSet.Add(RenderGroup.For(targetRenderers).WithData(component));
-                    
+
                     /**
-                     * ���̃��^�[���ɂ���:
-                     * ���݁A������RenderGroup�ɓn���ē���Renderer���ǉ�����Ă��܂��ăG���[��f���܂��B
-                     * ������e�X�g���ňꎞ�I�Ƀp�X���邽�߂̃��^�[���ł��B�C�����I��莟��A�폜����܂��B
+                     * 下のリターンについて:
+                     * 現在、複数のRenderGroupに渡って同じRendererが追加されてしまってエラーを吐きます。
+                     * これをテスト環境で一時的にパスするためのリターンです。修正が終わり次第、削除されます。
+                     * 
+                     * 再現方法:
+                     * 同じオブジェクトに複数のマテリアルが含まれており、ColorChangerForUnityコンポーネントがその複数のマテリアルのテクスチャを参照することでエラーを吐く。
+                     * 
+                     * Instantiateに渡されるとき、ColorChangerForUnityコンポーネントの個数分実行されることを想定しているので、これを治すには、根本的な部分を治す必要がある。
+                     * どうしたものか...
                      */
-                    
+
                     return resultSet.ToImmutableList();
                 }
             }

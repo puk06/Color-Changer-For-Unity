@@ -12,6 +12,7 @@ namespace net.puk06.ColorChanger {
     public class ColorChanger : Editor
     {
         private Texture2D logoTexture;
+        private Texture2D componentIcon;
 
         private SerializedProperty targetTextureProp;
         private SerializedProperty previousColorProp;
@@ -40,6 +41,7 @@ namespace net.puk06.ColorChanger {
         void OnEnable()
         {
             logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/logo.png");
+            componentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/ComponentIcon.png");
 
             targetTextureProp = serializedObject.FindProperty("targetTexture");
             previousColorProp = serializedObject.FindProperty("previousColor");
@@ -69,6 +71,7 @@ namespace net.puk06.ColorChanger {
             }
 
             ColorChangerForUnity comp = (ColorChangerForUnity)target;
+            if (componentIcon != null) EditorGUIUtility.SetIconForObject(comp, componentIcon);
 
             // テクスチャ設定画面
             DrawTextureSettingsGUI(comp);
