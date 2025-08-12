@@ -4,6 +4,7 @@ using net.puk06.ColorChanger.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -29,18 +30,11 @@ namespace net.puk06.ColorChanger.NDMF {
                     string targetPath = AssetDatabase.GetAssetPath(component.targetTexture);
                     if (string.IsNullOrEmpty(targetPath)) continue;
 
-                    foreach (var renderer in renderers)
-                    {
-                        if (RendererHasTexture(renderer, targetPath))
-                        {
-                            var group = RenderGroup.For(renderers).WithData(component);
-                            if (!resultSet.Contains(group))
-                            {
-                                resultSet.Add(group);
-                                return resultSet.ToImmutableList(); // TEST CODE
-                            }
-                        }
-                    }
+                    var targetRenderers = renderers
+                        .Where(e => RendererHasTexture(e, targetPath));
+
+                    resultSet.Add(RenderGroup.For(targetRenderers).WithData(component));
+                    return resultSet.ToImmutableList(); // TEST CODE
                 }
             }
 
@@ -212,15 +206,23 @@ namespace net.puk06.ColorChanger.NDMF {
                 {
                     if (proxy == null || _materialDictionary == null || _materialDictionary.Count == 0) return;
 
+                    var newMaterials = new Material[proxy.sharedMaterials.Length];
                     for (int i = 0; i < proxy.sharedMaterials.Length; i++)
                     {
                         var material = proxy.sharedMaterials[i];
-                        if (!_materialDictionary.ContainsKey(material))
-                            return;
-
-                        proxy.sharedMaterials[i] = _materialDictionary[material];
+                        if (_materialDictionary.TryGetValue(material, out var newMaterial))
+                        {
+                            newMaterials[i] = newMaterial;
+                        }
+                        else
+                        {
+                            newMaterials[i] = material;
+                        }
                     }
-                } catch { }
+
+                    proxy.sharedMaterials = newMaterials;
+                }
+                catch { }
             }
 
             public void Dispose()
