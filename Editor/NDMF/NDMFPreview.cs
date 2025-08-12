@@ -25,49 +25,54 @@ namespace net.puk06.ColorChanger.NDMF {
                 foreach (var component in colorChangers)
                 {
                     if (component.targetTexture == null) continue;
+
                     string targetPath = AssetDatabase.GetAssetPath(component.targetTexture);
                     if (string.IsNullOrEmpty(targetPath)) continue;
 
                     foreach (var renderer in renderers)
                     {
-                        Material[] materials = renderer.sharedMaterials;
-                        bool added = false;
-
-                        foreach (var material in materials)
+                        if (RendererHasTexture(renderer, targetPath))
                         {
-                            if (material == null) continue;
-                            Shader shader = material.shader;
-                            int count = ShaderUtil.GetPropertyCount(shader);
-
-                            for (int i = 0; i < count; i++)
+                            var group = RenderGroup.For(renderer).WithData(component);
+                            if (!resultSet.Contains(group))
                             {
-                                if (ShaderUtil.GetPropertyType(shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
-                                    continue;
-
-                                string propName = ShaderUtil.GetPropertyName(shader, i);
-                                Texture currentTex = material.GetTexture(propName);
-                                if (currentTex == null) continue;
-
-                                string currentPath = AssetDatabase.GetAssetPath(currentTex);
-                                if (currentPath == targetPath)
-                                {
-                                    var group = RenderGroup.For(renderer).WithData(component);
-                                    if (!resultSet.Contains(group))
-                                    {
-                                        resultSet.Add(group);
-                                    }
-                                    added = true;
-                                    break;
-                                }
+                                resultSet.Add(group);
                             }
-                            if (added) break;
                         }
-                        if (added) break;
                     }
                 }
             }
 
             return resultSet.ToImmutableList();
+        }
+
+
+        private bool RendererHasTexture(Renderer renderer, string targetPath)
+        {
+            var materials = renderer.sharedMaterials;
+            foreach (var material in materials)
+            {
+                if (material == null) continue;
+                var shader = material.shader;
+                int count = ShaderUtil.GetPropertyCount(shader);
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (ShaderUtil.GetPropertyType(shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
+                        continue;
+
+                    string propName = ShaderUtil.GetPropertyName(shader, i);
+                    Texture currentTex = material.GetTexture(propName);
+                    if (currentTex == null) continue;
+
+                    string currentPath = AssetDatabase.GetAssetPath(currentTex);
+                    if (currentPath == targetPath)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
@@ -76,8 +81,10 @@ namespace net.puk06.ColorChanger.NDMF {
             try
             {
                 var component = group.GetData<ColorChangerForUnity>();
+
                 var originalTexture = component.targetTexture;
                 var originalTexturePath = AssetDatabase.GetAssetPath(originalTexture);
+
                 var processedTexture = ComputeTextureOverrides(component);
                 if (processedTexture == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(materialDict));
 
@@ -97,17 +104,15 @@ namespace net.puk06.ColorChanger.NDMF {
 
                         for (int i = 0; i < count; i++)
                         {
-                            if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-                            {
-                                string propName = ShaderUtil.GetPropertyName(shader, i);
-                                Texture currentTex = newMaterial.GetTexture(propName);
-                                string texturePath = AssetDatabase.GetAssetPath(currentTex);
+                            if (ShaderUtil.GetPropertyType(shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
+                                continue;
 
-                                if (texturePath == originalTexturePath)
-                                {
-                                    newMaterial.SetTexture(propName, processedTexture);
-                                }
-                            }
+                            string propName = ShaderUtil.GetPropertyName(shader, i);
+                            Texture currentTex = newMaterial.GetTexture(propName);
+                            string texturePath = AssetDatabase.GetAssetPath(currentTex);
+
+                            if (texturePath != originalTexturePath) continue;
+                            newMaterial.SetTexture(propName, processedTexture);
                         }
                     }
                 }
