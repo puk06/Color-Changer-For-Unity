@@ -34,6 +34,11 @@ namespace net.puk06.ColorChanger.NDMF
 
                     resultSet.Add(RenderGroup.For(targetRenderers).WithData(component));
 
+                    foreach (var renderer in renderers)
+                    {
+                        context.Observe(renderer.gameObject);
+                    }
+
                     /**
                      * 下のリターンについて:
                      * 現在、複数のRenderGroupに渡って同じRendererが追加されてしまってエラーを吐きます。
@@ -82,6 +87,7 @@ namespace net.puk06.ColorChanger.NDMF
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
+            Debug.Log("いんすたんしえいと！！");
             Dictionary<Material, Material> materialDict = new();
 
             try
