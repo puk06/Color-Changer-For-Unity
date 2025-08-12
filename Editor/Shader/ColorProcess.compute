@@ -1,12 +1,15 @@
 #pragma kernel CSMain
 
+#include "BalanceModeShader.hlsl"
+#include "AdvancedColorShader.hlsl"
+
 RWTexture2D<float4> _Source;
 RWTexture2D<float4> _Target;
 
-float3 _prevColor; // 0-255の色
-float3 _ColorOffset; // -510 - 510の色
+float3 _prevColor;
+float3 _ColorOffset;
 
-// BalanceMode
+// Balance Mode
 bool _balanceModeEnabled;
 int _balanceModeVersion;
 float _balanceModeV1Weight;
@@ -17,7 +20,7 @@ float _balanceModeV2MinimumValue;
 bool _balanceModeV2IncludeOutside;
 Texture2D _balanceModeV3Gradient;
 
-// AdvancedColorSettings
+// Advanced Color Settings
 bool _advancedColorModeEnabled;
 float _advancedColorSettingsBrightness;
 float _advancedColorSettingsContrast;
@@ -25,7 +28,6 @@ float _advancedColorSettingsGamma;
 float _advancedColorSettingsExposure;
 float _advancedColorSettingsTransparency;
 
-//テクスチャ用だけど今は使ってない、わからん
 SamplerState samplerLinearClamp
 {
     Filter = MIN_MAG_MIP_LINEAR;
@@ -33,231 +35,19 @@ SamplerState samplerLinearClamp
     AddressV = Clamp;
 };
 
-// 色の距離
-float GetColorDistance(float4 c1, float3 c2)
-{
-    float r = pow(c1.r - c2.r, 2);
-    float g = pow(c1.g - c2.g, 2);
-    float b = pow(c1.b - c2.b, 2);
-
-    return sqrt(r + g + b);
-}
-
-// 色の変化率計算用
-float CalculateColorChangeRate(bool hasIntersection, float intersectionDistance, float distance, float graphWeight, float minValue)
-{
-    if (!hasIntersection || abs(intersectionDistance) < 1e-6)
-    {
-        return 1.0;
-    }
-
-    float changeRate = pow(1.0 - (distance / intersectionDistance), graphWeight);
-    return max(minValue, changeRate);
-}
-
-// 交差する距離求めるやつ マジでわからない
-void GetRGBIntersectionDistance(
-    float3 baseColor,
-    float4 targetColor,
-    out bool hasIntersection,
-    out float intersectionDistance
-)
-{
-    float dx = targetColor.x - baseColor.x;
-    float dy = targetColor.y - baseColor.y;
-    float dz = targetColor.z - baseColor.z;
-
-    float t_values[6];
-    int count = 0;
-    
-    if (abs(dx) > 1e-6)
-    {
-        t_values[count++] = (0.0 - baseColor.x) / dx;
-        t_values[count++] = (255.0 - baseColor.x) / dx;
-    }
-    
-    if (abs(dy) > 1e-6)
-    {
-        t_values[count++] = (0.0 - baseColor.y) / dy;
-        t_values[count++] = (255.0 - baseColor.y) / dy;
-    }
-    
-    if (abs(dz) > 1e-6)
-    {
-        t_values[count++] = (0.0 - baseColor.z) / dz;
-        t_values[count++] = (255.0 - baseColor.z) / dz;
-    }
-
-    float minPositiveT = 1e30;
-    [unroll]
-    for (int i = 0; i < count; i++)
-    {
-        float t = t_values[i];
-        if (t > 0.0)
-        {
-            float x = baseColor.x + t * dx;
-            float y = baseColor.y + t * dy;
-            float z = baseColor.z + t * dz;
-
-            if (x >= 0.0 && x <= 255.0 &&
-                y >= 0.0 && y <= 255.0 &&
-                z >= 0.0 && z <= 255.0)
-            {
-                if (t < minPositiveT)
-                    minPositiveT = t;
-            }
-        }
-    }
-
-    if (minPositiveT < 1e29)
-    {
-        float length = sqrt(dx * dx + dy * dy + dz * dz);
-        intersectionDistance = minPositiveT * length;
-        hasIntersection = true;
-    }
-    else
-    {
-        intersectionDistance = -1.0;
-        hasIntersection = false;
-    }
-}
-
-// バランスモードの計算式
-// 全然動かないです。はい。
-float3 BalanceColorAdjustment(
-    float4 pixel, float3 prevColor, float3 diff,
-    int modeVersion,
-    float v1Weight,
-    float v1MinimumValue,
-    float v2Radius,
-    float v2Weight,
-    float v2MinimumValue,
-    bool v2IncludeOutside,
-    Texture2D v3Gradient
-)
-{
-    float adjustmentFactor = 0.0;
-
-    float distance = GetColorDistance(pixel, prevColor);
-
-    if (modeVersion == 1)
-    {
-        bool hasIntersection;
-        float intersectionDistance;
-        GetRGBIntersectionDistance(prevColor, pixel, hasIntersection, intersectionDistance);
-
-        adjustmentFactor = CalculateColorChangeRate(
-            hasIntersection,
-            intersectionDistance,
-            distance,
-            v1Weight,
-            v1MinimumValue
-        );
-    }
-    else if (modeVersion == 2)
-    {
-        if (distance <= v2Radius)
-        {
-            adjustmentFactor = CalculateColorChangeRate(
-                true,
-                v2Radius,
-                distance,
-                v2Weight,
-                v2MinimumValue
-            );
-        }
-        else if (v2IncludeOutside)
-        {
-            adjustmentFactor = v2MinimumValue;
-        }
-    }
-    else if (modeVersion == 3)
-    {
-        const float grayScaleWeightR = 0.299;
-        const float grayScaleWeightG = 0.587;
-        const float grayScaleWeightB = 0.114;
-
-        float grayScale =
-            grayScaleWeightR * pixel.r +
-            grayScaleWeightG * pixel.g +
-            grayScaleWeightB * pixel.b;
-
-        //テクスチャから読み込めればいいけど、今はちょい難しいのでパス
-        return pixel;
-    }
-    
-    pixel.r = pixel.r + (diff.r * adjustmentFactor);
-    pixel.g = pixel.g + (diff.g * adjustmentFactor);
-    pixel.b = pixel.b + (diff.b * adjustmentFactor);
-
-    return pixel;
-}
-
-float4 ApplyBrightness(float4 color, float brightness)
-{
-    return float4(color.rgb * brightness, color.a);
-}
-float4 ApplyContrast(float4 color, float contrast)
-{
-    float3 contrasted = ((color.rgb - 128.0) * contrast) + 128.0;
-    return float4(saturate(contrasted), color.a);
-}
-float4 ApplyGamma(float4 color, float gamma)
-{
-    float3 gammaCorrected = pow(color.rgb / 255.0, float3(gamma, gamma, gamma)) * float3(255.0, 255.0, 255.0);
-    return float4(gammaCorrected, color.a);
-}
-float4 ApplyExposure(float4 color, float exposure)
-{
-    float exposureFactor = pow(2.0, exposure);
-    return float4(color.rgb * exposureFactor, color.a);
-}
-float4 ApplyTransparency(float4 color, float transparency)
-{
-    float alpha = color.a * (1.0 - transparency);
-    return float4(color.rgb, alpha);
-}
-float4 AdvancedColorAdjustment(
-    float4 color,
-    float brightness,
-    float contrast,
-    float gamma,
-    float exposure,
-    float transparency
-)
-{
-    if (brightness != 1.0)
-        color = ApplyBrightness(color, brightness);
-
-    if (contrast != 1.0)
-        color = ApplyContrast(color, contrast);
-
-    if (gamma != 1.0)
-        color = ApplyGamma(color, gamma);
-
-    if (abs(exposure) > 1e-6)
-        color = ApplyExposure(color, exposure);
-
-    if (abs(transparency) > 1e-6)
-        color = ApplyTransparency(color, transparency);
-
-    return color;
-}
-
 [numthreads(16, 16, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     uint width, height;
     _Target.GetDimensions(width, height);
-    if (id.x >= width || id.y >= height)
-        return;
+    if (id.x >= width || id.y >= height) return;
 
     float4 color = _Source[id.xy] * 255.0;
 
     if (_balanceModeEnabled)
     {
         color.rgb = BalanceColorAdjustment(
-            color, _prevColor, _ColorOffset,
+            color.rgb, _prevColor, _ColorOffset,
             _balanceModeVersion,
             _balanceModeV1Weight,
             _balanceModeV1MinimumValue,

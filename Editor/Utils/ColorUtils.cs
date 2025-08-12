@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using net.puk06.ColorChanger.Models;
 using UnityEngine;
 
@@ -153,24 +154,21 @@ namespace net.puk06.ColorChanger.Utils
 
             // 最小正の t を探す（延長線上、前方方向）
             double minPositiveT = double.MaxValue;
-            foreach (double t in t_values)
+            foreach (double t in t_values.Where(t => t > 0))
             {
-                if (t > 0)
-                {
-                    double x = base_r + (t * dx);
-                    double y = base_g + (t * dy);
-                    double z = base_b + (t * dz);
+                double x = base_r + (t * dx);
+                double y = base_g + (t * dy);
+                double z = base_b + (t * dz);
 
-                    // 点がRGB空間内にあるか（各成分が0〜255の間）
-                    if (
-                        x >= 0 && x <= 255 &&
-                        y >= 0 && y <= 255 &&
-                        z >= 0 && z <= 255 &&
-                        t < minPositiveT
-                    )
-                    {
-                        minPositiveT = t;
-                    }
+                // 点がRGB空間内にあるか（各成分が0〜255の間）
+                if (
+                    x >= 0 && x <= 255 &&
+                    y >= 0 && y <= 255 &&
+                    z >= 0 && z <= 255 &&
+                    t < minPositiveT
+                )
+                {
+                    minPositiveT = t;
                 }
             }
 
@@ -255,7 +253,12 @@ namespace net.puk06.ColorChanger.Utils
         }
         #endregion
         
+        /// <summary>
+        /// 0-1のfloatを0-255のintに変換します。
+        /// </summary>
+        /// <param name="colorValue"></param>
+        /// <returns></returns>
         internal static int ConvertColorToInt32(float colorValue)
-        => Mathf.RoundToInt(colorValue * 255f);
+            => Mathf.RoundToInt(colorValue * 255f);
     }
 }

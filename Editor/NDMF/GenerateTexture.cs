@@ -14,7 +14,7 @@ namespace net.puk06.ColorChanger.NDMF
 
             foreach (var component in avatar.GetComponentsInChildren<ColorChangerForUnity>())
             {
-                Texture2D originalTexture = ConvertToNonCompressed(component.targetTexture);
+                Texture2D originalTexture = GetRawTexture(component.targetTexture);
                 Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
                 ColorDifference colorDifference = new ColorDifference(component.previousColor, component.newColor);
@@ -31,40 +31,39 @@ namespace net.puk06.ColorChanger.NDMF
                 AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
 
                 Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>();
-
-                foreach (var renderer in renderers)
-                {
-                    Material[] materials = renderer.materials;
-
-                    foreach (var material in materials)
-                    {
-                        Shader shader = material.shader;
-                        int count = ShaderUtil.GetPropertyCount(shader);
-
-                        for (int i = 0; i < count; i++)
-                        {
-                            if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-                            {
-                                string propName = ShaderUtil.GetPropertyName(shader, i);
-                                Texture currentTex = material.GetTexture(propName);
-
-                                string path1 = AssetDatabase.GetAssetPath(currentTex);
-                                string path2 = AssetDatabase.GetAssetPath(component.targetTexture);
-
-                                if (path1 == path2)
-                                {
-                                    material.SetTexture(propName, newTexture);
-                                }
-                            }
-                        }
-                    }
-                }
+                ReplaceTextures(renderers, component.targetTexture, newTexture);
 
                 Object.DestroyImmediate(component);
             }
         }
+
+        private void ReplaceTextures(Renderer[] renderers, Texture2D oldTexture, Texture2D newTexture)
+        {
+            foreach (var renderer in renderers)
+            {
+                Material[] materials = renderer.materials;
+
+                foreach (var material in materials)
+                {
+                    Shader shader = material.shader;
+                    int count = ShaderUtil.GetPropertyCount(shader);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
+                        {
+                            string propName = ShaderUtil.GetPropertyName(shader, i);
+                            Texture currentTex = material.GetTexture(propName);
+
+                            if (currentTex != oldTexture) continue;
+                            material.SetTexture(propName, newTexture);
+                        }
+                    }
+                }
+            }
+        }
         
-        private Texture2D ConvertToNonCompressed(Texture2D source)
+        private Texture2D GetRawTexture(Texture2D source)
         {
             RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.Default);
             Graphics.Blit(source, rt);

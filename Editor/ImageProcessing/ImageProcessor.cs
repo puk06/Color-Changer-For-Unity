@@ -1,8 +1,6 @@
 using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
-using System;
 using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 using MathUtils = net.puk06.ColorChanger.Utils.MathUtils;
 
@@ -67,19 +65,15 @@ namespace net.puk06.ColorChanger.ImageProcessing
             target.Apply();
         }
 
-        const string shaderPath = "Packages/net.puk06.color-changer/Editor/Shader/ColorProcess.compute";
-        ComputeShader colorComputeShader;
-
         public void ProcessAllPixelsGPU(RenderTexture source, RenderTexture target)
         {
-#if UNITY_EDITOR
-            colorComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(shaderPath);
+            ComputeShader colorComputeShader = ShaderUtils.GetComputeShader();
             if (colorComputeShader == null)
             {
-                Debug.LogError("ComputeShaderが読み込めませんでした。");
+                Debug.LogError("計算用シェーダーファイルが見つかりませんでした。");
                 return;
             }
-#endif
+
             int kernel = colorComputeShader.FindKernel("CSMain");
 
             colorComputeShader.SetTexture(kernel, "_Source", source);
@@ -107,8 +101,8 @@ namespace net.puk06.ColorChanger.ImageProcessing
             colorComputeShader.SetFloat("_advancedColorSettingsExposure", _advancedColorConfiguration.Exposure);
             colorComputeShader.SetFloat("_advancedColorSettingsTransparency", _advancedColorConfiguration.Transparency);
 
-            int threadGroupX = Mathf.CeilToInt(source.width / 8.0f);
-            int threadGroupY = Mathf.CeilToInt(source.height / 8.0f);
+            int threadGroupX = Mathf.CeilToInt(source.width / 16.0f);
+            int threadGroupY = Mathf.CeilToInt(source.height / 16.0f);
             colorComputeShader.Dispatch(kernel, threadGroupX, threadGroupY, 1);
         }
 
