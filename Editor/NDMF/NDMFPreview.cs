@@ -16,7 +16,8 @@ namespace net.puk06.ColorChanger.NDMF {
         public ImmutableList<RenderGroup> GetTargetGroups(ComputeContext context)
         {
             var avatars = context.GetAvatarRoots();
-            var resultSet = new HashSet<RenderGroup>();
+            var resultSet = new List<RenderGroup>();
+            // var addedList = new List<Renderer>();
 
             foreach (var avatar in avatars)
             {
@@ -37,6 +38,8 @@ namespace net.puk06.ColorChanger.NDMF {
                     return resultSet.ToImmutableList(); // TEST CODE
                 }
             }
+
+            // addedList.Clear();
 
             return resultSet.ToImmutableList();
         }
@@ -175,6 +178,9 @@ namespace net.puk06.ColorChanger.NDMF {
 
             processor.ProcessAllPixelsGPU(rawTexture, newTex);
 
+            rawTexture.DiscardContents();
+            Object.DestroyImmediate(rawTexture);
+
             return newTex;
         }
 
@@ -229,6 +235,21 @@ namespace net.puk06.ColorChanger.NDMF {
             {
                 foreach (var material in _materialDictionary.Values)
                 {
+                    int count = ShaderUtil.GetPropertyCount(material.shader);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (ShaderUtil.GetPropertyType(material.shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
+                        {
+                            var tex = material.GetTexture(ShaderUtil.GetPropertyName(material.shader, i));
+                            if (tex is RenderTexture rt)
+                            {
+                                rt.DiscardContents();
+                                Object.DestroyImmediate(rt);
+                            }
+                        }
+                    }
+
                     Object.DestroyImmediate(material);
                 }
 

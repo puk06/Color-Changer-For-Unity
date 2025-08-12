@@ -186,9 +186,9 @@ float3 BalanceColorAdjustment(
         return pixel;
     }
     
-    pixel.r = saturate((pixel.r + diff.r * adjustmentFactor) / 255.0) * 255.0;
-    pixel.g = saturate((pixel.g + diff.g * adjustmentFactor) / 255.0) * 255.0;
-    pixel.b = saturate((pixel.b + diff.b * adjustmentFactor) / 255.0) * 255.0;
+    pixel.r = pixel.r + (diff.r * adjustmentFactor);
+    pixel.g = pixel.g + (diff.g * adjustmentFactor);
+    pixel.b = pixel.b + (diff.b * adjustmentFactor);
 
     return pixel;
 }
@@ -244,7 +244,7 @@ float4 AdvancedColorAdjustment(
     return color;
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(16, 16, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     uint width, height;
