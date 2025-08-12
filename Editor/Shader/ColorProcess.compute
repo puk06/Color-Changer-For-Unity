@@ -29,13 +29,6 @@ float _advancedColorSettingsGamma;
 float _advancedColorSettingsExposure;
 float _advancedColorSettingsTransparency;
 
-SamplerState samplerLinearClamp
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
-
 [numthreads(16, 16, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
