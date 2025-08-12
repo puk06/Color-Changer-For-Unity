@@ -33,10 +33,11 @@ namespace net.puk06.ColorChanger.NDMF {
                     {
                         if (RendererHasTexture(renderer, targetPath))
                         {
-                            var group = RenderGroup.For(renderer).WithData(component);
+                            var group = RenderGroup.For(renderers).WithData(component);
                             if (!resultSet.Contains(group))
                             {
                                 resultSet.Add(group);
+                                return resultSet.ToImmutableList(); // TEST CODE
                             }
                         }
                     }
@@ -45,7 +46,6 @@ namespace net.puk06.ColorChanger.NDMF {
 
             return resultSet.ToImmutableList();
         }
-
 
         private bool RendererHasTexture(Renderer renderer, string targetPath)
         {
@@ -78,6 +78,7 @@ namespace net.puk06.ColorChanger.NDMF {
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
             Dictionary<Material, Material> materialDict = new();
+
             try
             {
                 var component = group.GetData<ColorChangerForUnity>();
@@ -90,14 +91,15 @@ namespace net.puk06.ColorChanger.NDMF {
 
                 foreach (var proxyPair in proxyPairs)
                 {
-                    var originalMaterials = proxyPair.Item2.sharedMaterials;
+                    var proxyMaterials = proxyPair.Item2.sharedMaterials;
+                    var swappedMaterials = FindMaterialsWithTexturePath(proxyMaterials, originalTexturePath);
 
-                    foreach (var originalMaterial in originalMaterials)
+                    foreach (var swapMaterial in swappedMaterials)
                     {
-                        if (materialDict.ContainsKey(originalMaterial)) continue;
+                        if (materialDict.ContainsKey(swapMaterial)) continue;
 
-                        var newMaterial = new Material(originalMaterial);
-                        materialDict.Add(originalMaterial, newMaterial);
+                        var newMaterial = new Material(swapMaterial);
+                        materialDict.Add(swapMaterial, newMaterial);
 
                         Shader shader = newMaterial.shader;
                         int count = ShaderUtil.GetPropertyCount(shader);
@@ -126,6 +128,37 @@ namespace net.puk06.ColorChanger.NDMF {
                 Debug.LogException(ex);
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(materialDict));
             }
+        }
+
+        private List<Material> FindMaterialsWithTexturePath(Material[] materials, string originalTexturePath)
+        {
+            List<Material> result = new List<Material>();
+
+            foreach (Material material in materials)
+            {
+                if (material == null) continue;
+                var shader = material.shader;
+                int count = ShaderUtil.GetPropertyCount(shader);
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (ShaderUtil.GetPropertyType(shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
+                        continue;
+
+                    string propName = ShaderUtil.GetPropertyName(shader, i);
+                    Texture currentTex = material.GetTexture(propName);
+                    if (currentTex == null) continue;
+
+                    string currentPath = AssetDatabase.GetAssetPath(currentTex);
+                    if (currentPath == originalTexturePath)
+                    {
+                        result.Add(material);
+                        break;
+                    }
+                }
+            }
+
+            return result;
         }
 
         private static RenderTexture ComputeTextureOverrides(ColorChangerForUnity component)
