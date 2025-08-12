@@ -1,15 +1,17 @@
 using UnityEngine;
 using net.puk06.ColorChanger.Models;
+using System;
 
 namespace net.puk06.ColorChanger
 {
-    public class ColorChangerForUnity : MonoBehaviour
+    [Serializable]
+    public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly
     {
         public Texture2D targetTexture;
 
         public Color previousColor;
         public Color newColor;
-        
+
         public BalanceModeConfiguration balanceModeConfiguration = new BalanceModeConfiguration();
         public AdvancedColorConfiguration advancedColorConfiguration = new AdvancedColorConfiguration();
     }

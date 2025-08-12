@@ -2,7 +2,8 @@
     "name": "net.puk06.color-changer.editor",
     "rootNamespace": "",
     "references": [
-        "net.puk06.color-changer.runtime"
+        "net.puk06.color-changer.runtime",
+        "nadena.dev.ndmf"
     ],
     "includePlatforms": [
         "Editor"

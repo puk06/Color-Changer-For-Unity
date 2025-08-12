@@ -1,7 +1,7 @@
 {
     "name": "net.puk06.color-changer",
     "displayName": "Color Changer For Unity",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "author": {
         "name": "Pukorufu",
         "url": "https://github.com/puk06",
@@ -9,5 +9,5 @@
     },
     "unity": "2022.3",
     "description": "VRC Color Changer For Unity!",
-    "url": "https://github.com/puk06/Color-Changer-For-Unity/releases/download/v1.0.3/net.puk06.color-changer-v1.0.3.zip?"
+    "url": "https://github.com/puk06/Color-Changer-For-Unity/releases/download/v1.0.4/net.puk06.color-changer-v1.0.4.zip?"
 }

@@ -1,19 +1,21 @@
+using System;
 using UnityEngine;
 
 namespace net.puk06.ColorChanger.Models
 {
+    [Serializable]
     public class BalanceModeConfiguration
     {
-        public int ModeVersion { get; set; } = 0;
+        public int ModeVersion = 0;
 
-        public float V1Weight { get; set; } = 1.0f;
-        public float V1MinimumValue { get; set; } = 0.0f;
+        public float V1Weight = 1.0f;
+        public float V1MinimumValue = 0.0f;
 
-        public float V2Weight { get; set; } = 1.0f;
-        public float V2Radius { get; set; } = 0.0f;
-        public float V2MinimumValue { get; set; } = 0.0f;
-        public bool V2IncludeOutside { get; set; } = false;
+        public float V2Weight = 1.0f;
+        public float V2Radius = 0.0f;
+        public float V2MinimumValue = 0.0f;
+        public bool V2IncludeOutside = false;
 
-        public Gradient V3GradientColor { get; set; } = new Gradient();
+        public Gradient V3GradientColor = new Gradient();
     }
 }
