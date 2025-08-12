@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const archiver = require('archiver');
 const path = require("node:path");
 
-const PACKAGE_JSON = path.join(__dirname, "PackageData", 'package.json');
+const PACKAGE_JSON = path.join(__dirname, "../PackageData", 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON, "utf8"));
 
 const PACKAGE_NAME = packageJson.name;
@@ -22,7 +22,7 @@ const output = fs.createWriteStream(ZIP_FILE_NAME);
 const archive = archiver('zip', { zlib: { level: 9 } });
 
 archive.glob('**/*', {
-    cwd: path.join(__dirname, 'PackageData')
+    cwd: path.join(__dirname, '../PackageData')
 });
 
 output.on('close', () => {
