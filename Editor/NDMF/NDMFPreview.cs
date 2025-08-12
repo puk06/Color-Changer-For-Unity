@@ -17,6 +17,7 @@ namespace net.puk06.ColorChanger.NDMF
     {
         public ImmutableList<RenderGroup> GetTargetGroups(ComputeContext context)
         {
+            LogUtils.Log("GetTargetGroups Called!");
             var avatars = context.GetAvatarRoots();
             var resultSet = new List<RenderGroup>();
 
@@ -55,6 +56,8 @@ namespace net.puk06.ColorChanger.NDMF
                 }
             }
 
+            LogUtils.Log("RenderGroup Count: " + resultSet.Count);
+
             return resultSet.ToImmutableList();
         }
 
@@ -87,7 +90,7 @@ namespace net.puk06.ColorChanger.NDMF
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
-            Debug.Log("いんすたんしえいと！！");
+            LogUtils.Log("Instantiate Called!");
             Dictionary<Material, Material> materialDict = new();
 
             try

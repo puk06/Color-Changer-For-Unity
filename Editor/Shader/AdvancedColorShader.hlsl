@@ -6,7 +6,7 @@ float4 ApplyBrightness(float4 color, float brightness)
 float4 ApplyContrast(float4 color, float contrast)
 {
     float3 contrasted = ((color.rgb - 128.0) * contrast) + 128.0;
-    return float4(saturate(contrasted), color.a);
+    return float4(contrasted, color.a);
 }
 
 float4 ApplyGamma(float4 color, float gamma)

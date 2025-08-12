@@ -121,7 +121,7 @@ namespace net.puk06.ColorChanger {
                     float displayHeight = displayWidth * aspect;
 
                     Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
-                    rect.x = (EditorGUIUtility.currentViewWidth - rect.width) / 2;
+                    rect.x = ((EditorGUIUtility.currentViewWidth - rect.width) / 2) + 5;
 
                     GUI.DrawTexture(rect, colorChangerComponent.targetTexture, ScaleMode.ScaleToFit);
                 }
