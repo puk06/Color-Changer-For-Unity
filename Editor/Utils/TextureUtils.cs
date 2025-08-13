@@ -183,5 +183,25 @@ namespace net.puk06.ColorChanger.Utils
 
             return materials.FirstOrDefault()?.mainTexture;
         }
+
+        /// <summary>
+        /// アバター内の全てのテクスチャのハッシュセット(比較用)を取得します。
+        /// </summary>
+        /// <param name="avatar"></param>
+        /// <returns></returns>
+        internal static HashSet<Texture2D> GetAvatarTexturesHashSet(GameObject avatar)
+        {
+            return avatar.GetComponentsInChildren<Renderer>()
+                .SelectMany(r => r.sharedMaterials)
+                .SelectMany(m =>
+                {
+                    var textureList = new List<Texture>();
+                    MaterialUtils.ForEachTex(m, (texture, _) => textureList.Add(texture));
+                    return textureList;
+                })
+                .OfType<Texture2D>()
+                .Distinct()
+                .ToHashSet();
+        }
     }
 }

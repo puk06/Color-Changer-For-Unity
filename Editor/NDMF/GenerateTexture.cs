@@ -1,9 +1,12 @@
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.Utils;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace net.puk06.ColorChanger.NDMF
 {
@@ -15,18 +18,45 @@ namespace net.puk06.ColorChanger.NDMF
 
             Dictionary<Texture2D, Texture2D> processedDictionary = new();
 
-            foreach (var component in avatar.GetComponentsInChildren<ColorChangerForUnity>())
+            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
+            if (components == null || components.Length == 0) return;
+
+            // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
+            var enabledComponents = components.Where(x => x != null && x.Enabled && x.targetTexture != null);
+            if (enabledComponents == null || !enabledComponents.Any()) return;
+
+            // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
+            var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
+            if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
+
+            var avatarComponents = enabledComponents
+                .Where(c => avatarTexturesHashSet.Contains(c.targetTexture));
+            if (avatarComponents == null || !avatarComponents.Any()) return;
+
+            foreach (var component in avatarComponents)
             {
-                if (!component.Enabled || component.targetTexture == null) continue;
-                Texture2D originalTexture = GetRawTexture(component.targetTexture);
-                Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                LogUtils.Log($"Texture Processing Start: '{component.name}'");
 
-                TextureUtils.ProcessTexture(originalTexture, newTexture, component);
+                try
+                {
+                    Texture2D originalTexture = GetRawTexture(component.targetTexture);
+                    Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
-                AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
-                processedDictionary.Add(component.targetTexture, newTexture);
+                    TextureUtils.ProcessTexture(originalTexture, newTexture, component);
 
-                Object.DestroyImmediate(originalTexture);
+                    AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
+                    processedDictionary.Add(component.targetTexture, newTexture);
+
+                    Object.DestroyImmediate(originalTexture);
+                    stopwatch.Stop();
+
+                    LogUtils.Log($"Texture Processing Done: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms");
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.LogError($"Texture Processing Error: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms\n" + ex);
+                }
             }
 
             Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>();

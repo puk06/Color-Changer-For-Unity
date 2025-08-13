@@ -81,17 +81,31 @@ namespace net.puk06.ColorChanger.NDMF
         {
             try
             {
-                // シーン内の全てのColorChangerForUnityコンポーネントを出してくる。
-                var components = context.GetComponentsByType<ColorChangerForUnity>();
+                var firstRenderer = group.Renderers.FirstOrDefault();
+                if (firstRenderer == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+
+                var avatar = context.GetAvatarRoot(firstRenderer.gameObject);
+                if (avatar == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+
+                // アバター配下にあるColorChangerコンポーネントの配列
+                var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
+                if (components == null || components.Length == 0) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
 
                 // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
-                var enabledComponents = components.Where(x => x.Enabled && x.targetTexture != null);
+                var enabledComponents = components.Where(x => x != null && x.Enabled && x.targetTexture != null);
+                if (enabledComponents == null || !enabledComponents.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
 
-                // 変更される予定のテクスチャの配列
+                // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
+                var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
+                if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+
+                // 変更される予定のテクスチャ（アバター配下で使われている物だけ）
                 var targetTextures = enabledComponents
                     .Select(c => c.targetTexture)
+                    .Where(t => avatarTexturesHashSet.Contains(t))
                     .Distinct()
                     .ToArray();
+                if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
 
                 // 元のテクスチャ、処理されたテクスチャのDictionary
                 var processedTextures = new Dictionary<Texture2D, RenderTexture>();
@@ -131,7 +145,10 @@ namespace net.puk06.ColorChanger.NDMF
                         material => ProcessMaterial(material, processedTextures)
                     );
 
-                components.ForEach(component => context.Observe(component));
+                foreach (var component in components)
+                {
+                    context.Observe(component);
+                }
 
                 // 変換前、変換後のマテリアルテクスチャをまとめたものを渡してあげる。
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials));

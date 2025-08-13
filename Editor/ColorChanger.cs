@@ -39,7 +39,7 @@ namespace net.puk06.ColorChanger {
 
         void OnEnable()
         {
-            logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/logo.png");
+            logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/ComponentLogo.png");
             componentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/ComponentIcon.png");
 
             enabledButtonProp = serializedObject.FindProperty("Enabled");
