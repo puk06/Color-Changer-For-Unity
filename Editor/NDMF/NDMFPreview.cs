@@ -90,6 +90,12 @@ namespace net.puk06.ColorChanger.NDMF
                 // アバター配下にあるColorChangerコンポーネントの配列
                 var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
                 if (components == null || components.Length == 0) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+                
+                // 早期リターンで監視対象から外れるのを防ぐため
+                foreach (var component in components)
+                {
+                    context.Observe(component);
+                }
 
                 // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
                 var enabledComponents = components.Where(x => x != null && x.Enabled && x.targetTexture != null);
@@ -144,11 +150,6 @@ namespace net.puk06.ColorChanger.NDMF
                         material => material,
                         material => ProcessMaterial(material, processedTextures)
                     );
-
-                foreach (var component in components)
-                {
-                    context.Observe(component);
-                }
 
                 // 変換前、変換後のマテリアルテクスチャをまとめたものを渡してあげる。
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials));
