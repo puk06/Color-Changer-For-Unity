@@ -38,13 +38,17 @@ namespace net.puk06.ColorChanger.NDMF
             {
                 var components = context.GetComponentsByType<ColorChangerForUnity>();
                 var targetTextures = components
+                    .Where(x => x.targetTexture != null)
                     .Select(c => c.targetTexture)
                     .Distinct()
                     .ToArray();
 
                 var processedTextures = new Dictionary<Texture2D, RenderTexture>();
 
-                var groupedComponents = components.GroupBy(c => c.targetTexture);
+                var groupedComponents = components
+                    .Where(x => x.targetTexture != null)
+                    .GroupBy(c => c.targetTexture);
+
                 foreach (var componentGroup in groupedComponents)
                 {
                     var firstComponent = componentGroup.First();
