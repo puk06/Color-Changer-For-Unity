@@ -1,34 +1,34 @@
-float4 ApplyBrightness(float4 color, float brightness)
+int4 ApplyBrightness(int4 color, float brightness)
 {
-    return float4(color.rgb * brightness, color.a);
+    return int4((int3)(color.rgb * brightness), color.a);
 }
 
-float4 ApplyContrast(float4 color, float contrast)
+int4 ApplyContrast(int4 color, float contrast)
 {
-    float3 contrasted = ((color.rgb - 128.0) * contrast) + 128.0;
-    return float4(contrasted, color.a);
+    int3 contrasted = int3(float3(color.rgb - 128) * contrast + 128.0);
+    return int4(contrasted, color.a);
 }
 
-float4 ApplyGamma(float4 color, float gamma)
+int4 ApplyGamma(int4 color, float gamma)
 {
-    float3 gammaCorrected = pow(saturate(color.rgb / 255.0), float3(gamma, gamma, gamma)) * float3(255.0, 255.0, 255.0);
-    return float4(gammaCorrected, color.a);
+    int3 gammaCorrected = (int3)(pow(saturate(color.rgb / 255.0), gamma) * 255.0);
+    return int4(gammaCorrected, color.a);
 }
 
-float4 ApplyExposure(float4 color, float exposure)
+int4 ApplyExposure(int4 color, float exposure)
 {
     float exposureFactor = pow(2.0, exposure);
-    return float4(color.rgb * exposureFactor, color.a);
+    return int4((int3)(color.rgb * exposureFactor), color.a);
 }
 
-float4 ApplyTransparency(float4 color, float transparency)
+int4 ApplyTransparency(int4 color, float transparency)
 {
-    float alpha = color.a * (1.0 - transparency);
-    return float4(color.rgb, alpha);
+    int alpha = (int)(color.a * (1.0 - transparency));
+    return int4(color.rgb, alpha);
 }
 
-float4 AdvancedColorAdjustment(
-    float4 color,
+int4 AdvancedColorAdjustment(
+    int4 color,
     float brightness,
     float contrast,
     float gamma,

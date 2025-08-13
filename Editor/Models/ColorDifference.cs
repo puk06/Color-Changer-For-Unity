@@ -23,10 +23,10 @@ namespace net.puk06.ColorChanger.Models
         }
 
         /// <summary>
-        /// 色をVector3形式に変換します。
+        /// Diffのint[3]配列を取得します。シェーダーのint3に渡すために使用されます。
         /// </summary>
         /// <returns></returns>
-        internal Vector3 ToVector3()
-            => new Vector3(DiffR, DiffG, DiffB);
+        internal int[] ToInts()
+            => new int[] { DiffR, DiffG, DiffB };
     }
 }

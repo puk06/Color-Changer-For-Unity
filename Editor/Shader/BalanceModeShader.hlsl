@@ -1,8 +1,8 @@
-float GetColorDistance(float3 c1, float3 c2)
+float GetColorDistance(int3 c1, int3 c2)
 {
-    float r = pow(c1.r - c2.r, 2);
-    float g = pow(c1.g - c2.g, 2);
-    float b = pow(c1.b - c2.b, 2);
+    float r = pow(float(c1.r - c2.r), 2.0);
+    float g = pow(float(c1.g - c2.g), 2.0);
+    float b = pow(float(c1.b - c2.b), 2.0);
 
     return sqrt(r + g + b);
 }
@@ -15,38 +15,40 @@ float CalculateColorChangeRate(bool hasIntersection, float intersectionDistance,
 }
 
 void GetRGBIntersectionDistance(
-    float3 baseColor,
-    float3 targetColor,
+    int3 baseColor,
+    int3 targetColor,
     out bool hasIntersection,
     out float intersectionDistance
 )
 {
-    float dx = targetColor.r - baseColor.r;
-    float dy = targetColor.g - baseColor.g;
-    float dz = targetColor.b - baseColor.b;
+    int dx = targetColor.r - baseColor.r;
+    int dy = targetColor.g - baseColor.g;
+    int dz = targetColor.b - baseColor.b;
 
     float t_values[6];
     int count = 0;
     
     if (abs(dx) > 1e-6)
     {
-        t_values[count++] = (0.0 - baseColor.r) / dx;
-        t_values[count++] = (255.0 - baseColor.r) / dx;
+        t_values[count++] = (0 - baseColor.r) / (float)dx;
+        t_values[count++] = (255 - baseColor.r) / (float)dx;
     }
     
     if (abs(dy) > 1e-6)
     {
-        t_values[count++] = (0.0 - baseColor.g) / dy;
-        t_values[count++] = (255.0 - baseColor.g) / dy;
+        t_values[count++] = (0 - baseColor.g) / (float)dy;
+        t_values[count++] = (255 - baseColor.g) / (float)dy;
     }
     
     if (abs(dz) > 1e-6)
     {
-        t_values[count++] = (0.0 - baseColor.b) / dz;
-        t_values[count++] = (255.0 - baseColor.b) / dz;
+        t_values[count++] = (0 - baseColor.b) / (float)dz;
+        t_values[count++] = (255 - baseColor.b) / (float)dz;
     }
 
     float minPositiveT = 1e30;
+    bool foundAny = false;
+
     [unroll]
     for (int i = 0; i < count; i++)
     {
@@ -65,11 +67,12 @@ void GetRGBIntersectionDistance(
             )
             {
                 minPositiveT = t;
+                foundAny = true;
             }
         }
     }
 
-    if (abs(minPositiveT - 1e30) > 1e-6)
+    if (foundAny)
     {
         float length = sqrt((dx * dx) + (dy * dy) + (dz * dz));
         intersectionDistance = minPositiveT * length;
@@ -82,8 +85,8 @@ void GetRGBIntersectionDistance(
     }
 }
 
-float3 BalanceColorAdjustment(
-    float3 pixel, float3 prevColor, float3 diff,
+int3 BalanceColorAdjustment(
+    int3 pixel, int3 prevColor, int3 diff,
     int modeVersion,
     float v1Weight,
     float v1MinimumValue,
@@ -112,10 +115,10 @@ float3 BalanceColorAdjustment(
             v1Weight,
             v1MinimumValue
         );
-            
-        pixel.r = pixel.r + (diff.r * adjustmentFactor);
-        pixel.g = pixel.g + (diff.g * adjustmentFactor);
-        pixel.b = pixel.b + (diff.b * adjustmentFactor);
+
+        pixel.r = (int)(pixel.r + (diff.r * adjustmentFactor));
+        pixel.g = (int)(pixel.g + (diff.g * adjustmentFactor));
+        pixel.b = (int)(pixel.b + (diff.b * adjustmentFactor));
         
         return pixel;
     }
@@ -135,11 +138,10 @@ float3 BalanceColorAdjustment(
         {
             adjustmentFactor = v2MinimumValue;
         }
-        
-            
-        pixel.r = pixel.r + (diff.r * adjustmentFactor);
-        pixel.g = pixel.g + (diff.g * adjustmentFactor);
-        pixel.b = pixel.b + (diff.b * adjustmentFactor);
+
+        pixel.r = (int)(pixel.r + (diff.r * adjustmentFactor));
+        pixel.g = (int)(pixel.g + (diff.g * adjustmentFactor));
+        pixel.b = (int)(pixel.b + (diff.b * adjustmentFactor));
 
         return pixel;
     }
@@ -149,22 +151,23 @@ float3 BalanceColorAdjustment(
         const float grayScaleWeightG = 0.587;
         const float grayScaleWeightB = 0.114;
 
-        float grayScale =
+        float grayScale = (
             grayScaleWeightR * (pixel.r / 255.0) +
             grayScaleWeightG * (pixel.g / 255.0) +
-            grayScaleWeightB * (pixel.b / 255.0);
+            grayScaleWeightB * (pixel.b / 255.0)
+        );
         
-        int x = (int) (saturate(grayScale) * (v3PreviewResolution - 1));
+        int x = (int)(saturate(grayScale) * (v3PreviewResolution - 1));
         int y = 0;
         
         float4 gradientColor = v3Gradient[int2(x, y)];
         
-        return gradientColor.rgb * 255.0;
+        return int3(gradientColor.rgb * 255.0);
     }
     
-    pixel.r = pixel.r + (diff.r * adjustmentFactor);
-    pixel.g = pixel.g + (diff.g * adjustmentFactor);
-    pixel.b = pixel.b + (diff.b * adjustmentFactor);
+    pixel.r = (int)(pixel.r + (diff.r * adjustmentFactor));
+    pixel.g = (int)(pixel.g + (diff.g * adjustmentFactor));
+    pixel.b = (int)(pixel.b + (diff.b * adjustmentFactor));
 
     return pixel;
 }

@@ -81,8 +81,8 @@ namespace net.puk06.ColorChanger.ImageProcessing
             colorComputeShader.SetTexture(kernel, "_Source", source);
             colorComputeShader.SetTexture(kernel, "_Target", target);
 
-            colorComputeShader.SetVector("_prevColor", (Vector4)_colorOffset.PreviousColor);
-            colorComputeShader.SetVector("_ColorOffset", _colorOffset.ToVector3());
+            colorComputeShader.SetInts("_prevColor", ColorUtils.GetIntsColorValue(_colorOffset.PreviousColor));
+            colorComputeShader.SetInts("_ColorOffset", _colorOffset.ToInts());
 
             // バランスモード
             colorComputeShader.SetBool("_balanceModeEnabled", _isBalanceMode);

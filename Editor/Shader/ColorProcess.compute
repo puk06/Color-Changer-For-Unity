@@ -6,8 +6,8 @@
 RWTexture2D<float4> _Source;
 RWTexture2D<float4> _Target;
 
-float3 _prevColor;
-float3 _ColorOffset;
+int3 _prevColor;
+int3 _ColorOffset;
 
 // Balance Mode
 bool _balanceModeEnabled;
@@ -36,7 +36,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     _Target.GetDimensions(width, height);
     if (id.x >= width || id.y >= height) return;
 
-    float4 color = _Source[id.xy] * 255.0;
+    int4 color = (int4)(_Source[id.xy] * 255.0);
 
     if (_balanceModeEnabled)
     {

@@ -154,6 +154,7 @@ namespace net.puk06.ColorChanger.Utils
 
             // 最小正の t を探す（延長線上、前方方向）
             double minPositiveT = double.MaxValue;
+            bool foundAny = false;
             foreach (double t in t_values.Where(t => t > 0))
             {
                 double x = base_r + (t * dx);
@@ -169,11 +170,12 @@ namespace net.puk06.ColorChanger.Utils
                 )
                 {
                     minPositiveT = t;
+                    foundAny = true;
                 }
             }
 
             // 最短距離 = ベクトルの長さ * t
-            if (Math.Abs(minPositiveT - double.MaxValue) > MathUtils.EPSILON)
+            if (foundAny)
             {
                 double length = Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
                 return (true, minPositiveT * length);
@@ -252,7 +254,7 @@ namespace net.puk06.ColorChanger.Utils
             return pixel;
         }
         #endregion
-        
+
         /// <summary>
         /// 0-1のfloatを0-255のintに変換します。
         /// </summary>
@@ -260,5 +262,13 @@ namespace net.puk06.ColorChanger.Utils
         /// <returns></returns>
         internal static int ConvertColorToInt32(float colorValue)
             => Mathf.RoundToInt(colorValue * 255f);
+
+        /// <summary>
+        /// Colorのint[4]配列を取得します。シェーダーのint3に渡すために使用されます。alphaは一応用意してあるだけです。
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        internal static int[] GetIntsColorValue(Color color)
+            => new int[] { ConvertColorToInt32(color.r), ConvertColorToInt32(color.g), ConvertColorToInt32(color.b), ConvertColorToInt32(color.a) };
     }
 }
