@@ -175,6 +175,7 @@ namespace net.puk06.ColorChanger.NDMF
 
             public void Dispose()
             {
+                LogUtils.Log("IRenderFilterNode Dispose Has Been Called!");
                 foreach (var material in _materialDictionary.Values)
                 {
                     MaterialUtils.ForEachTex(material, (texture, propName) =>

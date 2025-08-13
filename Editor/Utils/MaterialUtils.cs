@@ -6,7 +6,7 @@ internal static class MaterialUtils
 {
     /// <summary>
     /// 渡されたマテリアルの全プロパティをループで回します。
-    /// Actionには元のテクスチャ(Texture 2D)とそのプロパティ名が渡されます。
+    /// Actionには元のテクスチャとそのプロパティ名が渡されます。
     /// </summary>
     /// <param name="material"></param>
     /// <param name="action"></param>
@@ -23,7 +23,7 @@ internal static class MaterialUtils
             Texture materialTexture = material.GetTexture(propName);
             if (materialTexture == null) continue;
 
-            action(materialTexture as Texture2D, propName);
+            action(materialTexture, propName);
         }
     }
 
