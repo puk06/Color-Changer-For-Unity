@@ -13,6 +13,8 @@ namespace net.puk06.ColorChanger.NDMF
         protected override void Configure()
         {
             InPhase(BuildPhase.Transforming)
+                .AfterPlugin("net.rs64.tex-trans-tool")
+                .AfterPlugin("nadena.dev.modular-avatar") // å„Ç…ìÆÇ¢ÇƒÇŸÇµÇ¢Ç©ÇÁÇÀÅI
                 .Run(GenerateColorChangedTexture.Instance)
                 .PreviewingWith(new NDMFPreview());
         }

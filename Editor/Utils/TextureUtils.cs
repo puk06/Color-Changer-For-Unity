@@ -2,6 +2,7 @@
 using net.puk06.ColorChanger.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -160,6 +161,27 @@ namespace net.puk06.ColorChanger.Utils
             }
 
             LogUtils.Log($"シーン上の{replacedCount} 個のマテリアルのテクスチャを差し替えました。");
+        }
+
+        /// <summary>
+        /// ゲームオブジェクトからメインテクスチャを持ってきます。なければnullを返します。
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        internal static Texture GetMainTextureFromGameobject(GameObject gameObject)
+        {
+            if (gameObject == null) return null;
+
+            var renderers = gameObject.GetComponents<Renderer>();
+            if (renderers == null || renderers.Length == 0) return null;
+
+            var renderer = renderers.FirstOrDefault();
+            if (renderer == null) return null;
+
+            var materials = renderer.sharedMaterials;
+            if (materials == null || materials.Length == 0) return null;
+
+            return materials.FirstOrDefault()?.mainTexture;
         }
     }
 }

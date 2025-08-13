@@ -155,6 +155,19 @@ namespace net.puk06.ColorChanger {
 
                     GUI.DrawTexture(rect, colorChangerComponent.targetTexture, ScaleMode.ScaleToFit);
                 }
+
+                if (colorChangerComponent.targetTexture == null)
+                {
+                    var gameObject = colorChangerComponent.gameObject;
+                    if (gameObject != null)
+                    {
+                        var mainTexture = TextureUtils.GetMainTextureFromGameobject(gameObject);
+                        if (mainTexture != null)
+                        {
+                            targetTextureProp.objectReferenceValue = mainTexture;
+                        }
+                    }
+                }
             }
 
             EditorGUI.indentLevel = 0;
@@ -349,8 +362,21 @@ namespace net.puk06.ColorChanger {
 
             string savedPath = SaveTextureWithUniqueName(colorChangerComponent.targetTexture, newTexture);
 
+            bool confirm = EditorUtility.DisplayDialog(
+                "確認",
+                "テクスチャの作成が完了しました。\nこのテクスチャを使用しているマテリアルを、現在のシーン内で更新しますか？",
+                "はい",
+                "いいえ"
+            );
+
             if (string.IsNullOrEmpty(savedPath)) return;
-            TextureUtils.ReplaceTextureInSceneObjects(colorChangerComponent.targetTexture, savedPath);
+
+            if (confirm)
+            {
+                TextureUtils.ReplaceTextureInSceneObjects(colorChangerComponent.targetTexture, savedPath);
+            }
+
+            UnityUtils.SelectAssetAtPath(savedPath);
         }
 
         private string SaveTextureWithUniqueName(Texture2D originalTexture, Texture2D newTexture)

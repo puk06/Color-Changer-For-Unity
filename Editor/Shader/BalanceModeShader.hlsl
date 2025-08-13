@@ -47,7 +47,7 @@ void GetRGBIntersectionDistance(
     }
 
     float minPositiveT = 1e30;
-    [unroll]
+    //[unroll]
     for (int i = 0; i < count; i++)
     {
         float t = t_values[i];
