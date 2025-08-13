@@ -73,6 +73,10 @@ namespace net.puk06.ColorChanger {
             ColorChangerForUnity comp = (ColorChangerForUnity)target;
             if (componentIcon != null) EditorGUIUtility.SetIconForObject(comp, componentIcon);
 
+            EditorGUILayout.HelpBox("このコンポーネントが入ったオブジェクトは、アバターのルートに入っていないとビルド時実行されません。\nプレビューはされますが、ゲームオブジェクトの位置には注意してください。", MessageType.Warning);
+
+            EditorGUILayout.Space(10);
+
             // スクリプト設定画面
             DrawColorChangerSettingsGUI(comp);
 
@@ -88,6 +92,8 @@ namespace net.puk06.ColorChanger {
             // 色の追加設定画面
             DrawAdvancedColorModeSettingsGUI(comp);
 
+            EditorGUILayout.Space(10);
+
             // テクスチャ作成ボタン
             DrawTextureOutputGUI(comp);
 
@@ -96,8 +102,6 @@ namespace net.puk06.ColorChanger {
 
         private void DrawColorChangerSettingsGUI(ColorChangerForUnity colorChangerComponent)
         {
-            EditorGUILayout.HelpBox("このコンポーネントが入ったオブジェクトは、アバターのルートに入っていないとビルド時実行されません。\nプレビューはされますが、ゲームオブジェクトの位置には注意してください。", MessageType.Warning);
-
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
             GUIStyle titleStyle = new GUIStyle(EditorStyles.foldout);
