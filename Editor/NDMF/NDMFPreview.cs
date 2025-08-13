@@ -36,17 +36,23 @@ namespace net.puk06.ColorChanger.NDMF
 
             try
             {
+                // シーン内の全てのColorChangerForUnityコンポーネントを出してくる。
                 var components = context.GetComponentsByType<ColorChangerForUnity>();
-                var targetTextures = components
-                    .Where(x => x.targetTexture != null)
+
+                // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
+                var enabledComponents = components.Where(x => x.Enabled && x.targetTexture != null);
+
+                // 変更される予定のテクスチャの配列
+                var targetTextures = enabledComponents
                     .Select(c => c.targetTexture)
                     .Distinct()
                     .ToArray();
 
+                // 元のテクスチャ、処理されたテクスチャのDictionary
                 var processedTextures = new Dictionary<Texture2D, RenderTexture>();
 
-                var groupedComponents = components
-                    .Where(x => x.targetTexture != null)
+                // ターゲットテクスチャごとに分ける。これは複数同じテクスチャが合った時対策
+                var groupedComponents = enabledComponents
                     .GroupBy(c => c.targetTexture);
 
                 foreach (var componentGroup in groupedComponents)
@@ -56,16 +62,20 @@ namespace net.puk06.ColorChanger.NDMF
                     {
                         LogUtils.LogWarning($"Duplicate targetTexture detected: '{componentGroup.Key.name}' (using '{firstComponent.gameObject.name}' settings)");
                     }
+
+                    // テクスチャを作る
                     var processedTexture = ComputeTextureOverrides(firstComponent);
                     processedTextures.Add(componentGroup.Key, processedTexture);
                 }
 
+                // テクスチャが含まれているマテリアルすべてを探す。
                 var relevantMaterials = group.Renderers
                     .SelectMany(r => r.sharedMaterials)
                     .Where(material => targetTextures.Any(tex => MaterialUtils.AnyTex(material, tex)))
                     .Distinct()
                     .ToList();
 
+                // テクスチャが含まれているマテリアル全てを複製 + 新しいテクスチャに置き換える
                 var processedMaterials = relevantMaterials
                     .ToDictionary(
                         material => material,
@@ -74,6 +84,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                 components.ForEach(component => context.Observe(component));
 
+                // 変換前、変換後のマテリアルテクスチャをまとめたものを渡してあげる。
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials));
             }
             catch (Exception ex)

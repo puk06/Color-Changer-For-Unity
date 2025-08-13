@@ -22,6 +22,10 @@ namespace net.puk06.ColorChanger.Models
             DiffB = ColorUtils.ConvertColorToInt32(newColor.b) - ColorUtils.ConvertColorToInt32(previousColor.b);
         }
 
+        /// <summary>
+        /// êFÇVector3å`éÆÇ…ïœä∑ÇµÇ‹Ç∑ÅB
+        /// </summary>
+        /// <returns></returns>
         internal Vector3 ToVector3()
             => new Vector3(DiffR, DiffG, DiffB);
     }

@@ -17,6 +17,7 @@ namespace net.puk06.ColorChanger.NDMF
 
             foreach (var component in avatar.GetComponentsInChildren<ColorChangerForUnity>())
             {
+                if (!component.Enabled) continue;
                 Texture2D originalTexture = GetRawTexture(component.targetTexture);
                 Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 

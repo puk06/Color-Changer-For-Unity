@@ -1,10 +1,7 @@
-using UnityEditor;
-using UnityEngine;
-using net.puk06.ColorChanger.ImageProcessing;
-using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using System.IO;
-using System;
+using UnityEditor;
+using UnityEngine;
 
 namespace net.puk06.ColorChanger {
     [CustomEditor(typeof(ColorChangerForUnity))]
@@ -14,6 +11,7 @@ namespace net.puk06.ColorChanger {
         private Texture2D logoTexture;
         private Texture2D componentIcon;
 
+        private SerializedProperty enabledButtonProp;
         private SerializedProperty targetTextureProp;
         private SerializedProperty previousColorProp;
         private SerializedProperty newColorProp;
@@ -21,6 +19,7 @@ namespace net.puk06.ColorChanger {
         private SerializedProperty balanceModeConfigProp;
         private SerializedProperty advancedColorConfigProp;
 
+        private bool showColorChangerSettings = false;
         private bool showTextureSettings = false;
         private bool showColorSettings = false;
         private bool showBalanceModeSettings = false;
@@ -43,6 +42,7 @@ namespace net.puk06.ColorChanger {
             logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/logo.png");
             componentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/ComponentIcon.png");
 
+            enabledButtonProp = serializedObject.FindProperty("Enabled");
             targetTextureProp = serializedObject.FindProperty("targetTexture");
             previousColorProp = serializedObject.FindProperty("previousColor");
             newColorProp = serializedObject.FindProperty("newColor");
@@ -73,6 +73,9 @@ namespace net.puk06.ColorChanger {
             ColorChangerForUnity comp = (ColorChangerForUnity)target;
             if (componentIcon != null) EditorGUIUtility.SetIconForObject(comp, componentIcon);
 
+            // スクリプト設定画面
+            DrawColorChangerSettingsGUI(comp);
+
             // テクスチャ設定画面
             DrawTextureSettingsGUI(comp);
 
@@ -89,6 +92,33 @@ namespace net.puk06.ColorChanger {
             DrawTextureOutputGUI(comp);
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawColorChangerSettingsGUI(ColorChangerForUnity colorChangerComponent)
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            GUIStyle titleStyle = new GUIStyle(EditorStyles.foldout);
+            titleStyle.fontSize = 13;
+            titleStyle.fontStyle = FontStyle.Bold;
+
+            // インデントリセット
+            EditorGUI.indentLevel = 1;
+
+            showColorChangerSettings = EditorGUILayout.Foldout(showColorChangerSettings, "スクリプト設定", true, titleStyle);
+            if (!showColorChangerSettings)
+            {
+                EditorGUI.indentLevel = 0;
+                EditorGUILayout.EndVertical();
+                return;
+            }
+
+            EditorGUI.indentLevel++;
+
+            enabledButtonProp.boolValue = EditorGUILayout.Toggle("スクリプトの有効化", enabledButtonProp.boolValue);
+
+            EditorGUI.indentLevel = 0;
+            EditorGUILayout.EndVertical();
         }
 
         private void DrawTextureSettingsGUI(ColorChangerForUnity colorChangerComponent)

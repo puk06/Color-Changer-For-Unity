@@ -7,6 +7,7 @@ namespace net.puk06.ColorChanger
     [Serializable]
     public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly
     {
+        public bool Enabled = true;
         public Texture2D targetTexture;
 
         public Color previousColor;
