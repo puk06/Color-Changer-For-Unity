@@ -318,7 +318,7 @@ namespace net.puk06.ColorChanger {
             string savedPath = SaveTextureWithUniqueName(colorChangerComponent.targetTexture, newTexture);
 
             if (string.IsNullOrEmpty(savedPath)) return;
-            TextureUtils.ReplaceTextureInMaterials(colorChangerComponent.targetTexture, savedPath);
+            TextureUtils.ReplaceTextureInSceneObjects(colorChangerComponent.targetTexture, savedPath);
         }
 
         private string SaveTextureWithUniqueName(Texture2D originalTexture, Texture2D newTexture)

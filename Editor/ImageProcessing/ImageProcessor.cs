@@ -70,7 +70,7 @@ namespace net.puk06.ColorChanger.ImageProcessing
             ComputeShader colorComputeShader = ShaderUtils.GetComputeShader();
             if (colorComputeShader == null)
             {
-                Debug.LogError("計算用シェーダーファイルが見つかりませんでした。");
+                LogUtils.LogError("計算用シェーダーファイルが見つかりませんでした。");
                 return;
             }
 

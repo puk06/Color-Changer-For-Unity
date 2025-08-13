@@ -103,7 +103,7 @@ namespace net.puk06.ColorChanger.NDMF
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                LogUtils.LogError(ex.Message);
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(materialDict));
             }
         }
