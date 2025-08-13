@@ -23,42 +23,52 @@ namespace net.puk06.ColorChanger.NDMF
                 {
                     // アバター内にある全部のコンポーネント
                     var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
+                    if (components == null) continue;
 
                     // その中で参照されてる全てのテクスチャ
-                    var targetTextures = components.Select(c => c.targetTexture).Distinct();
+                    var targetTextures = components
+                        .Select(c => c.targetTexture)
+                        .Where(t => t != null)
+                        .Distinct()
+                        .ToArray();
 
                     // アバター内の全てのレンダラー
-                    var avatarRenderers = avatar.GetComponentsInChildren<Renderer>()
+                    var avatarRenderers = avatar.GetComponentsInChildren<Renderer>()?
                         .Where(r => r is MeshRenderer or SkinnedMeshRenderer)
                         .GroupBy(r => r.gameObject);
+                    if (avatarRenderers == null) continue;
 
                     var rendererList = new List<Renderer>();
 
                     foreach (var avatarRenderer in avatarRenderers)
                     {
-                        var firstComponent = avatarRenderer.First();
+                        var firstComponent = avatarRenderer.FirstOrDefault();
+                        if (firstComponent == null) continue;
+
                         if (avatarRenderer.Count() >= 2)
                         {
                             LogUtils.LogWarning($"Duplicate Renderer GameObject detected: '{avatarRenderer.Key.name}' (using settings from '{firstComponent.GetType()}' component)");
                         }
 
                         var materials = firstComponent.sharedMaterials;
-                        if (materials.Any(material => targetTextures.Any(targetTexture => MaterialUtils.AnyTex(material, targetTexture))))
-                        {
+                        if (materials == null) continue;
+
+                        if (!materials.Any(material => targetTextures.Any(targetTexture => targetTexture != null && MaterialUtils.AnyTex(material, targetTexture))))
                             rendererList.Add(firstComponent);
-                        }
                     }
 
                     foreach (var component in components)
                     {
-                        context.Observe(component, c => c.targetTexture);
+                        if (component != null)
+                            context.Observe(component, c => c.targetTexture);
                     }
 
-                    resultSet.Add(RenderGroup.For(rendererList));
+                    if (rendererList.Count > 0)
+                        resultSet.Add(RenderGroup.For(rendererList));
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.LogError($"Failed to add renderer for avatar '{avatar.name}'.\n{ex.Message}");
+                    LogUtils.LogError($"Failed to add renderer for avatar '{avatar.name}'.\n{ex}");
                 }
             }
 
@@ -69,7 +79,6 @@ namespace net.puk06.ColorChanger.NDMF
         {
             try
             {
-                LogUtils.Log(group.Renderers.Count.ToString());
                 // シーン内の全てのColorChangerForUnityコンポーネントを出してくる。
                 var components = context.GetComponentsByType<ColorChangerForUnity>();
 
@@ -91,7 +100,9 @@ namespace net.puk06.ColorChanger.NDMF
 
                 foreach (var groupedComponent in groupedComponents)
                 {
-                    var firstComponent = groupedComponent.First();
+                    var firstComponent = groupedComponent.FirstOrDefault();
+                    if (firstComponent == null) continue;
+
                     if (groupedComponent.Count() >= 2)
                     {
                         LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key.name}' (using settings from '{firstComponent.gameObject.name}')");
@@ -99,6 +110,8 @@ namespace net.puk06.ColorChanger.NDMF
 
                     // テクスチャを作る
                     var processedTexture = ComputeTextureOverrides(firstComponent);
+                    if (processedTexture == null) continue;
+
                     processedTextures.Add(groupedComponent.Key, processedTexture);
                 }
 
@@ -202,7 +215,7 @@ namespace net.puk06.ColorChanger.NDMF
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.LogError("Error occurred while rendering proxy.\n" + ex.Message);
+                    LogUtils.LogError("Error occurred while rendering proxy.\n" + ex);
                 }
             }
 
