@@ -181,7 +181,10 @@ namespace net.puk06.ColorChanger.Utils
             var materials = renderer.sharedMaterials;
             if (materials == null || materials.Length == 0) return null;
 
-            return materials.FirstOrDefault()?.mainTexture;
+            var mainMaterial = materials.FirstOrDefault();
+            if (mainMaterial == null) return null;
+
+            return mainMaterial.mainTexture;
         }
 
         /// <summary>

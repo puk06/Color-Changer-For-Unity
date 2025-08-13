@@ -3,7 +3,7 @@ using UnityEngine;
 
 internal static class LogUtils
 {
-    private const string LOG_PREFIX = "<color=#f9b7e7>Color Changer</color> <color=#ffffff>></color> ";
+    private const string LOG_PREFIX = "<color=#f9b7e7>Color Changer</color> <color=#ffffff>>";
 
     /// <summary>
     /// 普通のログを表示する時に使います。
@@ -12,7 +12,7 @@ internal static class LogUtils
     /// <param name="caller"></param>
     internal static void Log(string message, [CallerMemberName] string caller = "")
     {
-        Debug.Log($"{LOG_PREFIX}[{caller}] {message}");
+        Debug.Log($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
     }
 
     /// <summary>
@@ -22,7 +22,7 @@ internal static class LogUtils
     /// <param name="caller"></param>
     internal static void LogWarning(string message, [CallerMemberName] string caller = "")
     {
-        Debug.LogWarning($"{LOG_PREFIX}[{caller}] {message}");
+        Debug.LogWarning($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
     }
 
     /// <summary>
@@ -32,6 +32,6 @@ internal static class LogUtils
     /// <param name="caller"></param>
     internal static void LogError(string message, [CallerMemberName] string caller = "")
     {
-        Debug.LogError($"{LOG_PREFIX}[{caller}] {message}");
+        Debug.LogError($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
     }
 }
