@@ -20,8 +20,8 @@ namespace net.puk06.ColorChanger {
         private SerializedProperty advancedColorConfigProp;
 
         private bool showColorChangerSettings = false;
-        private bool showTextureSettings = true;
-        private bool showColorSettings = true;
+        private bool showTextureSettings = false;
+        private bool showColorSettings = false;
         private bool showBalanceModeSettings = false;
         private bool showBalanceModeV1Settings = false;
         private bool showBalanceModeV2Settings = false;
@@ -155,17 +155,17 @@ namespace net.puk06.ColorChanger {
 
                     GUI.DrawTexture(rect, colorChangerComponent.targetTexture, ScaleMode.ScaleToFit);
                 }
+            }
 
-                if (colorChangerComponent.targetTexture == null)
+            if (colorChangerComponent.targetTexture == null)
+            {
+                var gameObject = colorChangerComponent.gameObject;
+                if (gameObject != null)
                 {
-                    var gameObject = colorChangerComponent.gameObject;
-                    if (gameObject != null)
+                    var mainTexture = TextureUtils.GetMainTextureFromGameobject(gameObject);
+                    if (mainTexture != null)
                     {
-                        var mainTexture = TextureUtils.GetMainTextureFromGameobject(gameObject);
-                        if (mainTexture != null)
-                        {
-                            targetTextureProp.objectReferenceValue = mainTexture;
-                        }
+                        targetTextureProp.objectReferenceValue = mainTexture;
                     }
                 }
             }

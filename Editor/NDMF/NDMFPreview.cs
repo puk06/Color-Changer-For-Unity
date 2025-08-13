@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -25,7 +26,7 @@ namespace net.puk06.ColorChanger.NDMF
                     var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
                     if (components == null) continue;
 
-                    // その中で参照されてる全てのテクスチャ
+                    // その中で参照されてる全てのテクスチャ (重複対策してあります)
                     var targetTextures = components
                         .Select(c => c.targetTexture)
                         .Where(t => t != null)
@@ -39,7 +40,6 @@ namespace net.puk06.ColorChanger.NDMF
                     if (avatarRenderers == null) continue;
 
                     var rendererList = new List<Renderer>();
-
                     foreach (var avatarRenderer in avatarRenderers)
                     {
                         var firstComponent = avatarRenderer.FirstOrDefault();
@@ -53,16 +53,18 @@ namespace net.puk06.ColorChanger.NDMF
                         var materials = firstComponent.sharedMaterials;
                         if (materials == null) continue;
 
-                        if (!materials.Any(material => targetTextures.Any(targetTexture => targetTexture != null && MaterialUtils.AnyTex(material, targetTexture))))
+                        if (materials.Any(material => targetTextures.Any(targetTexture => targetTexture != null && MaterialUtils.AnyTex(material, targetTexture))))
+                        {
                             rendererList.Add(firstComponent);
+                        }
                     }
 
                     foreach (var component in components)
                     {
-                        if (component != null)
-                            context.Observe(component, c => c.targetTexture);
+                        context.Observe(component, c => c.targetTexture);
                     }
 
+                    //レンダラーリストは、コンポーネントによってアバター内のどれかのマテリアルテクスチャが参照されているレンダラーのリスト
                     if (rendererList.Count > 0)
                         resultSet.Add(RenderGroup.For(rendererList));
                 }
@@ -177,6 +179,7 @@ namespace net.puk06.ColorChanger.NDMF
             return renderTexture;
         }
 
+        //このノードはアバター1体につき1個作られる。OnFrameは、RenderGroupの中身分のみ呼ばれる
         private class TextureReplacerNode : IRenderFilterNode, IDisposable
         {
             private readonly Dictionary<Material, Material> _materialDictionary;
@@ -186,7 +189,7 @@ namespace net.puk06.ColorChanger.NDMF
             public TextureReplacerNode(Dictionary<Material, Material> materialDictionary)
             {
                 if (materialDictionary == null) return;
-                _materialDictionary = materialDictionary;
+                _materialDictionary = materialDictionary; //ここで渡されるものは、OnFrameで、置き換えられるものがあるのが確定したマテリアルと、その処理済みマテリアルのDictionaryである
             }
 
             public void OnFrame(Renderer original, Renderer proxy)
