@@ -20,8 +20,8 @@ namespace net.puk06.ColorChanger {
         private SerializedProperty advancedColorConfigProp;
 
         private bool showColorChangerSettings = false;
-        private bool showTextureSettings = false;
-        private bool showColorSettings = false;
+        private bool showTextureSettings = true;
+        private bool showColorSettings = true;
         private bool showBalanceModeSettings = false;
         private bool showBalanceModeV1Settings = false;
         private bool showBalanceModeV2Settings = false;
