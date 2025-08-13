@@ -96,6 +96,8 @@ namespace net.puk06.ColorChanger {
 
         private void DrawColorChangerSettingsGUI(ColorChangerForUnity colorChangerComponent)
         {
+            EditorGUILayout.HelpBox("このコンポーネントが入ったオブジェクトは、アバターのルートに入っていないとビルド時実行されません。\nプレビューはされますが、ゲームオブジェクトの位置には注意してください。", MessageType.Warning);
+
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
             GUIStyle titleStyle = new GUIStyle(EditorStyles.foldout);

@@ -54,6 +54,15 @@ namespace net.puk06.ColorChanger.NDMF
         {
             try
             {
+                // // アバター内の全てのColorChangerForUnityコンポーネントを出してくる。
+                // // 現状、コンポーネントが入ったオブジェクトを移動した後にこれが実行されてほしいのだが、実行されないという問題がある。
+                // // ビルド時はアバタールートに入っている必要があるため、プレビューできないという問題が出てきてしまう。
+                // var avatar = context.GetAvatarRoot(group.Renderers.First().gameObject);
+                // if (avatar == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+
+                // var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
+                // if (components.Length == 0) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+
                 // シーン内の全てのColorChangerForUnityコンポーネントを出してくる。
                 var components = context.GetComponentsByType<ColorChangerForUnity>();
 
@@ -69,7 +78,7 @@ namespace net.puk06.ColorChanger.NDMF
                 // 元のテクスチャ、処理されたテクスチャのDictionary
                 var processedTextures = new Dictionary<Texture2D, RenderTexture>();
 
-                // ターゲットテクスチャごとに分ける。これは複数同じテクスチャが合った時対策
+                // ターゲットテクスチャごとに分ける。これは複数同じテクスチャがあった時対策
                 var groupedComponents = enabledComponents
                     .GroupBy(c => c.targetTexture);
 
@@ -100,6 +109,11 @@ namespace net.puk06.ColorChanger.NDMF
                         material => ProcessMaterial(material, processedTextures)
                     );
 
+                // foreach (var component in components)
+                // {
+                //     context.Observe(component);
+                // }
+
                 components.ForEach(component => context.Observe(component));
 
                 // 変換前、変換後のマテリアルテクスチャをまとめたものを渡してあげる。
@@ -108,7 +122,7 @@ namespace net.puk06.ColorChanger.NDMF
             catch (Exception ex)
             {
                 LogUtils.LogError($"Failed to instantiate.\n{ex.Message}");
-                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(new Dictionary<Material, Material>()));
+                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
             }
         }
 
