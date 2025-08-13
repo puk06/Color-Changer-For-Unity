@@ -15,42 +15,14 @@ namespace net.puk06.ColorChanger.NDMF
         public ImmutableList<RenderGroup> GetTargetGroups(ComputeContext context)
         {
             LogUtils.Log("GetTargetGroups Called!");
-            var avatars = context.GetAvatarRoots();
-            var resultSet = new List<RenderGroup>();
 
+            var avatars = context.GetAvatarRoots();
+
+            var resultSet = new List<RenderGroup>();
             foreach (var avatar in avatars)
             {
                 var renderers = avatar.GetComponentsInChildren<Renderer>();
-                var colorChangers = avatar.GetComponentsInChildren<ColorChangerForUnity>();
-
-                foreach (var component in colorChangers)
-                {
-                    if (component.targetTexture == null) continue;
-
-                    var targetRenderers = renderers
-                        .Where(e => RendererHasTargetTexture(e, component.targetTexture));
-
-                    resultSet.Add(RenderGroup.For(targetRenderers).WithData(component));
-
-                    foreach (var renderer in renderers)
-                    {
-                        context.Observe(renderer.gameObject);
-                    }
-
-                    /**
-                     * 下のリターンについて:
-                     * 現在、複数のRenderGroupに渡って同じRendererが追加されてしまってエラーを吐きます。
-                     * これをテスト環境で一時的にパスするためのリターンです。修正が終わり次第、削除されます。
-                     * 
-                     * 再現方法:
-                     * 同じオブジェクトに複数のマテリアルが含まれており、ColorChangerForUnityコンポーネントがその複数のマテリアルのテクスチャを参照することでエラーを吐く。
-                     * 
-                     * Instantiateに渡されるとき、ColorChangerForUnityコンポーネントの個数分実行されることを想定しているので、これを治すには、根本的な部分を治す必要がある。
-                     * どうしたものか...
-                     */
-
-                    return resultSet.ToImmutableList();
-                }
+                resultSet.Add(RenderGroup.For(renderers));
             }
 
             LogUtils.Log("RenderGroup Count: " + resultSet.Count);
@@ -58,54 +30,64 @@ namespace net.puk06.ColorChanger.NDMF
             return resultSet.ToImmutableList();
         }
 
-        private bool RendererHasTargetTexture(Renderer renderer, Texture2D targetTexture)
-        {
-            var materials = renderer.sharedMaterials;
-            return materials.Any(material => MaterialUtils.AnyTex(material, targetTexture));
-        }
-
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
-            LogUtils.Log("Instantiate Called!");
-            Dictionary<Material, Material> materialDict = new();
+            LogUtils.Log($"Instantiate Called! Renderers Count: {group.Renderers.Count}");
 
             try
             {
-                var component = group.GetData<ColorChangerForUnity>();
-                var targetTexture = component.targetTexture;
+                var components = context.GetComponentsByType<ColorChangerForUnity>();
+                var targetTextures = components
+                    .Select(c => c.targetTexture)
+                    .Distinct()
+                    .ToArray();
 
-                var processedTexture = ComputeTextureOverrides(component);
-                if (processedTexture == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(materialDict));
+                var processedTextures = new Dictionary<Texture2D, RenderTexture>();
 
-                foreach (var proxyPair in proxyPairs)
+                var groupedComponents = components.GroupBy(c => c.targetTexture);
+                foreach (var componentGroup in groupedComponents)
                 {
-                    var proxyMaterials = proxyPair.Item2.sharedMaterials;
-                    var matchingMaterials = TextureUtils.FindMaterialsWithTexture(proxyMaterials, targetTexture);
-
-                    foreach (var matchingMaterial in matchingMaterials)
+                    var firstComponent = componentGroup.First();
+                    if (componentGroup.Count() >= 2)
                     {
-                        if (materialDict.ContainsKey(matchingMaterial)) continue;
-
-                        var newMaterial = new Material(matchingMaterial);
-                        materialDict.Add(matchingMaterial, newMaterial);
-
-                        MaterialUtils.ForEachTex(newMaterial, (texture, propName) =>
-                        {
-                            if (texture != targetTexture) return;
-                            newMaterial.SetTexture(propName, processedTexture);
-                        });
+                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{componentGroup.Key.name}' (using '{firstComponent.gameObject.name}' settings)");
                     }
+                    var processedTexture = ComputeTextureOverrides(firstComponent);
+                    processedTextures.Add(componentGroup.Key, processedTexture);
                 }
 
-                context.Observe(component);
+                var relevantMaterials = group.Renderers
+                    .SelectMany(r => r.sharedMaterials)
+                    .Where(material => targetTextures.Any(tex => MaterialUtils.AnyTex(material, tex)))
+                    .Distinct()
+                    .ToList();
 
-                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(materialDict));
+                var processedMaterials = relevantMaterials
+                    .ToDictionary(
+                        material => material,
+                        material => ProcessMaterial(material, processedTextures)
+                    );
+
+                components.ForEach(component => context.Observe(component));
+
+                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials));
             }
             catch (Exception ex)
             {
                 LogUtils.LogError(ex.Message);
-                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(materialDict));
+                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(new Dictionary<Material, Material>()));
             }
+        }
+
+        private Material ProcessMaterial(Material material, Dictionary<Texture2D, RenderTexture> processedTextures)
+        {
+            var newMat = new Material(material);
+            MaterialUtils.ForEachTex(newMat, (tex, propName) =>
+            {
+                if (processedTextures.TryGetValue(tex as Texture2D, out var renderTex))
+                    newMat.SetTexture(propName, renderTex);
+            });
+            return newMat;
         }
 
         private static RenderTexture ComputeTextureOverrides(ColorChangerForUnity component)
