@@ -11,7 +11,7 @@ float4 ApplyContrast(float4 color, float contrast)
 
 float4 ApplyGamma(float4 color, float gamma)
 {
-    float3 gammaCorrected = pow(color.rgb / 255.0, float3(gamma, gamma, gamma)) * float3(255.0, 255.0, 255.0);
+    float3 gammaCorrected = pow(saturate(color.rgb / 255.0), float3(gamma, gamma, gamma)) * float3(255.0, 255.0, 255.0);
     return float4(gammaCorrected, color.a);
 }
 

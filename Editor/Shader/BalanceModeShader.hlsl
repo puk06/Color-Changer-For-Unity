@@ -10,7 +10,7 @@ float GetColorDistance(float3 c1, float3 c2)
 float CalculateColorChangeRate(bool hasIntersection, float intersectionDistance, float distance, float graphWeight, float minValue)
 {
     if (!hasIntersection || abs(intersectionDistance) < 1e-6) return 1.0;
-    float changeRate = pow(1.0 - (distance / intersectionDistance), graphWeight);
+    float changeRate = pow(saturate(1.0 - (distance / intersectionDistance)), graphWeight);
     return max(minValue, changeRate);
 }
 
@@ -112,6 +112,12 @@ float3 BalanceColorAdjustment(
             v1Weight,
             v1MinimumValue
         );
+            
+        pixel.r = pixel.r + (diff.r * adjustmentFactor);
+        pixel.g = pixel.g + (diff.g * adjustmentFactor);
+        pixel.b = pixel.b + (diff.b * adjustmentFactor);
+
+        return pixel;
     }
     else if (modeVersion == 2)
     {
@@ -129,6 +135,13 @@ float3 BalanceColorAdjustment(
         {
             adjustmentFactor = v2MinimumValue;
         }
+        
+            
+        pixel.r = pixel.r + (diff.r * adjustmentFactor);
+        pixel.g = pixel.g + (diff.g * adjustmentFactor);
+        pixel.b = pixel.b + (diff.b * adjustmentFactor);
+
+        return pixel;
     }
     else if (modeVersion == 3)
     {
