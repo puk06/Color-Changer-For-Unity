@@ -3,7 +3,7 @@ using UnityEngine;
 
 internal static class LogUtils
 {
-    private const string LOG_PREFIX = "<color=#f9b7e7>Color Changer</color> > ";
+    private const string LOG_PREFIX = "<color=#f9b7e7>Color Changer</color> <color=#ffffff>></color> ";
 
     /// <summary>
     /// 普通のログを表示する時に使います。
