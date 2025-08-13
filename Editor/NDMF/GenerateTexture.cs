@@ -56,7 +56,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                         MaterialUtils.ForEachTex(newMaterials[i], (texture, propName) =>
                         {
-                            if (!processedTextureDictionary.TryGetValue(texture, out Texture2D newTexture)) return;
+                            if (!processedTextureDictionary.TryGetValue(texture as Texture2D, out Texture2D newTexture)) return;
                             newMaterials[i].SetTexture(propName, newTexture);
                         });
                     }
