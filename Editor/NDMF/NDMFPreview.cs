@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -62,11 +61,7 @@ namespace net.puk06.ColorChanger.NDMF
         private bool RendererHasTargetTexture(Renderer renderer, Texture2D targetTexture)
         {
             var materials = renderer.sharedMaterials;
-            foreach (var material in materials)
-            {
-                return MaterialUtils.AnyTex(material, targetTexture);
-            }
-            return false;
+            return materials.Any(material => MaterialUtils.AnyTex(material, targetTexture));
         }
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
