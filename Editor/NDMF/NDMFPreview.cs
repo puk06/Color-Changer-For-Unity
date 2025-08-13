@@ -182,39 +182,24 @@ namespace net.puk06.ColorChanger.NDMF
         //このノードはアバター1体につき1個作られる。OnFrameは、RenderGroupの中身分のみ呼ばれる
         private class TextureReplacerNode : IRenderFilterNode, IDisposable
         {
-            private readonly Dictionary<Material, Material> _materialDictionary;
+            private readonly Dictionary<Material, Material> _processedMaterialsDictionary;
 
             public RenderAspects WhatChanged { get; private set; } = RenderAspects.Texture & RenderAspects.Material;
 
             public TextureReplacerNode(Dictionary<Material, Material> materialDictionary)
             {
                 if (materialDictionary == null) return;
-                _materialDictionary = materialDictionary; //ここで渡されるものは、OnFrameで、置き換えられるものがあるのが確定したマテリアルと、その処理済みマテリアルのDictionaryである
+                _processedMaterialsDictionary = materialDictionary; //ここで渡されるものは、OnFrameで、置き換えられるものがあるのが確定したマテリアルと、その処理済みマテリアルのDictionaryである
             }
 
             public void OnFrame(Renderer original, Renderer proxy)
             {
                 try
                 {
-                    if (proxy == null || proxy.sharedMaterials == null || _materialDictionary == null || _materialDictionary.Count == 0) return;
+                    if (proxy == null || proxy.sharedMaterials == null || _processedMaterialsDictionary == null || _processedMaterialsDictionary.Count == 0)
+                        return;
 
-                    var newMaterials = new Material[proxy.sharedMaterials.Length];
-                    for (int i = 0; i < proxy.sharedMaterials.Length; i++)
-                    {
-                        var material = proxy.sharedMaterials[i];
-                        if (material == null) continue;
-
-                        if (_materialDictionary.TryGetValue(material, out var newMaterial))
-                        {
-                            newMaterials[i] = newMaterial;
-                        }
-                        else
-                        {
-                            newMaterials[i] = material;
-                        }
-                    }
-
-                    proxy.sharedMaterials = newMaterials;
+                    proxy.sharedMaterials = GenerateSwappedMaterials(proxy.sharedMaterials);
                 }
                 catch (Exception ex)
                 {
@@ -222,9 +207,35 @@ namespace net.puk06.ColorChanger.NDMF
                 }
             }
 
+            private Material[] GenerateSwappedMaterials(Material[] proxyMaterials)
+            {
+                var processedMaterials = new Material[proxyMaterials.Length];
+
+                for (int i = 0; i < proxyMaterials.Length; i++)
+                {
+                    var proxyMaterial = proxyMaterials[i];
+                    if (proxyMaterial == null)
+                    {
+                        processedMaterials[i] = null;
+                        continue;
+                    }
+
+                    if (_processedMaterialsDictionary.TryGetValue(proxyMaterial, out var processedMaterial))
+                    {
+                        processedMaterials[i] = processedMaterial;
+                    }
+                    else
+                    {
+                        processedMaterials[i] = proxyMaterial;
+                    }
+                }
+
+                return processedMaterials;
+            }
+
             public void Dispose()
             {
-                foreach (var material in _materialDictionary.Values)
+                foreach (var material in _processedMaterialsDictionary.Values)
                 {
                     MaterialUtils.ForEachTex(material, (texture, propName) =>
                     {
@@ -237,7 +248,7 @@ namespace net.puk06.ColorChanger.NDMF
                     Object.DestroyImmediate(material);
                 }
 
-                _materialDictionary.Clear();
+                _processedMaterialsDictionary.Clear();
             }
         }
     }
