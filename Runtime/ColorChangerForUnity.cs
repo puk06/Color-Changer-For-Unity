@@ -10,8 +10,8 @@ namespace net.puk06.ColorChanger
         public bool Enabled = true;
         public Texture2D targetTexture;
 
-        public Color previousColor;
-        public Color newColor;
+        public Color previousColor = Color.white;
+        public Color newColor = Color.white;
 
         public BalanceModeConfiguration balanceModeConfiguration = new BalanceModeConfiguration();
         public AdvancedColorConfiguration advancedColorConfiguration = new AdvancedColorConfiguration();
