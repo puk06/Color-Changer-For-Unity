@@ -1,6 +1,4 @@
 using nadena.dev.ndmf;
-using net.puk06.ColorChanger.ImageProcessing;
-using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,19 +20,9 @@ namespace net.puk06.ColorChanger.NDMF
                 Texture2D originalTexture = GetRawTexture(component.targetTexture);
                 Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
-                ColorDifference colorDifference = new ColorDifference(component.previousColor, component.newColor);
-                ImageProcessor imageProcessor = new ImageProcessor(colorDifference);
-
-                if (component.balanceModeConfiguration.ModeVersion != 0)
-                    imageProcessor.SetBalanceSettings(component.balanceModeConfiguration);
-
-                if (component.advancedColorConfiguration.Enabled)
-                    imageProcessor.SetColorSettings(component.advancedColorConfiguration);
-
-                imageProcessor.ProcessAllPixels(originalTexture, newTexture);
+                TextureUtils.ProcessTexture(originalTexture, newTexture, component);
 
                 AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
-
                 processedDictionary.Add(component.targetTexture, newTexture);
 
                 Object.DestroyImmediate(originalTexture);
@@ -66,24 +54,11 @@ namespace net.puk06.ColorChanger.NDMF
                     {
                         newMaterials[i] = new Material(materials[i]);
 
-                        Shader shader = newMaterials[i].shader;
-                        int count = ShaderUtil.GetPropertyCount(shader);
-
-                        for (int j = 0; j < count; j++)
+                        MaterialUtils.ForEachTex(newMaterials[i], (texture, propName) =>
                         {
-                            if (ShaderUtil.GetPropertyType(shader, j) == ShaderUtil.ShaderPropertyType.TexEnv)
-                            {
-                                string propName = ShaderUtil.GetPropertyName(shader, j);
-                                Texture currentTex = newMaterials[i].GetTexture(propName);
-                                var tex2D = currentTex as Texture2D;
-
-                                if (tex2D == null) continue;
-
-                                if (!processedTextureDictionary.TryGetValue(tex2D, out Texture2D newTexture)) continue;
-
-                                newMaterials[i].SetTexture(propName, newTexture);
-                            }
-                        }
+                            if (!processedTextureDictionary.TryGetValue(texture, out Texture2D newTexture)) return;
+                            newMaterials[i].SetTexture(propName, newTexture);
+                        });
                     }
                     else
                     {

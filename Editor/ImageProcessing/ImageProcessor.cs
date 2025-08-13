@@ -6,7 +6,7 @@ using MathUtils = net.puk06.ColorChanger.Utils.MathUtils;
 
 namespace net.puk06.ColorChanger.ImageProcessing
 {
-    public class ImageProcessor
+    internal class ImageProcessor
     {
         private readonly ColorDifference _colorOffset;
 
@@ -16,7 +16,7 @@ namespace net.puk06.ColorChanger.ImageProcessing
         private bool _isAdvancedColorMode = false;
         private AdvancedColorConfiguration _advancedColorConfiguration = new();
 
-        public ImageProcessor(ColorDifference colorDifference)
+        internal ImageProcessor(ColorDifference colorDifference)
         {
             _colorOffset = colorDifference;
         }
@@ -40,19 +40,19 @@ namespace net.puk06.ColorChanger.ImageProcessing
             return source;
         }
 
-        public void SetBalanceSettings(BalanceModeConfiguration balanceModeConfiguration)
+        internal void SetBalanceSettings(BalanceModeConfiguration balanceModeConfiguration)
         {
             _balanceModeConfiguration = balanceModeConfiguration;
             _isBalanceMode = true;
         }
 
-        public void SetColorSettings(AdvancedColorConfiguration advancedColorConfiguration)
+        internal void SetColorSettings(AdvancedColorConfiguration advancedColorConfiguration)
         {
             _advancedColorConfiguration = advancedColorConfiguration;
             _isAdvancedColorMode = true;
         }
 
-        public void ProcessAllPixels(Texture2D source, Texture2D target)
+        internal void ProcessAllPixels(Texture2D source, Texture2D target)
         {
             NativeArray<Color32> rawData = source.GetRawTextureData<Color32>();
             NativeArray<Color32> targetData = target.GetRawTextureData<Color32>();
@@ -65,7 +65,7 @@ namespace net.puk06.ColorChanger.ImageProcessing
             target.Apply();
         }
 
-        public void ProcessAllPixelsGPU(RenderTexture source, RenderTexture target)
+        internal void ProcessAllPixelsGPU(RenderTexture source, RenderTexture target)
         {
             ComputeShader colorComputeShader = ShaderUtils.GetComputeShader();
             if (colorComputeShader == null)

@@ -99,8 +99,6 @@ namespace net.puk06.ColorChanger {
             titleStyle.fontSize = 13;
             titleStyle.fontStyle = FontStyle.Bold;
 
-            // インデントリセット
-            int prevIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 1;
 
             showTextureSettings = EditorGUILayout.Foldout(
@@ -127,8 +125,7 @@ namespace net.puk06.ColorChanger {
                 }
             }
 
-            // インデント復元
-            EditorGUI.indentLevel = prevIndent;
+            EditorGUI.indentLevel = 0;
 
             EditorGUILayout.EndVertical();
         }
@@ -141,8 +138,6 @@ namespace net.puk06.ColorChanger {
             titleStyle.fontSize = 13;
             titleStyle.fontStyle = FontStyle.Bold;
 
-            // インデントリセット
-            int prevIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 1;
 
             showColorSettings = EditorGUILayout.Foldout(
@@ -154,14 +149,13 @@ namespace net.puk06.ColorChanger {
 
             if (showColorSettings)
             {
-                EditorGUI.indentLevel++;
+                EditorGUI.indentLevel = 2;
                 previousColorProp.colorValue = EditorGUILayout.ColorField("変更前の色", previousColorProp.colorValue);
                 newColorProp.colorValue = EditorGUILayout.ColorField("変更後の色", newColorProp.colorValue);
-                EditorGUI.indentLevel--;
+                EditorGUI.indentLevel = 1;
             }
 
-            // インデント復元
-            EditorGUI.indentLevel = prevIndent;
+            EditorGUI.indentLevel = 0;
 
             EditorGUILayout.EndVertical();
         }
@@ -174,7 +168,6 @@ namespace net.puk06.ColorChanger {
             titleStyle.fontSize = 13;
             titleStyle.fontStyle = FontStyle.Bold;
 
-            int prevIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 1;
 
             showBalanceModeSettings = EditorGUILayout.Foldout(
@@ -206,12 +199,12 @@ namespace net.puk06.ColorChanger {
 
                 if (showBalanceModeV1Settings)
                 {
-                    EditorGUI.indentLevel++;
+                    EditorGUI.indentLevel = 3;
                     SerializedProperty v1WeightProp = balanceModeConfigProp.FindPropertyRelative("V1Weight");
                     SerializedProperty v1MinValueProp = balanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
                     v1WeightProp.floatValue = EditorGUILayout.FloatField("変化率グラフの重み", v1WeightProp.floatValue);
                     v1MinValueProp.floatValue = EditorGUILayout.FloatField("変化率グラフの最低値", v1MinValueProp.floatValue);
-                    EditorGUI.indentLevel--;
+                    EditorGUI.indentLevel = 2;
                 }
 
                 showBalanceModeV2Settings = EditorGUILayout.Foldout(
@@ -223,7 +216,7 @@ namespace net.puk06.ColorChanger {
 
                 if (showBalanceModeV2Settings)
                 {
-                    EditorGUI.indentLevel++;
+                    EditorGUI.indentLevel = 3;
                     SerializedProperty v2RadiusProp = balanceModeConfigProp.FindPropertyRelative("V2Radius");
                     SerializedProperty v2WeightProp = balanceModeConfigProp.FindPropertyRelative("V2Weight");
                     SerializedProperty v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
@@ -233,7 +226,7 @@ namespace net.puk06.ColorChanger {
                     v2WeightProp.floatValue = EditorGUILayout.FloatField("変化率グラフの重み", v2WeightProp.floatValue);
                     v2MinValueProp.floatValue = EditorGUILayout.FloatField("変化率グラフの最低値", v2MinValueProp.floatValue);
                     v2IncludeOutsideProp.boolValue = EditorGUILayout.Toggle("範囲外にも最低値を適用する", v2IncludeOutsideProp.boolValue);
-                    EditorGUI.indentLevel--;
+                    EditorGUI.indentLevel = 2;
                 }
 
                 showBalanceModeV3Settings = EditorGUILayout.Foldout(
@@ -245,18 +238,17 @@ namespace net.puk06.ColorChanger {
 
                 if (showBalanceModeV3Settings)
                 {
-                    EditorGUI.indentLevel++;
+                    EditorGUI.indentLevel = 3;
                     SerializedProperty v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
                     SerializedProperty v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
 
                     v3GradientProp.gradientValue = EditorGUILayout.GradientField("グラデーション", v3GradientProp.gradientValue);
                     v3GradientResolutionProp.intValue = EditorGUILayout.IntField("プレビュー解像度", v3GradientResolutionProp.intValue);
-                    EditorGUI.indentLevel--;
+                    EditorGUI.indentLevel = 2;
                 }
             }
 
-            // インデント復元
-            EditorGUI.indentLevel = prevIndent;
+            EditorGUI.indentLevel = 1;
 
             EditorGUILayout.EndVertical();
         }
@@ -273,35 +265,38 @@ namespace net.puk06.ColorChanger {
             EditorGUI.indentLevel = 1;
 
             showAdvancedColorSettings = EditorGUILayout.Foldout(showAdvancedColorSettings, "色の追加設定", true, titleStyle);
-                if (!showAdvancedColorSettings)
-                {
-                    EditorGUILayout.EndVertical();
-                    return;
-                }
-
-                EditorGUI.indentLevel++;
-
-                SerializedProperty enabledProp = advancedColorConfigProp.FindPropertyRelative("Enabled");
-                SerializedProperty brightnessProp = advancedColorConfigProp.FindPropertyRelative("Brightness");
-                SerializedProperty contrastProp = advancedColorConfigProp.FindPropertyRelative("Contrast");
-                SerializedProperty gammaProp = advancedColorConfigProp.FindPropertyRelative("Gamma");
-                SerializedProperty exposureProp = advancedColorConfigProp.FindPropertyRelative("Exposure");
-                SerializedProperty transparencyProp = advancedColorConfigProp.FindPropertyRelative("Transparency");
-
-                enabledProp.boolValue = EditorGUILayout.Toggle("有効", enabledProp.boolValue);
-                brightnessProp.floatValue = EditorGUILayout.FloatField("明るさ", brightnessProp.floatValue);
-                contrastProp.floatValue = EditorGUILayout.FloatField("コントラスト", contrastProp.floatValue);
-                gammaProp.floatValue = EditorGUILayout.FloatField("ガンマ", gammaProp.floatValue);
-                exposureProp.floatValue = EditorGUILayout.FloatField("露出", exposureProp.floatValue);
-                transparencyProp.floatValue = EditorGUILayout.FloatField("透明度", transparencyProp.floatValue);
-
-                EditorGUI.indentLevel--;
+            if (!showAdvancedColorSettings)
+            {
+                EditorGUI.indentLevel = 0;
                 EditorGUILayout.EndVertical();
+                return;
             }
+
+            EditorGUI.indentLevel++;
+
+            SerializedProperty enabledProp = advancedColorConfigProp.FindPropertyRelative("Enabled");
+            SerializedProperty brightnessProp = advancedColorConfigProp.FindPropertyRelative("Brightness");
+            SerializedProperty contrastProp = advancedColorConfigProp.FindPropertyRelative("Contrast");
+            SerializedProperty gammaProp = advancedColorConfigProp.FindPropertyRelative("Gamma");
+            SerializedProperty exposureProp = advancedColorConfigProp.FindPropertyRelative("Exposure");
+            SerializedProperty transparencyProp = advancedColorConfigProp.FindPropertyRelative("Transparency");
+
+            enabledProp.boolValue = EditorGUILayout.Toggle("有効", enabledProp.boolValue);
+            brightnessProp.floatValue = EditorGUILayout.FloatField("明るさ", brightnessProp.floatValue);
+            contrastProp.floatValue = EditorGUILayout.FloatField("コントラスト", contrastProp.floatValue);
+            gammaProp.floatValue = EditorGUILayout.FloatField("ガンマ", gammaProp.floatValue);
+            exposureProp.floatValue = EditorGUILayout.FloatField("露出", exposureProp.floatValue);
+            transparencyProp.floatValue = EditorGUILayout.FloatField("透明度", transparencyProp.floatValue);
+
+            EditorGUI.indentLevel = 0;
+            EditorGUILayout.EndVertical();
+        }
 
         private void DrawTextureOutputGUI(ColorChangerForUnity colorChangerComponent)
         {
-            if (GUILayout.Button("テクスチャ出力", GUILayout.ExpandWidth(true)))
+            EditorGUI.indentLevel = 0;
+            EditorGUILayout.HelpBox("テクスチャはビルド時に自動で非破壊で作成、適用されます。\nテクスチャ画像の細かな修正が必要な場合はテクスチャを出力して各自で編集してください。", MessageType.Warning);
+            if (GUILayout.Button("テクスチャ出力(非推奨)", GUILayout.ExpandWidth(true)))
             {
                 GenerateTexture(colorChangerComponent);
             }
@@ -311,33 +306,19 @@ namespace net.puk06.ColorChanger {
         {
             if (colorChangerComponent.targetTexture == null)
             {
-                Debug.LogError("ターゲットテクスチャが選択されていません。");
+                LogUtils.LogError("ターゲットテクスチャが選択されていません。");
                 return;
             }
 
             Texture2D originalTexture = ConvertToNonCompressed(colorChangerComponent.targetTexture);
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, true);
 
-            ColorDifference colorDifference = new ColorDifference(colorChangerComponent.previousColor, colorChangerComponent.newColor);
-
-            ImageProcessor imageProcessor = new ImageProcessor(colorDifference);
-
-            if (colorChangerComponent.balanceModeConfiguration.ModeVersion != 0)
-            {
-                imageProcessor.SetBalanceSettings(colorChangerComponent.balanceModeConfiguration);
-            }
-
-            if (colorChangerComponent.advancedColorConfiguration.Enabled)
-            {
-                imageProcessor.SetColorSettings(colorChangerComponent.advancedColorConfiguration);
-            }
-
-            imageProcessor.ProcessAllPixels(originalTexture, newTexture);
+            TextureUtils.ProcessTexture(originalTexture, newTexture, colorChangerComponent);
 
             string savedPath = SaveTextureWithUniqueName(colorChangerComponent.targetTexture, newTexture);
 
             if (string.IsNullOrEmpty(savedPath)) return;
-            TextureReplacer.ReplaceTextureInMaterials(colorChangerComponent.targetTexture, savedPath);
+            TextureUtils.ReplaceTextureInMaterials(colorChangerComponent.targetTexture, savedPath);
         }
 
         private string SaveTextureWithUniqueName(Texture2D originalTexture, Texture2D newTexture)
@@ -345,7 +326,7 @@ namespace net.puk06.ColorChanger {
             string originalPath = AssetDatabase.GetAssetPath(originalTexture);
             if (string.IsNullOrEmpty(originalPath))
             {
-                Debug.LogError("元テクスチャのパスが取得できません");
+                LogUtils.LogError("元テクスチャのパスが取得できません");
                 return string.Empty;
             }
 
@@ -357,7 +338,7 @@ namespace net.puk06.ColorChanger {
             string savePath;
             do
             {
-                string fileName = $"{originalFileName}_{index}{extension}";
+                string fileName = $"{originalFileName} {index}{extension}";
                 savePath = Path.Combine(directory, fileName);
                 index++;
             } while (File.Exists(savePath));
@@ -365,12 +346,12 @@ namespace net.puk06.ColorChanger {
             byte[] pngData = newTexture.EncodeToPNG();
             if (pngData == null)
             {
-                Debug.LogError("PNGデータのエンコードに失敗しました");
+                LogUtils.LogError("PNGデータのエンコードに失敗しました");
                 return string.Empty;
             }
 
             File.WriteAllBytes(savePath, pngData);
-            Debug.Log($"テクスチャを保存しました: {savePath}");
+            LogUtils.Log($"テクスチャを保存しました: {savePath}");
 
             AssetDatabase.ImportAsset(savePath);
             AssetDatabase.Refresh();

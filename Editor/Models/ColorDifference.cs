@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace net.puk06.ColorChanger.Models
 {
-    public class ColorDifference
+    internal class ColorDifference
     {
         internal Color PreviousColor { get; private set; }
         internal Color NewColor { get; private set; }
@@ -12,7 +12,7 @@ namespace net.puk06.ColorChanger.Models
         internal int DiffG { get; private set; }
         internal int DiffB { get; private set; }
 
-        public ColorDifference(Color previousColor, Color newColor)
+        internal ColorDifference(Color previousColor, Color newColor)
         {
             PreviousColor = previousColor;
             NewColor = newColor;
@@ -22,7 +22,7 @@ namespace net.puk06.ColorChanger.Models
             DiffB = ColorUtils.ConvertColorToInt32(newColor.b) - ColorUtils.ConvertColorToInt32(previousColor.b);
         }
 
-        public Vector3 ToVector3()
+        internal Vector3 ToVector3()
             => new Vector3(DiffR, DiffG, DiffB);
     }
 }

@@ -1,6 +1,4 @@
 ﻿using nadena.dev.ndmf.preview;
-using net.puk06.ColorChanger.ImageProcessing;
-using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using System;
 using System.Collections.Generic;
@@ -31,7 +29,7 @@ namespace net.puk06.ColorChanger.NDMF
                     if (component.targetTexture == null) continue;
 
                     var targetRenderers = renderers
-                        .Where(e => RendererHasTexture(e, component.targetTexture));
+                        .Where(e => RendererHasTargetTexture(e, component.targetTexture));
 
                     resultSet.Add(RenderGroup.For(targetRenderers).WithData(component));
 
@@ -61,29 +59,12 @@ namespace net.puk06.ColorChanger.NDMF
             return resultSet.ToImmutableList();
         }
 
-        private bool RendererHasTexture(Renderer renderer, Texture2D targetTexture)
+        private bool RendererHasTargetTexture(Renderer renderer, Texture2D targetTexture)
         {
             var materials = renderer.sharedMaterials;
             foreach (var material in materials)
             {
-                if (material == null) continue;
-                var shader = material.shader;
-                int count = ShaderUtil.GetPropertyCount(shader);
-
-                for (int i = 0; i < count; i++)
-                {
-                    if (ShaderUtil.GetPropertyType(shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
-                        continue;
-
-                    string propName = ShaderUtil.GetPropertyName(shader, i);
-                    Texture currentTex = material.GetTexture(propName);
-                    if (currentTex == null) continue;
-
-                    if (currentTex == targetTexture)
-                    {
-                        return true;
-                    }
-                }
+                return MaterialUtils.AnyTex(material, targetTexture);
             }
             return false;
         }
@@ -113,20 +94,11 @@ namespace net.puk06.ColorChanger.NDMF
                         var newMaterial = new Material(matchingMaterial);
                         materialDict.Add(matchingMaterial, newMaterial);
 
-                        Shader shader = newMaterial.shader;
-                        int count = ShaderUtil.GetPropertyCount(shader);
-
-                        for (int i = 0; i < count; i++)
+                        MaterialUtils.ForEachTex(newMaterial, (texture, propName) =>
                         {
-                            if (ShaderUtil.GetPropertyType(shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
-                                continue;
-
-                            string propName = ShaderUtil.GetPropertyName(shader, i);
-                            Texture currentTex = newMaterial.GetTexture(propName);
-
-                            if (currentTex != targetTexture) continue;
+                            if (texture != targetTexture) return;
                             newMaterial.SetTexture(propName, processedTexture);
-                        }
+                        });
                     }
                 }
 
@@ -145,21 +117,9 @@ namespace net.puk06.ColorChanger.NDMF
         {
             if (component.targetTexture == null) return null;
             RenderTexture rawTexture = GetRawRenderTexture(component.targetTexture);
+            RenderTexture newTex = TextureUtils.GenerateRenderTexture(component);
 
-            RenderTexture newTex = new RenderTexture(component.targetTexture.width, component.targetTexture.height, 0);
-            newTex.enableRandomWrite = true;
-            newTex.Create();
-
-            var colorDiff = new ColorDifference(component.previousColor, component.newColor);
-            var processor = new ImageProcessor(colorDiff);
-
-            if (component.balanceModeConfiguration.ModeVersion != 0)
-                processor.SetBalanceSettings(component.balanceModeConfiguration);
-
-            if (component.advancedColorConfiguration.Enabled)
-                processor.SetColorSettings(component.advancedColorConfiguration);
-
-            processor.ProcessAllPixelsGPU(rawTexture, newTex);
+            TextureUtils.ProcessTexture(rawTexture, newTex, component);
 
             if (RenderTexture.active == rawTexture) RenderTexture.active = null;
             rawTexture.DiscardContents();
@@ -222,20 +182,13 @@ namespace net.puk06.ColorChanger.NDMF
             {
                 foreach (var material in _materialDictionary.Values)
                 {
-                    int count = ShaderUtil.GetPropertyCount(material.shader);
-
-                    for (int i = 0; i < count; i++)
+                    MaterialUtils.ForEachTex(material, (texture, propName) =>
                     {
-                        if (ShaderUtil.GetPropertyType(material.shader, i) != ShaderUtil.ShaderPropertyType.TexEnv)
-                            continue;
-
-                        var tex = material.GetTexture(ShaderUtil.GetPropertyName(material.shader, i));
-                        if (tex is not RenderTexture rt)
-                            continue;
+                        if (texture is not RenderTexture rt) return;
 
                         rt.DiscardContents();
                         Object.DestroyImmediate(rt);
-                    }
+                    });
 
                     Object.DestroyImmediate(material);
                 }
