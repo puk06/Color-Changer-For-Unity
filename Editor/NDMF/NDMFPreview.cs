@@ -21,25 +21,40 @@ namespace net.puk06.ColorChanger.NDMF
             {
                 try
                 {
-                    var groupedRenderers = avatar.GetComponentsInChildren<Renderer>()
+                    // アバター内にある全部のコンポーネント
+                    var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
+
+                    // その中で参照されてる全てのテクスチャ
+                    var targetTextures = components.Select(c => c.targetTexture).Distinct();
+
+                    // アバター内の全てのレンダラー
+                    var avatarRenderers = avatar.GetComponentsInChildren<Renderer>()
                         .Where(r => r is MeshRenderer or SkinnedMeshRenderer)
                         .GroupBy(r => r.gameObject);
 
-                    // 1つのオブジェクトの中にRendererが複数入っていたときのエラー対策。いらないかもしれないけど、ループになるので念の為
-                    // ここでSelectを使ってない理由は、groupedRender.First()を無駄にしたくなかったからです。
-                    var renderer = new List<Renderer>();
-                    foreach (var groupedRender in groupedRenderers)
+                    var rendererList = new List<Renderer>();
+
+                    foreach (var avatarRenderer in avatarRenderers)
                     {
-                        var firstComponent = groupedRender.First();
-                        if (groupedRender.Count() >= 2)
+                        var firstComponent = avatarRenderer.First();
+                        if (avatarRenderer.Count() >= 2)
                         {
-                            LogUtils.LogWarning($"Duplicate Renderer Gameobject detected: '{groupedRender.Key.name}' (using settings from '{firstComponent.GetType()}' component)");
+                            LogUtils.LogWarning($"Duplicate Renderer GameObject detected: '{avatarRenderer.Key.name}' (using settings from '{firstComponent.GetType()}' component)");
                         }
 
-                        renderer.Add(firstComponent);
+                        var materials = firstComponent.sharedMaterials;
+                        if (materials.Any(material => targetTextures.Any(targetTexture => MaterialUtils.AnyTex(material, targetTexture))))
+                        {
+                            rendererList.Add(firstComponent);
+                        }
                     }
 
-                    resultSet.Add(RenderGroup.For(renderer));
+                    foreach (var component in components)
+                    {
+                        context.Observe(component, c => c.targetTexture);
+                    }
+
+                    resultSet.Add(RenderGroup.For(rendererList));
                 }
                 catch (Exception ex)
                 {
@@ -54,15 +69,7 @@ namespace net.puk06.ColorChanger.NDMF
         {
             try
             {
-                // // アバター内の全てのColorChangerForUnityコンポーネントを出してくる。
-                // // 現状、コンポーネントが入ったオブジェクトを移動した後にこれが実行されてほしいのだが、実行されないという問題がある。
-                // // ビルド時はアバタールートに入っている必要があるため、プレビューできないという問題が出てきてしまう。
-                // var avatar = context.GetAvatarRoot(group.Renderers.First().gameObject);
-                // if (avatar == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
-
-                // var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
-                // if (components.Length == 0) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
-
+                LogUtils.Log(group.Renderers.Count.ToString());
                 // シーン内の全てのColorChangerForUnityコンポーネントを出してくる。
                 var components = context.GetComponentsByType<ColorChangerForUnity>();
 
@@ -108,11 +115,6 @@ namespace net.puk06.ColorChanger.NDMF
                         material => material,
                         material => ProcessMaterial(material, processedTextures)
                     );
-
-                // foreach (var component in components)
-                // {
-                //     context.Observe(component);
-                // }
 
                 components.ForEach(component => context.Observe(component));
 

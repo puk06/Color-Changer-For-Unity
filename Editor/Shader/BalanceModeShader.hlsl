@@ -47,7 +47,7 @@ void GetRGBIntersectionDistance(
     }
 
     float minPositiveT = 1e30;
-    //[unroll]
+    [unroll]
     for (int i = 0; i < count; i++)
     {
         float t = t_values[i];
@@ -116,7 +116,7 @@ float3 BalanceColorAdjustment(
         pixel.r = pixel.r + (diff.r * adjustmentFactor);
         pixel.g = pixel.g + (diff.g * adjustmentFactor);
         pixel.b = pixel.b + (diff.b * adjustmentFactor);
-
+        
         return pixel;
     }
     else if (modeVersion == 2)
