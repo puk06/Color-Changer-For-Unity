@@ -12,6 +12,8 @@ internal static class MaterialUtils
     /// <param name="action"></param>
     internal static void ForEachTex(Material material, Action<Texture, string> action)
     {
+        if (material == null) return;
+
         Shader shader = material.shader;
         int propertyCount = GetPropertyCount(shader);
 
@@ -35,6 +37,8 @@ internal static class MaterialUtils
     /// <returns></returns>
     internal static bool AnyTex(Material material, Texture targetTexture)
     {
+        if (material == null) return false;
+
         Shader shader = material.shader;
         int propertyCount = GetPropertyCount(shader);
 

@@ -14,26 +14,44 @@ namespace net.puk06.ColorChanger.NDMF
     {
         public ImmutableList<RenderGroup> GetTargetGroups(ComputeContext context)
         {
-            LogUtils.Log("GetTargetGroups Called!");
-
             var avatars = context.GetAvatarRoots();
 
             var resultSet = new List<RenderGroup>();
             foreach (var avatar in avatars)
             {
-                var renderers = avatar.GetComponentsInChildren<Renderer>();
-                resultSet.Add(RenderGroup.For(renderers));
-            }
+                try
+                {
+                    var groupedRenderers = avatar.GetComponentsInChildren<Renderer>()
+                        .Where(r => r is MeshRenderer or SkinnedMeshRenderer)
+                        .GroupBy(r => r.gameObject);
 
-            LogUtils.Log("RenderGroup Count: " + resultSet.Count);
+                    // 1つのオブジェクトの中にRendererが複数入っていたときのエラー対策。いらないかもしれないけど、ループになるので念の為
+                    // ここでSelectを使ってない理由は、groupedRender.First()を無駄にしたくなかったからです。
+                    var renderer = new List<Renderer>();
+                    foreach (var groupedRender in groupedRenderers)
+                    {
+                        var firstComponent = groupedRender.First();
+                        if (groupedRender.Count() >= 2)
+                        {
+                            LogUtils.LogWarning($"Duplicate Renderer Gameobject detected: '{groupedRender.Key.name}' (using settings from '{firstComponent.GetType()}' component)");
+                        }
+
+                        renderer.Add(firstComponent);
+                    }
+
+                    resultSet.Add(RenderGroup.For(renderer));
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.LogError($"Failed to add renderer for avatar '{avatar.name}'.\n{ex.Message}");
+                }
+            }
 
             return resultSet.ToImmutableList();
         }
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
-            LogUtils.Log($"Instantiate Called! Renderers Count: {group.Renderers.Count}");
-
             try
             {
                 // シーン内の全てのColorChangerForUnityコンポーネントを出してくる。
@@ -55,17 +73,17 @@ namespace net.puk06.ColorChanger.NDMF
                 var groupedComponents = enabledComponents
                     .GroupBy(c => c.targetTexture);
 
-                foreach (var componentGroup in groupedComponents)
+                foreach (var groupedComponent in groupedComponents)
                 {
-                    var firstComponent = componentGroup.First();
-                    if (componentGroup.Count() >= 2)
+                    var firstComponent = groupedComponent.First();
+                    if (groupedComponent.Count() >= 2)
                     {
-                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{componentGroup.Key.name}' (using '{firstComponent.gameObject.name}' settings)");
+                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key.name}' (using settings from '{firstComponent.gameObject.name}')");
                     }
 
                     // テクスチャを作る
                     var processedTexture = ComputeTextureOverrides(firstComponent);
-                    processedTextures.Add(componentGroup.Key, processedTexture);
+                    processedTextures.Add(groupedComponent.Key, processedTexture);
                 }
 
                 // テクスチャが含まれているマテリアルすべてを探す。
@@ -89,7 +107,7 @@ namespace net.puk06.ColorChanger.NDMF
             }
             catch (Exception ex)
             {
-                LogUtils.LogError(ex.Message);
+                LogUtils.LogError($"Failed to instantiate.\n{ex.Message}");
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(new Dictionary<Material, Material>()));
             }
         }
@@ -146,12 +164,14 @@ namespace net.puk06.ColorChanger.NDMF
             {
                 try
                 {
-                    if (proxy == null || _materialDictionary == null || _materialDictionary.Count == 0) return;
+                    if (proxy == null || proxy.sharedMaterials == null || _materialDictionary == null || _materialDictionary.Count == 0) return;
 
                     var newMaterials = new Material[proxy.sharedMaterials.Length];
                     for (int i = 0; i < proxy.sharedMaterials.Length; i++)
                     {
                         var material = proxy.sharedMaterials[i];
+                        if (material == null) continue;
+
                         if (_materialDictionary.TryGetValue(material, out var newMaterial))
                         {
                             newMaterials[i] = newMaterial;
@@ -164,15 +184,14 @@ namespace net.puk06.ColorChanger.NDMF
 
                     proxy.sharedMaterials = newMaterials;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Ignored
+                    LogUtils.LogError("Error occurred while rendering proxy.\n" + ex.Message);
                 }
             }
 
             public void Dispose()
             {
-                LogUtils.Log("IRenderFilterNode Dispose Has Been Called!");
                 foreach (var material in _materialDictionary.Values)
                 {
                     MaterialUtils.ForEachTex(material, (texture, propName) =>

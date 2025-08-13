@@ -95,7 +95,6 @@ namespace net.puk06.ColorChanger.ImageProcessing
             colorComputeShader.SetBool("_balanceModeV2IncludeOutside", _balanceModeConfiguration.V2IncludeOutside);
 
             var previewResolution = Math.Clamp(_balanceModeConfiguration.V3GradientPreviewResolution, 2, 4096);
-            LogUtils.Log("Gradient Preview Resolution: " + previewResolution);
             var gradientRenderTexture = GradientToRenderTexture(_balanceModeConfiguration.V3GradientColor, previewResolution);
             colorComputeShader.SetTexture(kernel, "_balanceModeV3Gradient", gradientRenderTexture);
             colorComputeShader.SetInt("_balanceModeV3GradientResolution", previewResolution);
