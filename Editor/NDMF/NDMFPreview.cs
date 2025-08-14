@@ -64,9 +64,10 @@ namespace net.puk06.ColorChanger.NDMF
                         context.Observe(component, c => c.targetTexture);
                     }
 
-                    //レンダラーリストは、コンポーネントによってアバター内のどれかのマテリアルテクスチャが参照されているレンダラーのリスト
+                    // レンダラーリストは、コンポーネントによってアバター内のどれかのマテリアルテクスチャが参照されているレンダラーのリスト
+                    // WithDataでアバター、現在のコンポーネントを返してあげることでInstantiateを呼び出す仕組みになっている
                     if (rendererList.Count > 0)
-                        resultSet.Add(RenderGroup.For(rendererList));
+                        resultSet.Add(RenderGroup.For(rendererList).WithData((avatar, components)));
                 }
                 catch (Exception ex)
                 {
@@ -81,16 +82,10 @@ namespace net.puk06.ColorChanger.NDMF
         {
             try
             {
-                var firstRenderer = group.Renderers.FirstOrDefault();
-                if (firstRenderer == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+                var renderData = group.GetData<(GameObject, ColorChangerForUnity[])>();
+                var avatar = renderData.Item1;
+                var components = renderData.Item2;
 
-                var avatar = context.GetAvatarRoot(firstRenderer.gameObject);
-                if (avatar == null) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
-
-                // アバター配下にあるColorChangerコンポーネントの配列
-                var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
-                if (components == null || components.Length == 0) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
-                
                 // 早期リターンで監視対象から外れるのを防ぐため
                 foreach (var component in components)
                 {
