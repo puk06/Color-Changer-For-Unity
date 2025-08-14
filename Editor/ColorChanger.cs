@@ -2,6 +2,7 @@ using net.puk06.ColorChanger.Utils;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using VRC.SDKBase;
 
 namespace net.puk06.ColorChanger {
     [CustomEditor(typeof(ColorChangerForUnity))]
@@ -73,25 +74,32 @@ namespace net.puk06.ColorChanger {
             ColorChangerForUnity comp = (ColorChangerForUnity)target;
             if (componentIcon != null) EditorGUIUtility.SetIconForObject(comp, componentIcon);
 
-            // スクリプト設定画面
-            DrawColorChangerSettingsGUI(comp);
+            if (comp != null && comp.GetComponentInParent<VRC_AvatarDescriptor>() == null)
+            {
+                EditorGUILayout.HelpBox("このオブジェクトはアバターの子オブジェクトとして配置する必要があります。", MessageType.Error);
+            }
+            else
+            {
+                // スクリプト設定画面
+                DrawColorChangerSettingsGUI(comp);
 
-            // テクスチャ設定画面
-            DrawTextureSettingsGUI(comp);
+                // テクスチャ設定画面
+                DrawTextureSettingsGUI(comp);
 
-            // 色設定画面
-            DrawColorSettingsGUI(comp);
+                // 色設定画面
+                DrawColorSettingsGUI(comp);
 
-            // バランスモード画面
-            DrawBalanceModeSettingsGUI(comp);
+                // バランスモード画面
+                DrawBalanceModeSettingsGUI(comp);
 
-            // 色の追加設定画面
-            DrawAdvancedColorModeSettingsGUI(comp);
+                // 色の追加設定画面
+                DrawAdvancedColorModeSettingsGUI(comp);
 
-            EditorGUILayout.Space(10);
+                EditorGUILayout.Space(10);
 
-            // テクスチャ作成ボタン
-            DrawTextureOutputGUI(comp);
+                // テクスチャ作成ボタン
+                DrawTextureOutputGUI(comp);
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
