@@ -30,7 +30,7 @@ internal static class MaterialUtils
     }
 
     /// <summary>
-    /// 渡されたマテリアルの全プロパティをループで回し、もし１つでもマテリアルで渡されたテクスチャを使っていたらtrueを返します。
+    /// 渡されたマテリアルの全プロパティをループで回し、もし1つでもマテリアルで渡されたテクスチャを使っていたらtrueを返します。
     /// </summary>
     /// <param name="material"></param>
     /// <param name="targetTexture"></param>
@@ -63,7 +63,13 @@ internal static class MaterialUtils
     /// <returns></returns>
     internal static int GetPropertyCount(Shader shader)
         => ShaderUtil.GetPropertyCount(shader);
-
+    
+    /// <summary>
+    /// 渡されたShaderの指定されたindexのプロパティがTextureかどうかを返します。
+    /// </summary>
+    /// <param name="shader"></param>
+    /// <param name="propertyIndex"></param>
+    /// <returns></returns>
     internal static bool IsTexture(Shader shader, int propertyIndex)
         => ShaderUtil.GetPropertyType(shader, propertyIndex) == ShaderUtil.ShaderPropertyType.TexEnv;
 }

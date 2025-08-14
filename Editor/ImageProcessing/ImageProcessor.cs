@@ -69,10 +69,10 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
         internal void ProcessAllPixelsGPU(RenderTexture source, RenderTexture target)
         {
-            ComputeShader colorComputeShader = ShaderUtils.GetComputeShader();
+            ComputeShader colorComputeShader = ShaderUtils.GetColorComputeShader();
             if (colorComputeShader == null)
             {
-                LogUtils.LogError("計算用シェーダーファイルが見つかりませんでした。");
+                LogUtils.LogError("The compute shader file could not be found.");
                 return;
             }
 

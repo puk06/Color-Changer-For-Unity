@@ -15,11 +15,12 @@ namespace net.puk06.ColorChanger.Utils
             colorComputeShader = AssetDatabase.LoadAssetAtPath<ComputeShader>(shaderPath);
             if (colorComputeShader == null)
             {
-                LogUtils.LogError($"ComputeShaderが読み込めませんでした: {shaderPath}");
+                LogUtils.LogError($"Failed to load ColorComputeShader: {shaderPath}");
             }
 #endif
         }
 
-        public static ComputeShader GetComputeShader() => colorComputeShader;
+        internal static ComputeShader GetColorComputeShader()
+            => colorComputeShader;
     }
 }
