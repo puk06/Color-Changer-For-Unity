@@ -7,10 +7,9 @@
   Bring the powerful color transformation formulas of Texture Color Changer into Unity.<br>
   Built on the Non-Destructive Modular Framework (NDMF) for fully reversible, real-time preview editing.
   <br><br>
-  <img src="https://img.shields.io/badge/Unity-000000?logo=unity&logoColor=white" width="71.25">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp&logoColor=white" width="56.25">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://img.shields.io/github/license/puk06/Color-Changer?style=flat-square" width="97.5">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://www.codefactor.io/repository/github/puk06/Color-Changer/badge" width="117.5">
+  <img src="https://img.shields.io/badge/Unity-000000?logo=unity&logoColor=white" width="71.25">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp&logoColor=white" width="56.25">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://img.shields.io/github/license/puk06/Color-Changer?style=flat-square" width="97.5">
 </div>
 
 ---
