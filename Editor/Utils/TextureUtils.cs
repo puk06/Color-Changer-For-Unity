@@ -20,22 +20,29 @@ namespace net.puk06.ColorChanger.Utils
         internal static List<Material> FindMaterialsWithTexture(Material[] materials, Texture2D targetTexture)
         {
             List<Material> result = new List<Material>();
+            if (targetTexture == null) return result;
 
             foreach (Material material in materials)
             {
                 if (material == null) continue;
 
                 var shader = material.shader;
+                if (shader == null) continue;
+
                 int count = MaterialUtils.GetPropertyCount(shader);
+                if (count == null || count == 0) continue;
 
                 for (int i = 0; i < count; i++)
                 {
                     if (!MaterialUtils.IsTexture(shader, i)) continue;
 
                     string propName = ShaderUtil.GetPropertyName(shader, i);
-                    Texture currentTex = material.GetTexture(propName);
+                    if (propName == null) continue;
 
-                    if (currentTex != targetTexture)
+                    Texture currentTex = material.GetTexture(propName);
+                    if (currentTex == null) continue;
+
+                    if (currentTex == targetTexture)
                     {
                         result.Add(material);
                         break;

@@ -15,13 +15,18 @@ internal static class MaterialUtils
         if (material == null) return;
 
         Shader shader = material.shader;
+        if (shader == null) return;
+
         int propertyCount = GetPropertyCount(shader);
+        if (propertyCount == null || propertyCount == 0) return;
 
         for (int i = 0; i < propertyCount; i++)
         {
             if (!IsTexture(shader, i)) continue;
 
             string propName = ShaderUtil.GetPropertyName(shader, i);
+            if (propName == null) continue;
+
             Texture materialTexture = material.GetTexture(propName);
             if (materialTexture == null) continue;
 
@@ -40,13 +45,18 @@ internal static class MaterialUtils
         if (material == null) return false;
 
         Shader shader = material.shader;
+        if (shader == null) return false;
+
         int propertyCount = GetPropertyCount(shader);
+        if (propertyCount == null || propertyCount == 0) return false;
 
         for (int i = 0; i < propertyCount; i++)
         {
             if (!IsTexture(shader, i)) continue;
 
             string propertyName = ShaderUtil.GetPropertyName(shader, i);
+            if (propertyName == null) continue;
+
             Texture materialTexture = material.GetTexture(propertyName);
             if (materialTexture == null) continue;
 
@@ -63,7 +73,7 @@ internal static class MaterialUtils
     /// <returns></returns>
     internal static int GetPropertyCount(Shader shader)
         => ShaderUtil.GetPropertyCount(shader);
-    
+
     /// <summary>
     /// 渡されたShaderの指定されたindexのプロパティがTextureかどうかを返します。
     /// </summary>
@@ -71,5 +81,8 @@ internal static class MaterialUtils
     /// <param name="propertyIndex"></param>
     /// <returns></returns>
     internal static bool IsTexture(Shader shader, int propertyIndex)
-        => ShaderUtil.GetPropertyType(shader, propertyIndex) == ShaderUtil.ShaderPropertyType.TexEnv;
+    {
+        if (shader == null || propertyIndex == null) return false;
+        return ShaderUtil.GetPropertyType(shader, propertyIndex) == ShaderUtil.ShaderPropertyType.TexEnv;
+    }
 }

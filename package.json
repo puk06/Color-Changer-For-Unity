@@ -1,7 +1,7 @@
 {
     "name": "net.puk06.color-changer",
     "displayName": "Color Changer For Unity",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "vpmDependencies": {
         "nadena.dev.ndmf": ">=1.5.0",
         "com.vrchat.base": ">=3.5.0"
@@ -12,6 +12,6 @@
         "email": "pukorufu@pukosrv.net"
     },
     "unity": "2022.3",
-    "description": "Non Destructive Color Changer For Unity!",
-    "url": "https://github.com/puk06/Color-Changer-For-Unity/releases/download/v1.1.0/net.puk06.color-changer-v1.1.0.zip?"
+    "description": "Non-destructive Color Changer For Unity!",
+    "url": "https://github.com/puk06/Color-Changer-For-Unity/releases/download/v1.1.1/net.puk06.color-changer-v1.1.1.zip?"
 }

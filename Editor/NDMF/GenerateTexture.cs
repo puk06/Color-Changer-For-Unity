@@ -81,6 +81,8 @@ namespace net.puk06.ColorChanger.NDMF
 
                 for (int i = 0; i < materials.Length; i++)
                 {
+                    if (materials[i] == null) continue;
+
                     if (materialsToChange.Contains(materials[i]))
                     {
                         newMaterials[i] = new Material(materials[i]);
