@@ -18,7 +18,7 @@ internal static class MaterialUtils
         if (shader == null) return;
 
         int propertyCount = GetPropertyCount(shader);
-        if (propertyCount == null || propertyCount == 0) return;
+        if (propertyCount == 0) return;
 
         for (int i = 0; i < propertyCount; i++)
         {
@@ -48,7 +48,7 @@ internal static class MaterialUtils
         if (shader == null) return false;
 
         int propertyCount = GetPropertyCount(shader);
-        if (propertyCount == null || propertyCount == 0) return false;
+        if (propertyCount == 0) return false;
 
         for (int i = 0; i < propertyCount; i++)
         {
@@ -82,7 +82,7 @@ internal static class MaterialUtils
     /// <returns></returns>
     internal static bool IsTexture(Shader shader, int propertyIndex)
     {
-        if (shader == null || propertyIndex == null) return false;
+        if (shader == null) return false;
         return ShaderUtil.GetPropertyType(shader, propertyIndex) == ShaderUtil.ShaderPropertyType.TexEnv;
     }
 }

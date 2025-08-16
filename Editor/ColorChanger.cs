@@ -4,14 +4,12 @@ using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
 
-namespace net.puk06.ColorChanger {
+namespace net.puk06.ColorChanger
+{
     [CustomEditor(typeof(ColorChangerForUnity))]
     [CanEditMultipleObjects]
     public class ColorChanger : Editor
     {
-        private Texture2D logoTexture;
-        private Texture2D componentIcon;
-
         private SerializedProperty enabledButtonProp;
         private SerializedProperty targetTextureProp;
         private SerializedProperty previousColorProp;
@@ -40,9 +38,6 @@ namespace net.puk06.ColorChanger {
 
         void OnEnable()
         {
-            logoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/ComponentLogo.png");
-            componentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/net.puk06.color-changer/Editor/Assets/ComponentIcon.png");
-
             enabledButtonProp = serializedObject.FindProperty("Enabled");
             targetTextureProp = serializedObject.FindProperty("targetTexture");
             previousColorProp = serializedObject.FindProperty("previousColor");
@@ -55,6 +50,8 @@ namespace net.puk06.ColorChanger {
         public override void OnInspectorGUI()
         {
             serializedObject.UpdateIfRequiredOrScript();
+
+            var logoTexture = AssetUtils.Logo;
             if (logoTexture != null)
             {
                 float imgWidth = logoTexture.width;
@@ -72,6 +69,8 @@ namespace net.puk06.ColorChanger {
             }
 
             ColorChangerForUnity comp = (ColorChangerForUnity)target;
+
+            var componentIcon = AssetUtils.Icon;
             if (componentIcon != null) EditorGUIUtility.SetIconForObject(comp, componentIcon);
 
             if (comp != null && comp.GetComponentInParent<VRC_AvatarDescriptor>() == null)
@@ -213,6 +212,11 @@ namespace net.puk06.ColorChanger {
             EditorGUILayout.EndVertical();
         }
 
+        private static readonly GUIContent BalanceModeLabel = new GUIContent(
+            "バランスモード",
+            "色変更の計算式を、テクスチャ改変に適した形式に切り替えます。"
+        );
+
         private void DrawBalanceModeSettingsGUI(ColorChangerForUnity colorChangerComponent)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -236,7 +240,7 @@ namespace net.puk06.ColorChanger {
 
                 SerializedProperty modeVersionProp = balanceModeConfigProp.FindPropertyRelative("ModeVersion");
                 modeVersionProp.intValue = (int)(BalanceModeSettings)EditorGUILayout.EnumPopup(
-                    "バランスモード", (BalanceModeSettings)modeVersionProp.intValue
+                    BalanceModeLabel, (BalanceModeSettings)modeVersionProp.intValue
                 );
 
                 GUIStyle subTitleStyle = new GUIStyle(EditorStyles.foldout);
@@ -253,6 +257,7 @@ namespace net.puk06.ColorChanger {
                 if (showBalanceModeV1Settings)
                 {
                     EditorGUI.indentLevel = 3;
+                    EditorGUILayout.HelpBox("選んだ色と各ピクセルの色の距離、およびその延長線上の位置から変化率を計算します。\nデメリット: RGB空間の端に近い色は変化が小さくなります。", MessageType.Info);
                     SerializedProperty v1WeightProp = balanceModeConfigProp.FindPropertyRelative("V1Weight");
                     SerializedProperty v1MinValueProp = balanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
                     v1WeightProp.floatValue = EditorGUILayout.FloatField("変化率グラフの重み", v1WeightProp.floatValue);
@@ -270,6 +275,7 @@ namespace net.puk06.ColorChanger {
                 if (showBalanceModeV2Settings)
                 {
                     EditorGUI.indentLevel = 3;
+                    EditorGUILayout.HelpBox("選んだ色を中心に球状に色の変化率を計算し、半径の位置を基準とします。\nデメリット: RGB空間の制限を受けませんが、設定が少し複雑です。", MessageType.Info);
                     SerializedProperty v2RadiusProp = balanceModeConfigProp.FindPropertyRelative("V2Radius");
                     SerializedProperty v2WeightProp = balanceModeConfigProp.FindPropertyRelative("V2Weight");
                     SerializedProperty v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
@@ -292,6 +298,7 @@ namespace net.puk06.ColorChanger {
                 if (showBalanceModeV3Settings)
                 {
                     EditorGUI.indentLevel = 3;
+                    EditorGUILayout.HelpBox("設定されたグラデーションに沿って、ピクセルの明るさから変化率を決めます。\nデメリット: 色が均一に変わりますが、意図しない部分も変化する可能性があります。", MessageType.Info);
                     SerializedProperty v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
                     SerializedProperty v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
 
