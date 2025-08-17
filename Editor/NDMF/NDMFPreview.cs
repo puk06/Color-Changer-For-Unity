@@ -95,12 +95,12 @@ namespace net.puk06.ColorChanger.NDMF
                 }
 
                 // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
-                var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x));
-                if (enabledComponents == null || !enabledComponents.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+                var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x) && x.PreviewEnabled);
+                if (enabledComponents == null || !enabledComponents.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
                 var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
-                if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+                if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // 変更される予定のテクスチャ（アバター配下で使われている物だけ）
                 var targetTextures = enabledComponents
@@ -108,7 +108,7 @@ namespace net.puk06.ColorChanger.NDMF
                     .Where(t => avatarTexturesHashSet.Contains(t))
                     .Distinct()
                     .ToArray();
-                if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+                if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // 元のテクスチャ、処理されたテクスチャのDictionary
                 var processedTextures = new Dictionary<Texture2D, Texture>();
@@ -128,7 +128,17 @@ namespace net.puk06.ColorChanger.NDMF
                     }
 
                     // テクスチャを作る
-                    var processedTexture = ComputeTextureOverrides(firstComponent); // CPUを付け足すことで、CPUモードに切り替わる。
+                    // CPUプレビューがオンのときはCPUでテクスチャが作成される。
+                    Texture processedTexture = null;
+                    if (firstComponent.PreviewOnCPU)
+                    {
+                        processedTexture = ComputeTextureOverridesCPU(firstComponent);
+                    }
+                    else
+                    {
+                        processedTexture = ComputeTextureOverrides(firstComponent);
+                    }
+
                     if (processedTexture == null)
                     {
                         LogUtils.LogError($"Failed to process texture: '{firstComponent.name}'. This may be due to the platform not supporting GPU-based computation.");
@@ -152,13 +162,13 @@ namespace net.puk06.ColorChanger.NDMF
                         material => ProcessMaterial(material, processedTextures)
                     );
 
-                // 変換前、変換後のマテリアルテクスチャをまとめたものを渡してあげる。
-                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials));
+                // 変換前、変換後のマテリアルテクスチャ、生成したテクスチャの配列をまとめたものを渡してあげる。
+                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials, processedTextures.Values));
             }
             catch (Exception ex)
             {
                 LogUtils.LogError($"Failed to instantiate.\n{ex}");
-                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
             }
         }
 
@@ -215,13 +225,21 @@ namespace net.puk06.ColorChanger.NDMF
         private class TextureReplacerNode : IRenderFilterNode, IDisposable
         {
             private readonly Dictionary<Material, Material> _processedMaterialsDictionary;
+            private readonly IEnumerable<Texture> _generatedTextures;
 
             public RenderAspects WhatChanged { get; private set; } = RenderAspects.Texture & RenderAspects.Material;
 
-            public TextureReplacerNode(Dictionary<Material, Material> materialDictionary)
+            public TextureReplacerNode(Dictionary<Material, Material> materialDictionary, IEnumerable<Texture> generatedTextures)
             {
-                if (materialDictionary == null) return;
-                _processedMaterialsDictionary = materialDictionary; //ここで渡されるものは、OnFrameで、置き換えられるものがあるのが確定したマテリアルと、その処理済みマテリアルのDictionaryである
+                if (materialDictionary != null)
+                {
+                    _processedMaterialsDictionary = materialDictionary; // ここで渡されるものは、OnFrameで、置き換えられるものがあるのが確定したマテリアルと、その処理済みマテリアルのDictionaryである
+                }
+
+                if (generatedTextures != null)
+                {
+                    _generatedTextures = generatedTextures; // ここで渡されるのは、自動で作成されたテクスチャの参照の配列である
+                }
             }
 
             public void OnFrame(Renderer original, Renderer proxy)
@@ -267,9 +285,9 @@ namespace net.puk06.ColorChanger.NDMF
 
             public void Dispose()
             {
-                foreach (var material in _processedMaterialsDictionary.Values)
+                if (_generatedTextures != null)
                 {
-                    MaterialUtils.ForEachTex(material, (texture, propName) =>
+                    foreach (var texture in _generatedTextures)
                     {
                         if (texture is ExtendedRenderTexture ert)
                         {
@@ -279,12 +297,18 @@ namespace net.puk06.ColorChanger.NDMF
                         {
                             Object.DestroyImmediate(tex);
                         }
-                    });
-
-                    Object.DestroyImmediate(material);
+                    }
                 }
 
-                _processedMaterialsDictionary.Clear();
+                if (_processedMaterialsDictionary != null && _processedMaterialsDictionary.Values != null && _processedMaterialsDictionary.Values.Count() != 0)
+                {
+                    foreach (var material in _processedMaterialsDictionary.Values)
+                    {
+                        Object.DestroyImmediate(material);
+                    }
+
+                    _processedMaterialsDictionary.Clear();
+                }
             }
         }
     }

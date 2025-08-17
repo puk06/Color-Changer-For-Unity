@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace net.puk06.ColorChanger
 {
-    class FoldoutState
+    public class FoldoutState
     {
         public bool Main;
         public bool Enabled;
@@ -18,7 +18,6 @@ namespace net.puk06.ColorChanger
     {
         private int _selectedAvatarIndex;
         private readonly Dictionary<Texture, FoldoutState> _foldoutStates = new Dictionary<Texture, FoldoutState>();
-
 
         [MenuItem("Tools/ぷこのつーる/Color Changer For Unity")]
         public static void ShowWindow()

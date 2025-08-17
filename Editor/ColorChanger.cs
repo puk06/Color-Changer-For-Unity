@@ -4,7 +4,6 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
-using Object = UnityEngine.Object;
 
 namespace net.puk06.ColorChanger
 {
@@ -12,7 +11,6 @@ namespace net.puk06.ColorChanger
     [CanEditMultipleObjects]
     public class ColorChanger : Editor
     {
-        private SerializedProperty enabledButtonProp;
         private SerializedProperty targetTextureProp;
         private SerializedProperty previousColorProp;
         private SerializedProperty newColorProp;
@@ -40,7 +38,6 @@ namespace net.puk06.ColorChanger
 
         void OnEnable()
         {
-            enabledButtonProp = serializedObject.FindProperty("Enabled");
             targetTextureProp = serializedObject.FindProperty("targetTexture");
             previousColorProp = serializedObject.FindProperty("previousColor");
             newColorProp = serializedObject.FindProperty("newColor");
@@ -122,7 +119,17 @@ namespace net.puk06.ColorChanger
             if (showColorChangerSettings)
             {
                 EditorGUI.indentLevel = 2;
+
+                SerializedProperty enabledButtonProp = serializedObject.FindProperty("Enabled");
+                SerializedProperty previewEnabledButtonProp = serializedObject.FindProperty("PreviewEnabled");
+                SerializedProperty previewOnCPUButtonProp = serializedObject.FindProperty("PreviewOnCPU");
+
                 enabledButtonProp.boolValue = EditorGUILayout.Toggle("スクリプトの有効化", enabledButtonProp.boolValue);
+                previewEnabledButtonProp.boolValue = EditorGUILayout.Toggle("プレビューの有効化", previewEnabledButtonProp.boolValue);
+
+                EditorGUILayout.HelpBox("CPUレンダリングはGPUがプレビューに対応していなかったときのみ使用してください。\nCPUプレビューは毎回プレビューを作成するのに時間がかかります。扱いには注意してください。", MessageType.Warning);
+                previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle("CPUレンダリングの有効化", previewOnCPUButtonProp.boolValue);
+
                 EditorGUI.indentLevel = 1;
             }
 
@@ -194,8 +201,10 @@ namespace net.puk06.ColorChanger
             if (showColorSettings)
             {
                 EditorGUI.indentLevel = 2;
+
                 previousColorProp.colorValue = EditorGUILayout.ColorField("変更前の色", previousColorProp.colorValue);
                 newColorProp.colorValue = EditorGUILayout.ColorField("変更後の色", newColorProp.colorValue);
+
                 EditorGUI.indentLevel = 1;
             }
 
@@ -241,11 +250,15 @@ namespace net.puk06.ColorChanger
                 if (showBalanceModeV1Settings)
                 {
                     EditorGUI.indentLevel = 3;
+
                     EditorGUILayout.HelpBox("選んだ色と各ピクセルの色の距離、およびその延長線上の位置から変化率を計算します。\nデメリット: RGB空間の端に近い色は変化が小さくなります。", MessageType.Info);
+
                     SerializedProperty v1WeightProp = balanceModeConfigProp.FindPropertyRelative("V1Weight");
                     SerializedProperty v1MinValueProp = balanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
+
                     v1WeightProp.floatValue = EditorGUILayout.FloatField("変化率グラフの重み", v1WeightProp.floatValue);
                     v1MinValueProp.floatValue = EditorGUILayout.FloatField("変化率グラフの最低値", v1MinValueProp.floatValue);
+
                     EditorGUI.indentLevel = 2;
                 }
 
@@ -259,7 +272,9 @@ namespace net.puk06.ColorChanger
                 if (showBalanceModeV2Settings)
                 {
                     EditorGUI.indentLevel = 3;
+
                     EditorGUILayout.HelpBox("選んだ色を中心に球状に色の変化率を計算し、半径の位置を基準とします。\nデメリット: RGB空間の制限を受けませんが、設定が少し複雑です。", MessageType.Info);
+
                     SerializedProperty v2RadiusProp = balanceModeConfigProp.FindPropertyRelative("V2Radius");
                     SerializedProperty v2WeightProp = balanceModeConfigProp.FindPropertyRelative("V2Weight");
                     SerializedProperty v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
@@ -269,6 +284,7 @@ namespace net.puk06.ColorChanger
                     v2WeightProp.floatValue = EditorGUILayout.FloatField("変化率グラフの重み", v2WeightProp.floatValue);
                     v2MinValueProp.floatValue = EditorGUILayout.FloatField("変化率グラフの最低値", v2MinValueProp.floatValue);
                     v2IncludeOutsideProp.boolValue = EditorGUILayout.Toggle("範囲外にも最低値を適用する", v2IncludeOutsideProp.boolValue);
+
                     EditorGUI.indentLevel = 2;
                 }
 
@@ -282,12 +298,14 @@ namespace net.puk06.ColorChanger
                 if (showBalanceModeV3Settings)
                 {
                     EditorGUI.indentLevel = 3;
+
                     EditorGUILayout.HelpBox("設定されたグラデーションに沿って、ピクセルの明るさから変化率を決めます。\nデメリット: 色が均一に変わりますが、意図しない部分も変化する可能性があります。", MessageType.Info);
                     SerializedProperty v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
                     SerializedProperty v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
 
                     v3GradientProp.gradientValue = EditorGUILayout.GradientField("グラデーション", v3GradientProp.gradientValue);
                     v3GradientResolutionProp.intValue = EditorGUILayout.IntField("プレビュー解像度", v3GradientResolutionProp.intValue);
+                    
                     EditorGUI.indentLevel = 2;
                 }
             }
@@ -358,7 +376,7 @@ namespace net.puk06.ColorChanger
             try
             {
                 originalTexture = TextureUtils.GetRawTexture(colorChangerComponent.targetTexture);
-                newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, true);
+                newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
                 TextureUtils.ProcessTexture(originalTexture, newTexture, colorChangerComponent);
 
