@@ -130,7 +130,7 @@ namespace net.puk06.ColorChanger.NDMF
                     var processedTexture = ComputeTextureOverrides(firstComponent);
                     if (processedTexture == null)
                     {
-                        LogUtils.LogError($"Failed to process texture: '{firstComponent.name}'");
+                        LogUtils.LogError($"Failed to process texture: '{firstComponent.name}'. This may be due to the platform not supporting GPU-based computation.");
                         continue;
                     }
 
