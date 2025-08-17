@@ -1,10 +1,23 @@
 using UnityEditor;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace net.puk06.ColorChanger.Utils
 {
     internal static class UnityUtils
     {
+        private static readonly GUIStyle _titleStyle = new(EditorStyles.foldout)
+        {
+            fontSize = 13,
+            fontStyle = FontStyle.Bold
+        };
+
+        private static readonly GUIStyle _subTitleStyle = new(EditorStyles.foldout)
+        {
+            fontSize = 12,
+            fontStyle = FontStyle.Bold
+        };
+
         /// <summary>
         /// UnityのAssets内で、指定されたパスのファイルを開きます。
         /// </summary>
@@ -22,5 +35,8 @@ namespace net.puk06.ColorChanger.Utils
                 LogUtils.LogError("Failed to open the file: " + assetPath);
             }
         }
+
+        internal static GUIStyle TitleStyle = _titleStyle;
+        internal static GUIStyle SubTitleStyle = _subTitleStyle;
     }
 }

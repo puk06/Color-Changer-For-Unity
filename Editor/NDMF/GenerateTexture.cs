@@ -22,7 +22,7 @@ namespace net.puk06.ColorChanger.NDMF
             if (components == null || components.Length == 0) return;
 
             // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
-            var enabledComponents = components.Where(x => x != null && x.Enabled && x.targetTexture != null);
+            var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x));
             if (enabledComponents == null || !enabledComponents.Any()) return;
 
             // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧

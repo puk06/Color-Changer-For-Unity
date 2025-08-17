@@ -30,7 +30,7 @@ namespace net.puk06.ColorChanger.Utils
                 if (shader == null) continue;
 
                 int count = MaterialUtils.GetPropertyCount(shader);
-                if (count == null || count == 0) continue;
+                if (count == 0) continue;
 
                 for (int i = 0; i < count; i++)
                 {
@@ -101,7 +101,13 @@ namespace net.puk06.ColorChanger.Utils
         {
             var renderTexture = new RenderTexture(colorChanger.targetTexture.width, colorChanger.targetTexture.height, 0);
             renderTexture.enableRandomWrite = true;
-            renderTexture.Create();
+            var createResult = renderTexture.Create();
+            if (!createResult)
+            {
+                if (renderTexture != null) renderTexture.DiscardContents();
+                Object.DestroyImmediate(renderTexture);
+                return null;
+            }
 
             return renderTexture;
         }

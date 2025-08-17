@@ -90,10 +90,11 @@ namespace net.puk06.ColorChanger.NDMF
                 foreach (var component in components)
                 {
                     context.Observe(component);
+                    context.Observe(component.gameObject, o => o.activeSelf);
                 }
 
                 // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
-                var enabledComponents = components.Where(x => x != null && x.Enabled && x.targetTexture != null);
+                var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x));
                 if (enabledComponents == null || !enabledComponents.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
 
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
@@ -127,7 +128,11 @@ namespace net.puk06.ColorChanger.NDMF
 
                     // テクスチャを作る
                     var processedTexture = ComputeTextureOverrides(firstComponent);
-                    if (processedTexture == null) continue;
+                    if (processedTexture == null)
+                    {
+                        LogUtils.LogError($"Failed to process texture: '{firstComponent.name}'");
+                        continue;
+                    }
 
                     processedTextures.Add(groupedComponent.Key, processedTexture);
                 }
@@ -151,7 +156,7 @@ namespace net.puk06.ColorChanger.NDMF
             }
             catch (Exception ex)
             {
-                LogUtils.LogError($"Failed to instantiate.\n{ex.Message}");
+                LogUtils.LogError($"Failed to instantiate.\n{ex}");
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
             }
         }
@@ -173,6 +178,12 @@ namespace net.puk06.ColorChanger.NDMF
             RenderTexture rawTexture = GetRawRenderTexture(component.targetTexture);
             RenderTexture newTex = TextureUtils.GenerateRenderTexture(component);
 
+            if (rawTexture == null || newTex == null)
+            {
+                if (RenderTexture.active == rawTexture || RenderTexture.active == newTex) RenderTexture.active = null;
+                return null;
+            }
+
             TextureUtils.ProcessTexture(rawTexture, newTex, component);
 
             if (RenderTexture.active == rawTexture) RenderTexture.active = null;
@@ -186,7 +197,13 @@ namespace net.puk06.ColorChanger.NDMF
         {
             var renderTexture = new RenderTexture(source.width, source.height, 0);
             renderTexture.enableRandomWrite = true;
-            renderTexture.Create();
+            var createResult = renderTexture.Create();
+            if (!createResult)
+            {
+                if (renderTexture != null) renderTexture.DiscardContents();
+                Object.DestroyImmediate(renderTexture);
+                return null;
+            }
 
             Graphics.Blit(source, renderTexture);
             return renderTexture;
