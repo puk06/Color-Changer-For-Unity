@@ -69,7 +69,7 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
         internal void ProcessAllPixelsGPU(RenderTexture source, RenderTexture target)
         {
-            RenderTexture gradientRenderTexture = null;
+            ExtendedRenderTexture gradientRenderTexture = null;
 
             try
             {
@@ -134,42 +134,35 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
             if (gradientRenderTexture != null)
             {
-                if (RenderTexture.active == gradientRenderTexture) RenderTexture.active = null;
-                gradientRenderTexture.DiscardContents();
-                Object.DestroyImmediate(gradientRenderTexture);
+                gradientRenderTexture.Dispose();
             }
         }
 
-        private RenderTexture GradientToRenderTexture(Gradient gradient, int resolution = 256)
+        private ExtendedRenderTexture GradientToRenderTexture(Gradient gradient, int resolution = 256)
         {
-            var tex2D = new Texture2D(resolution, 1, TextureFormat.RGBA32, false);
-            tex2D.wrapMode = TextureWrapMode.Clamp;
+            var gradientTexture2D = GenerateGradientTexture2D(gradient, resolution);
+            var gradientRenderTexture = new ExtendedRenderTexture(resolution, 1)
+                .Create(gradientTexture2D);
+
+            Object.DestroyImmediate(gradientTexture2D);
+            
+            return gradientRenderTexture;
+        }
+
+        private static Texture2D GenerateGradientTexture2D(Gradient gradient, int resolution)
+        {
+            var gradientTexture2D = new Texture2D(resolution, 1, TextureFormat.RGBA32, false);
+            gradientTexture2D.wrapMode = TextureWrapMode.Clamp;
 
             for (int i = 0; i < resolution; i++)
             {
-                float t = i / (float)(resolution - 1);
-                Color col = gradient.Evaluate(t);
-                tex2D.SetPixel(i, 0, col);
+                float value = i / (float)(resolution - 1);
+                Color color = gradient.Evaluate(value);
+                gradientTexture2D.SetPixel(i, 0, color);
             }
-            tex2D.Apply();
+            gradientTexture2D.Apply();
 
-            var renderTexture = new RenderTexture(resolution, 1, 0, RenderTextureFormat.ARGB32);
-            renderTexture.enableRandomWrite = true;
-            renderTexture.wrapMode = TextureWrapMode.Clamp;
-            var createResult = renderTexture.Create();
-            if (!createResult)
-            {
-                if (RenderTexture.active == renderTexture) RenderTexture.active = null;
-                Object.DestroyImmediate(renderTexture);
-                Object.DestroyImmediate(tex2D);
-                return null;
-            }
-
-            Graphics.Blit(tex2D, renderTexture);
-
-            Object.DestroyImmediate(tex2D);
-
-            return renderTexture;
+            return gradientTexture2D;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using nadena.dev.ndmf.preview;
 using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -110,7 +111,7 @@ namespace net.puk06.ColorChanger.NDMF
                 if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
 
                 // 元のテクスチャ、処理されたテクスチャのDictionary
-                var processedTextures = new Dictionary<Texture2D, RenderTexture>();
+                var processedTextures = new Dictionary<Texture2D, ExtendedRenderTexture>();
 
                 // ターゲットテクスチャごとに分ける。これは複数同じテクスチャがあった時対策
                 var groupedComponents = enabledComponents
@@ -161,52 +162,38 @@ namespace net.puk06.ColorChanger.NDMF
             }
         }
 
-        private Material ProcessMaterial(Material material, Dictionary<Texture2D, RenderTexture> processedTextures)
+        private Material ProcessMaterial(Material material, Dictionary<Texture2D, ExtendedRenderTexture> processedTextures)
         {
             var newMat = new Material(material);
+
             MaterialUtils.ForEachTex(newMat, (tex, propName) =>
             {
                 if (processedTextures.TryGetValue(tex as Texture2D, out var renderTex))
                     newMat.SetTexture(propName, renderTex);
             });
+            
             return newMat;
         }
 
-        private static RenderTexture ComputeTextureOverrides(ColorChangerForUnity component)
+        private static ExtendedRenderTexture ComputeTextureOverrides(ColorChangerForUnity component)
         {
-            if (component.targetTexture == null) return null;
-            RenderTexture rawTexture = GetRawRenderTexture(component.targetTexture);
-            RenderTexture newTex = TextureUtils.GenerateRenderTexture(component);
+            if (component == null || component.targetTexture == null) return null;
+            ExtendedRenderTexture rawTexture = new ExtendedRenderTexture(component.targetTexture)
+                .Create(component.targetTexture);
+
+            ExtendedRenderTexture newTex = new ExtendedRenderTexture(component.targetTexture)
+                .Create();
 
             if (rawTexture == null || newTex == null)
             {
-                if (RenderTexture.active == rawTexture || RenderTexture.active == newTex) RenderTexture.active = null;
                 return null;
             }
 
             TextureUtils.ProcessTexture(rawTexture, newTex, component);
 
-            if (RenderTexture.active == rawTexture) RenderTexture.active = null;
-            rawTexture.DiscardContents();
-            Object.DestroyImmediate(rawTexture);
+            rawTexture.Dispose();
 
             return newTex;
-        }
-
-        private static RenderTexture GetRawRenderTexture(Texture2D source)
-        {
-            var renderTexture = new RenderTexture(source.width, source.height, 0);
-            renderTexture.enableRandomWrite = true;
-            var createResult = renderTexture.Create();
-            if (!createResult)
-            {
-                if (renderTexture != null) renderTexture.DiscardContents();
-                Object.DestroyImmediate(renderTexture);
-                return null;
-            }
-
-            Graphics.Blit(source, renderTexture);
-            return renderTexture;
         }
 
         //このノードはアバター1体につき1個作られる。OnFrameは、RenderGroupの中身分のみ呼ばれる
@@ -269,10 +256,8 @@ namespace net.puk06.ColorChanger.NDMF
                 {
                     MaterialUtils.ForEachTex(material, (texture, propName) =>
                     {
-                        if (texture is not RenderTexture rt) return;
-
-                        rt.DiscardContents();
-                        Object.DestroyImmediate(rt);
+                        if (texture is not ExtendedRenderTexture ert) return;
+                        ert.Dispose();
                     });
 
                     Object.DestroyImmediate(material);

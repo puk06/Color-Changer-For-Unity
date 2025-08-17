@@ -1,5 +1,6 @@
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -105,21 +106,15 @@ namespace net.puk06.ColorChanger.NDMF
 
         private Texture2D GetRawTexture(Texture2D source)
         {
-            RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.Default);
-            Graphics.Blit(source, rt);
+            Texture2D rawTexture2D = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
 
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = rt;
+            ExtendedRenderTexture.ProcessTemporary(source.width, source.height, (renderTexture) =>
+            {
+                rawTexture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+                rawTexture2D.Apply();
+            });
 
-            Texture2D readableTexture = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
-
-            readableTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            readableTexture.Apply();
-
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(rt);
-
-            return readableTexture;
+            return rawTexture2D;
         }
     }
 }

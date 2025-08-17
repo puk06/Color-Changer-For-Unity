@@ -93,40 +93,6 @@ namespace net.puk06.ColorChanger.Utils
         }
 
         /// <summary>
-        /// Component内のTargetTextureのRenderTextureを取得します。リリースは忘れずに！
-        /// </summary>
-        /// <param name="colorChanger"></param>
-        /// <returns></returns>
-        internal static RenderTexture GenerateRenderTexture(ColorChangerForUnity colorChanger)
-        {
-            var renderTexture = new RenderTexture(colorChanger.targetTexture.width, colorChanger.targetTexture.height, 0);
-            renderTexture.enableRandomWrite = true;
-            var createResult = renderTexture.Create();
-            if (!createResult)
-            {
-                if (renderTexture != null) renderTexture.DiscardContents();
-                Object.DestroyImmediate(renderTexture);
-                return null;
-            }
-
-            return renderTexture;
-        }
-
-        /// <summary>
-        /// Component内のTargetTextureのRenderTextureを取得します。リリースは忘れずに！
-        /// </summary>
-        /// <param name="colorChanger"></param>
-        /// <returns></returns>
-        internal static RenderTexture GenerateRenderTexture(Texture2D targetTexture)
-        {
-            var renderTexture = new RenderTexture(targetTexture.width, targetTexture.height, 0);
-            renderTexture.enableRandomWrite = true;
-            renderTexture.Create();
-
-            return renderTexture;
-        }
-
-        /// <summary>
         /// シーン上のオブジェクトで、渡されたテクスチャを使っているものを全て新しいテクスチャに置き換えます。
         /// </summary>
         /// <param name="oldTex"></param>
