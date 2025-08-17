@@ -185,5 +185,24 @@ namespace net.puk06.ColorChanger.Utils
                 .Distinct()
                 .ToHashSet();
         }
+
+        /// <summary>
+        /// Texture2DのRawTextureを取得します。内部でRenderTextureを使います。
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        internal static Texture2D GetRawTexture(Texture2D source)
+        {
+            Texture2D rawTexture2D = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
+
+            ExtendedRenderTexture.ProcessTemporary(source.width, source.height, (renderTexture) =>
+            {
+                Graphics.Blit(source, renderTexture);
+                rawTexture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+                rawTexture2D.Apply();
+            });
+
+            return rawTexture2D;
+        }
     }
 }

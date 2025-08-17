@@ -41,7 +41,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                 try
                 {
-                    Texture2D originalTexture = GetRawTexture(component.targetTexture);
+                    Texture2D originalTexture = TextureUtils.GetRawTexture(component.targetTexture);
                     Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
                     TextureUtils.ProcessTexture(originalTexture, newTexture, component);
@@ -102,19 +102,6 @@ namespace net.puk06.ColorChanger.NDMF
 
                 renderer.sharedMaterials = newMaterials;
             }
-        }
-
-        private Texture2D GetRawTexture(Texture2D source)
-        {
-            Texture2D rawTexture2D = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
-
-            ExtendedRenderTexture.ProcessTemporary(source.width, source.height, (renderTexture) =>
-            {
-                rawTexture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-                rawTexture2D.Apply();
-            });
-
-            return rawTexture2D;
         }
     }
 }

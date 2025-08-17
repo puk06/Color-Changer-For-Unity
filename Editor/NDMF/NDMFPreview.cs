@@ -111,7 +111,7 @@ namespace net.puk06.ColorChanger.NDMF
                 if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
 
                 // 元のテクスチャ、処理されたテクスチャのDictionary
-                var processedTextures = new Dictionary<Texture2D, ExtendedRenderTexture>();
+                var processedTextures = new Dictionary<Texture2D, Texture>();
 
                 // ターゲットテクスチャごとに分ける。これは複数同じテクスチャがあった時対策
                 var groupedComponents = enabledComponents
@@ -128,7 +128,7 @@ namespace net.puk06.ColorChanger.NDMF
                     }
 
                     // テクスチャを作る
-                    var processedTexture = ComputeTextureOverrides(firstComponent);
+                    var processedTexture = ComputeTextureOverrides(firstComponent); // CPUを付け足すことで、CPUモードに切り替わる。
                     if (processedTexture == null)
                     {
                         LogUtils.LogError($"Failed to process texture: '{firstComponent.name}'. This may be due to the platform not supporting GPU-based computation.");
@@ -162,14 +162,14 @@ namespace net.puk06.ColorChanger.NDMF
             }
         }
 
-        private Material ProcessMaterial(Material material, Dictionary<Texture2D, ExtendedRenderTexture> processedTextures)
+        private Material ProcessMaterial(Material material, Dictionary<Texture2D, Texture> processedTextures)
         {
             var newMat = new Material(material);
 
             MaterialUtils.ForEachTex(newMat, (tex, propName) =>
             {
-                if (processedTextures.TryGetValue(tex as Texture2D, out var renderTex))
-                    newMat.SetTexture(propName, renderTex);
+                if (processedTextures.TryGetValue(tex as Texture2D, out var texture))
+                    newMat.SetTexture(propName, texture);
             });
             
             return newMat;
@@ -178,22 +178,37 @@ namespace net.puk06.ColorChanger.NDMF
         private static ExtendedRenderTexture ComputeTextureOverrides(ColorChangerForUnity component)
         {
             if (component == null || component.targetTexture == null) return null;
-            ExtendedRenderTexture rawTexture = new ExtendedRenderTexture(component.targetTexture)
+
+            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(component.targetTexture)
                 .Create(component.targetTexture);
 
-            ExtendedRenderTexture newTex = new ExtendedRenderTexture(component.targetTexture)
+            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(component.targetTexture)
                 .Create();
 
-            if (rawTexture == null || newTex == null)
+            if (originalTexture == null || newTexture == null)
             {
                 return null;
             }
 
-            TextureUtils.ProcessTexture(rawTexture, newTex, component);
+            TextureUtils.ProcessTexture(originalTexture, newTexture, component);
 
-            rawTexture.Dispose();
+            originalTexture.Dispose();
 
-            return newTex;
+            return newTexture;
+        }
+
+        private static Texture2D ComputeTextureOverridesCPU(ColorChangerForUnity component)
+        {
+            if (component == null || component.targetTexture == null) return null;
+
+            Texture2D originalTexture = TextureUtils.GetRawTexture(component.targetTexture);
+            Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
+
+            TextureUtils.ProcessTexture(originalTexture, newTexture, component);
+
+            Object.DestroyImmediate(originalTexture);
+
+            return newTexture;
         }
 
         //このノードはアバター1体につき1個作られる。OnFrameは、RenderGroupの中身分のみ呼ばれる
@@ -256,8 +271,14 @@ namespace net.puk06.ColorChanger.NDMF
                 {
                     MaterialUtils.ForEachTex(material, (texture, propName) =>
                     {
-                        if (texture is not ExtendedRenderTexture ert) return;
-                        ert.Dispose();
+                        if (texture is ExtendedRenderTexture ert)
+                        {
+                            ert.Dispose();
+                        }
+                        else if (texture is Texture2D tex)
+                        {
+                            Object.DestroyImmediate(tex);
+                        }
                     });
 
                     Object.DestroyImmediate(material);

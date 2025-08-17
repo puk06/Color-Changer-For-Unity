@@ -357,7 +357,7 @@ namespace net.puk06.ColorChanger
 
             try
             {
-                originalTexture = ConvertToNonCompressed(colorChangerComponent.targetTexture);
+                originalTexture = TextureUtils.GetRawTexture(colorChangerComponent.targetTexture);
                 newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, true);
 
                 TextureUtils.ProcessTexture(originalTexture, newTexture, colorChangerComponent);
@@ -427,25 +427,6 @@ namespace net.puk06.ColorChanger
             AssetDatabase.Refresh();
 
             return savePath;
-        }
-
-        private Texture2D ConvertToNonCompressed(Texture2D source)
-        {
-            RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.Default);
-            Graphics.Blit(source, rt);
-
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = rt;
-
-            Texture2D readableTexture = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false, true);
-
-            readableTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            readableTexture.Apply();
-
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(rt);
-
-            return readableTexture;
         }
     }
 }
