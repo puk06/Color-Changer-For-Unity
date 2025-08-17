@@ -55,7 +55,7 @@ namespace net.puk06.ColorChanger
 
                     _foldoutStates[groupedComponent.Key].Main = EditorGUILayout.Foldout(
                         _foldoutStates[groupedComponent.Key].Main,
-                        $"テクスチャ: '{groupedComponent.Key.name}' ({groupedComponent.Count()})",
+                        $"テクスチャ: {groupedComponent.Key.name} ({groupedComponent.Count()})",
                         true,
                         UnityUtils.TitleStyle
                     );
@@ -79,7 +79,7 @@ namespace net.puk06.ColorChanger
                             EditorGUI.indentLevel = 3;
                             foreach (var component in enabledComponents)
                             {
-                                EditorGUILayout.ObjectField("コンポーネント", component, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }
@@ -96,7 +96,7 @@ namespace net.puk06.ColorChanger
                             EditorGUI.indentLevel = 3;
                             foreach (var component in disabledComponents)
                             {
-                                EditorGUILayout.ObjectField("コンポーネント", component, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }

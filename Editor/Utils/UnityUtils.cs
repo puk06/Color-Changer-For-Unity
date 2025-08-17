@@ -36,7 +36,14 @@ namespace net.puk06.ColorChanger.Utils
             }
         }
 
+        /// <summary>
+        /// Foldout用のタイトルスタイルです
+        /// </summary>
         internal static GUIStyle TitleStyle = _titleStyle;
+
+        /// <summary>
+        /// サブのFoldout用のタイトルスタイルです
+        /// </summary>
         internal static GUIStyle SubTitleStyle = _subTitleStyle;
     }
 }
