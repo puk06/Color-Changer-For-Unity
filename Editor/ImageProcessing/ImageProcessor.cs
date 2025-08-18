@@ -102,17 +102,19 @@ namespace net.puk06.ColorChanger.ImageProcessing
                 {
                     var previewResolution = Math.Clamp(_balanceModeConfiguration.V3GradientPreviewResolution, 2, 4096);
                     gradientRenderTexture = GradientToRenderTexture(_balanceModeConfiguration.V3GradientColor, previewResolution);
+
                     if (gradientRenderTexture == null)
                     {
-                        LogUtils.LogError("Failed to create gradient texture. Balance Mode has been reset to None.");
-                        colorComputeShader.SetInt("_balanceModeVersion", 0);
+                        LogUtils.LogError("Failed to create gradient texture. Please use CPU Preview if you want to view the preview.");
+
+                        colorComputeShader.SetTexture(kernel, "_balanceModeV3Gradient", DummyRenderTexture.Instance);
+                        colorComputeShader.SetInt("_balanceModeV3GradientResolution", 1);
                     }
                     else
                     {
                         colorComputeShader.SetTexture(kernel, "_balanceModeV3Gradient", gradientRenderTexture);
+                        colorComputeShader.SetInt("_balanceModeV3GradientResolution", previewResolution);
                     }
-
-                    colorComputeShader.SetInt("_balanceModeV3GradientResolution", previewResolution);
                 }
 
                 // 追加設定
