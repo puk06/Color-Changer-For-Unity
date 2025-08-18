@@ -79,7 +79,7 @@ namespace net.puk06.ColorChanger.Utils
                     targetTexture as Texture2D
                 );
             }
-            else if (typeof(T) == typeof(RenderTexture))
+            else if (typeof(T) == typeof(ExtendedRenderTexture))
             {
                 imageProcessor.ProcessAllPixelsGPU(
                     originalTexture as RenderTexture,
