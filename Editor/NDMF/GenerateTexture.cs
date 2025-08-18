@@ -1,6 +1,5 @@
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.Utils;
-using net.puk06.ColorChanger.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

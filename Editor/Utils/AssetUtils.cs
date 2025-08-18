@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace net.puk06.ColorChanger.Utils
