@@ -45,11 +45,8 @@ namespace net.puk06.ColorChanger.Models
             if (_isCreated) throw new Exception("RenderTexture has already created.");
             if (_disposed) throw new Exception("RenderTexture has already disposed.");
 
-            LogUtils.Log("Creating RenderTexture...");
-
             if (base.Create())
             {
-                LogUtils.Log("RenderTexture created successfully.");
                 _isCreated = true;
 
                 if (texture2D != null) Graphics.Blit(texture2D, this);
