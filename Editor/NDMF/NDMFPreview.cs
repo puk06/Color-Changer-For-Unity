@@ -24,7 +24,7 @@ namespace net.puk06.ColorChanger.NDMF
                 try
                 {
                     // アバター内にある全部のコンポーネント
-                    var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
+                    var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
                     if (components == null) continue;
 
                     // その中で参照されてる全てのテクスチャ (重複対策してあります)
