@@ -16,57 +16,63 @@ namespace net.puk06.ColorChanger.NDMF
         {
             var avatar = buildContext.AvatarRootObject;
 
-            Dictionary<Texture2D, Texture2D> processedDictionary = new();
-
             var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
             if (components == null || components.Length == 0) return;
 
-            // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
-            var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x));
-            if (enabledComponents == null || !enabledComponents.Any()) return;
-
-            // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
-            var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
-            if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
-
-            var avatarComponents = enabledComponents
-                .Where(c => avatarTexturesHashSet.Contains(c.targetTexture));
-            if (avatarComponents == null || !avatarComponents.Any()) return;
-
-            foreach (var component in avatarComponents)
+            try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                LogUtils.Log($"Texture Processing Start: '{component.name}'");
+                // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
+                var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x));
+                if (enabledComponents == null || !enabledComponents.Any()) return;
 
-                try
+                // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
+                var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
+                if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
+
+                var avatarComponents = enabledComponents
+                    .Where(c => avatarTexturesHashSet.Contains(c.targetTexture));
+                if (avatarComponents == null || !avatarComponents.Any()) return;
+
+                Dictionary<Texture2D, Texture2D> processedDictionary = new();
+
+                foreach (var component in avatarComponents)
                 {
-                    Texture2D originalTexture = TextureUtils.GetRawTexture(component.targetTexture);
-                    Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
+                    Stopwatch stopwatch = Stopwatch.StartNew();
+                    LogUtils.Log($"Texture Processing Start: '{component.name}'");
 
-                    TextureUtils.ProcessTexture(originalTexture, newTexture, component);
+                    try
+                    {
+                        Texture2D originalTexture = TextureUtils.GetRawTexture(component.targetTexture);
+                        Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
-                    AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
-                    processedDictionary.Add(component.targetTexture, newTexture);
+                        TextureUtils.ProcessTexture(originalTexture, newTexture, component);
 
-                    Object.DestroyImmediate(originalTexture);
-                    stopwatch.Stop();
+                        AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
+                        processedDictionary.Add(component.targetTexture, newTexture);
 
-                    LogUtils.Log($"Texture Processing Done: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms");
+                        Object.DestroyImmediate(originalTexture);
+                        stopwatch.Stop();
+
+                        LogUtils.Log($"Texture Processing Done: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms");
+                    }
+                    catch (Exception ex)
+                    {
+                        stopwatch.Stop();
+
+                        LogUtils.LogError($"Texture Processing Error: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms\n{ex}");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    stopwatch.Stop();
 
-                    LogUtils.LogError($"Texture Processing Error: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms\n" + ex);
-                }
+                Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>();
+                ReplaceTextures(renderers, processedDictionary);
             }
-
-            Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>();
-            ReplaceTextures(renderers, processedDictionary);
-
-            foreach (var component in components)
+            catch (Exception ex)
             {
-                Object.DestroyImmediate(component);
+                throw new Exception($"Error occured while processing avatar: '{avatar.name}'\n{ex}");
+            }
+            finally
+            {
+                DeleteAllComponents(components);
             }
         }
 
@@ -102,6 +108,14 @@ namespace net.puk06.ColorChanger.NDMF
                 }
 
                 renderer.sharedMaterials = newMaterials;
+            }
+        }
+
+        private void DeleteAllComponents(ColorChangerForUnity[] components)
+        {
+            foreach (var component in components)
+            {
+                Object.DestroyImmediate(component);
             }
         }
     }
