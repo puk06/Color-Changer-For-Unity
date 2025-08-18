@@ -55,6 +55,8 @@ namespace net.puk06.ColorChanger.NDMF
                 }
                 catch (Exception ex)
                 {
+                    stopwatch.Stop();
+
                     LogUtils.LogError($"Texture Processing Error: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms\n" + ex);
                 }
             }
