@@ -101,14 +101,14 @@ namespace net.puk06.ColorChanger.Utils
         {
             if (oldTex == null || string.IsNullOrEmpty(newTexPath))
             {
-                LogUtils.LogError("テクスチャがnullのため読み込まれませんでした。");
+                LogUtils.LogError("Failed to load texture because it was null.");
                 return;
             }
 
             Texture2D newTex = AssetDatabase.LoadAssetAtPath<Texture2D>(newTexPath);
             if (newTex == null)
             {
-                LogUtils.LogError($"指定されたパスからテクスチャを読み込めませんでした: {newTexPath}");
+                LogUtils.LogError($"Failed to load texture from the specified path: {newTexPath}");
                 return;
             }
 
@@ -139,7 +139,7 @@ namespace net.puk06.ColorChanger.Utils
                 }
             }
 
-            LogUtils.Log($"シーン上の{replacedCount} 個のマテリアルのテクスチャを差し替えました。");
+            LogUtils.Log($"Replaced textures for {replacedCount} materials in the scene.");
         }
 
         /// <summary>
