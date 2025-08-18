@@ -1,5 +1,6 @@
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Localization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -54,12 +55,18 @@ namespace net.puk06.ColorChanger.NDMF
                         stopwatch.Stop();
 
                         LogUtils.Log($"Texture Processing Done: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms");
+
+                        //NDMF Console Log
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", component.name, component.targetTexture.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                     catch (Exception ex)
                     {
                         stopwatch.Stop();
 
                         LogUtils.LogError($"Texture Processing Error: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms\n{ex}");
+
+                        //NDMF Console Log
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", component.name, component.targetTexture.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                 }
 
