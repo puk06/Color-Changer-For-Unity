@@ -19,7 +19,7 @@ namespace net.puk06.ColorChanger.NDMF
 
             Dictionary<Texture2D, Texture2D> processedDictionary = new();
 
-            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>();
+            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
             if (components == null || components.Length == 0) return;
 
             // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
@@ -63,7 +63,7 @@ namespace net.puk06.ColorChanger.NDMF
             Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>();
             ReplaceTextures(renderers, processedDictionary);
 
-            foreach (var component in avatar.GetComponentsInChildren<ColorChangerForUnity>())
+            foreach (var component in components)
             {
                 Object.DestroyImmediate(component);
             }
