@@ -116,6 +116,11 @@ namespace net.puk06.ColorChanger.ImageProcessing
                         colorComputeShader.SetInt("_balanceModeV3GradientResolution", previewResolution);
                     }
                 }
+                else
+                {
+                    colorComputeShader.SetTexture(kernel, "_balanceModeV3Gradient", DummyRenderTexture.Instance);
+                    colorComputeShader.SetInt("_balanceModeV3GradientResolution", 1);
+                }
 
                 // 追加設定
                 colorComputeShader.SetBool("_advancedColorModeEnabled", _isAdvancedColorMode);
