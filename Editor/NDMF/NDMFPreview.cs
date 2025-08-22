@@ -30,7 +30,7 @@ namespace net.puk06.ColorChanger.NDMF
                         .ToArray()
 #endif
                     ;
-                    if (components == null) continue;
+                    if (!components.Any()) continue;
 
                     // その中で参照されてる全てのテクスチャ (重複対策してあります)
                     var targetTextures = components
@@ -43,7 +43,7 @@ namespace net.puk06.ColorChanger.NDMF
                     var avatarRenderers = avatar.GetComponentsInChildren<Renderer>()?
                         .Where(r => r is MeshRenderer or SkinnedMeshRenderer)
                         .GroupBy(r => r.gameObject);
-                    if (avatarRenderers == null) continue;
+                    if (!avatarRenderers.Any()) continue;
 
                     var rendererList = new List<Renderer>();
                     foreach (var avatarRenderer in avatarRenderers)
@@ -91,21 +91,20 @@ namespace net.puk06.ColorChanger.NDMF
                 foreach (var component in components)
                 {
                     context.Observe(component);
-                    context.Observe(component.gameObject, o => o.activeSelf);
                 }
 
                 // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
-                var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x) && x.PreviewEnabled);
+                var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x, context) && x.PreviewEnabled);
                 if (enabledComponents == null || !enabledComponents.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
-                var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
+                var avatarTexturesHashSet = TextureUtils.GetRenderersTexturesHashSet(group.Renderers);
                 if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // 変更される予定のテクスチャ（アバター配下で使われている物だけ）
                 var targetTextures = enabledComponents
                     .Select(c => c.targetTexture)
-                    .Where(t => avatarTexturesHashSet.Contains(t))
+                    .Where(t => avatarTexturesHashSet.Contains(TextureUtils.GetReferenceTexture(t)))
                     .Distinct()
                     .ToArray();
                 if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));

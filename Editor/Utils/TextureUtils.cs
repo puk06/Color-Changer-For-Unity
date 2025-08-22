@@ -1,4 +1,5 @@
-﻿using net.puk06.ColorChanger.ImageProcessing;
+﻿using nadena.dev.ndmf;
+using net.puk06.ColorChanger.ImageProcessing;
 using net.puk06.ColorChanger.Models;
 using System;
 using System.Collections.Generic;
@@ -167,23 +168,43 @@ namespace net.puk06.ColorChanger.Utils
         }
 
         /// <summary>
-        /// アバター内の全てのテクスチャのハッシュセット(比較用)を取得します。
+        /// レンダラー内の全てのテクスチャのハッシュセット(比較用)を取得します。
         /// </summary>
-        /// <param name="avatar"></param>
+        /// <param name="renderers"></param>
         /// <returns></returns>
-        internal static HashSet<Texture2D> GetAvatarTexturesHashSet(GameObject avatar)
+        internal static HashSet<Texture2D> GetRenderersTexturesHashSet(IEnumerable<Renderer> renderers)
         {
-            return avatar.GetComponentsInChildren<Renderer>()
+            return renderers
                 .SelectMany(r => r.sharedMaterials)
                 .SelectMany(m =>
                 {
                     var textureList = new List<Texture>();
-                    MaterialUtils.ForEachTex(m, (texture, _) => textureList.Add(texture));
+                    MaterialUtils.ForEachTex(m, (texture, _) => textureList.Add(GetReferenceTexture(texture)));
                     return textureList;
                 })
                 .OfType<Texture2D>()
                 .Distinct()
                 .ToHashSet();
+        }
+
+        /// <summary>
+        /// アバター内のすべてのレンダラーを取得します。
+        /// </summary>
+        /// <param name="avatar"></param>
+        /// <returns></returns>
+        internal static Renderer[] GetRenderers(GameObject avatar)
+            => avatar.GetComponentsInChildren<Renderer>(true);
+
+        /// <summary>
+        /// 与えられたテクスチャの元のテクスチャを取得します。
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        internal static Texture GetReferenceTexture(Texture texture)
+        {
+            var referenceObject = ObjectRegistry.GetReference(texture);
+            if (referenceObject == null) return texture;
+            return referenceObject.Object as Texture;
         }
 
         /// <summary>

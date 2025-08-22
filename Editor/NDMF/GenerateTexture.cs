@@ -17,8 +17,13 @@ namespace net.puk06.ColorChanger.NDMF
         {
             var avatar = buildContext.AvatarRootObject;
 
-            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
-            if (components == null || components.Length == 0) return;
+            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true)
+#if USE_TEXTRANSTOOL
+                .Where(component => !component.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
+                .ToArray()
+#endif
+                ;
+            if (components == null || !components.Any()) return;
 
             try
             {
@@ -27,7 +32,8 @@ namespace net.puk06.ColorChanger.NDMF
                 if (enabledComponents == null || !enabledComponents.Any()) return;
 
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
-                var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
+                var avatarRenderers = TextureUtils.GetRenderers(avatar);
+                var avatarTexturesHashSet = TextureUtils.GetRenderersTexturesHashSet(avatarRenderers);
                 if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
 
                 var avatarComponents = enabledComponents
