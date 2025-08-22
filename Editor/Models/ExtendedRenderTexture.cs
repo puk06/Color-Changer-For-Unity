@@ -24,7 +24,7 @@ namespace net.puk06.ColorChanger.Models
         }
 
         /// <summary>
-        /// Texture2D のサイズの大きさの ExtendedRenderTexture を Initialize します。Createはこの時点では実行されません。
+        /// Texture のサイズの大きさの ExtendedRenderTexture を Initialize します。Createはこの時点では実行されません。
         /// 作成時、中身はコピーされません。中身をコピーしたい場合は <see cref="Create(Texture)"/> を使ってください。
         /// </summary>
         /// <param name="texture"></param>
@@ -35,7 +35,7 @@ namespace net.puk06.ColorChanger.Models
 
         /// <summary>
         /// RenderTextureを内部で作成します。すでにCreateが実行されていた際は例外を吐きます。
-        /// Texture2Dを渡すことで、作成時に自動的にコピーされます。
+        /// Textureを渡すことで、作成時に自動的にコピーされます。
         /// </summary>
         /// <param name="texture"></param>
         /// <returns></returns>
