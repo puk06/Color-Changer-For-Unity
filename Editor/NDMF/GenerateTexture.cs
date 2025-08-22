@@ -17,7 +17,12 @@ namespace net.puk06.ColorChanger.NDMF
         {
             var avatar = buildContext.AvatarRootObject;
 
-            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
+            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true)
+#if USE_TEXTRANSTOOL
+                .Where(component => !component.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
+                .ToArray()
+#endif
+                ;
             if (components == null || components.Length == 0) return;
 
             try
