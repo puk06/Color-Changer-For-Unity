@@ -23,7 +23,7 @@ namespace net.puk06.ColorChanger.NDMF
                 .ToArray()
 #endif
                 ;
-            if (components == null || components.Length == 0) return;
+            if (components == null || !components.Any()) return;
 
             try
             {
@@ -32,7 +32,8 @@ namespace net.puk06.ColorChanger.NDMF
                 if (enabledComponents == null || !enabledComponents.Any()) return;
 
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
-                var avatarTexturesHashSet = TextureUtils.GetAvatarTexturesHashSet(avatar);
+                var avatarRenderers = TextureUtils.GetRenderers(avatar);
+                var avatarTexturesHashSet = TextureUtils.GetRenderersTexturesHashSet(avatarRenderers);
                 if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
 
                 var avatarComponents = enabledComponents
