@@ -24,7 +24,11 @@ namespace net.puk06.ColorChanger.NDMF
                 try
                 {
                     // アバター内にある全部のコンポーネント
-                    var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
+                    var components = context.GetComponentsInChildren<ColorChangerForUnity>(avatar, true)
+#if USE_TEXTRANSTOOL
+                        .Where(component => !component.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
+#endif
+                    ;
                     if (components == null) continue;
 
                     // その中で参照されてる全てのテクスチャ (重複対策してあります)
@@ -63,6 +67,9 @@ namespace net.puk06.ColorChanger.NDMF
                     foreach (var component in components)
                     {
                         context.Observe(component, c => c.targetTexture);
+#if USE_TEXTRANSTOOL
+                        context.Observe(component, c => c.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>());
+#endif
                     }
 
                     // レンダラーリストは、コンポーネントによってアバター内のどれかのマテリアルテクスチャが参照されているレンダラーのリスト

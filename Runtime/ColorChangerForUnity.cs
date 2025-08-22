@@ -7,7 +7,7 @@ namespace net.puk06.ColorChanger
     [Serializable]
     public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly
 #if USE_TEXTRANSTOOL
-    ,net.rs64.TexTransTool.MultiLayerImage.IExternalToolCanBehaveAsGrabLayerV1
+        , net.rs64.TexTransTool.MultiLayerImage.IExternalToolCanBehaveAsGrabLayerV1
 #endif
     {
         public bool Enabled = true;
