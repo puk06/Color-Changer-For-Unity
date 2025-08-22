@@ -27,13 +27,14 @@ namespace net.puk06.ColorChanger.NDMF
                     var components = context.GetComponentsInChildren<ColorChangerForUnity>(avatar, true)
 #if USE_TEXTRANSTOOL
                         .Where(component => !component.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
+                        .ToArray()
 #endif
                     ;
                     if (components == null) continue;
 
                     // その中で参照されてる全てのテクスチャ (重複対策してあります)
                     var targetTextures = components
-                        .Select(c => c.targetTexture)
+                        .Select(c => context.Observe(c, c => c.targetTexture))
                         .Where(t => t != null)
                         .Distinct()
                         .ToArray();
@@ -66,7 +67,6 @@ namespace net.puk06.ColorChanger.NDMF
 
                     foreach (var component in components)
                     {
-                        context.Observe(component, c => c.targetTexture);
 #if USE_TEXTRANSTOOL
                         context.Observe(component, c => c.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>());
 #endif
