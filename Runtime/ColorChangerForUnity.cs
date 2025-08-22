@@ -1,12 +1,14 @@
 using UnityEngine;
 using net.puk06.ColorChanger.Models;
 using System;
-using net.rs64.TexTransTool.MultiLayerImage;
 
 namespace net.puk06.ColorChanger
 {
     [Serializable]
-    public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly, IExternalToolCanBehaveAsGrabLayerV1
+    public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly
+#if USE_TEXTRANSTOOL
+    ,net.rs64.TexTransTool.MultiLayerImage.IExternalToolCanBehaveAsGrabLayerV1
+#endif
     {
         public bool Enabled = true;
         public bool PreviewEnabled = true;
