@@ -25,10 +25,10 @@ namespace net.puk06.ColorChanger.Models
 
         /// <summary>
         /// Texture2D のサイズの大きさの ExtendedRenderTexture を Initialize します。Createはこの時点では実行されません。
-        /// 作成時、中身はコピーされません。中身をコピーしたい場合は <see cref="Create(Texture2D)"/> を使ってください。
+        /// 作成時、中身はコピーされません。中身をコピーしたい場合は <see cref="Create(Texture)"/> を使ってください。
         /// </summary>
         /// <param name="texture"></param>
-        public ExtendedRenderTexture(Texture2D texture)
+        public ExtendedRenderTexture(Texture texture)
             : this(texture.width, texture.height)
         {
         }
@@ -37,10 +37,10 @@ namespace net.puk06.ColorChanger.Models
         /// RenderTextureを内部で作成します。すでにCreateが実行されていた際は例外を吐きます。
         /// Texture2Dを渡すことで、作成時に自動的にコピーされます。
         /// </summary>
-        /// <param name="texture2D"></param>
+        /// <param name="texture"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ExtendedRenderTexture Create(Texture2D texture2D = null)
+        public ExtendedRenderTexture Create(Texture texture = null)
         {
             if (_isCreated) throw new Exception("RenderTexture has already created.");
             if (_disposed) throw new Exception("RenderTexture has already disposed.");
@@ -49,7 +49,7 @@ namespace net.puk06.ColorChanger.Models
             {
                 _isCreated = true;
 
-                if (texture2D != null) Graphics.Blit(texture2D, this);
+                if (texture != null) Graphics.Blit(texture, this);
             }
             else
             {

@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "net.puk06.color-changer.runtime",
-        "nadena.dev.ndmf"
+        "nadena.dev.ndmf",
+        "net.rs64.tex-trans-tool.runtime"
     ],
     "includePlatforms": [
         "Editor"

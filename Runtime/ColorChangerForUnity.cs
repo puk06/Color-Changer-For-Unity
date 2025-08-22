@@ -1,11 +1,12 @@
 using UnityEngine;
 using net.puk06.ColorChanger.Models;
 using System;
+using net.rs64.TexTransTool.MultiLayerImage;
 
 namespace net.puk06.ColorChanger
 {
     [Serializable]
-    public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly
+    public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly, IExternalToolCanBehaveAsGrabLayerV1
     {
         public bool Enabled = true;
         public bool PreviewEnabled = true;
@@ -17,5 +18,13 @@ namespace net.puk06.ColorChanger
 
         public BalanceModeConfiguration balanceModeConfiguration = new BalanceModeConfiguration();
         public AdvancedColorConfiguration advancedColorConfiguration = new AdvancedColorConfiguration();
+
+        /// <summary>
+        /// TTTのExternalToolAsLayer用のものです。
+        /// </summary>
+        public static Action<RenderTexture, ColorChangerForUnity> action;
+
+        public void GrabBlending(RenderTexture renderTexture)
+            => action(renderTexture, this);
     }
 }
