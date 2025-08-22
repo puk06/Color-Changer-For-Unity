@@ -129,6 +129,20 @@ namespace net.puk06.ColorChanger
 
                 EditorGUILayout.HelpBox("CPUレンダリングはGPUがプレビューに対応していなかったときのみ使用してください。\nCPUプレビューは毎回プレビューを作成するのに時間がかかります。扱いには注意してください。", MessageType.Warning);
                 previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle("CPUレンダリングの有効化", previewOnCPUButtonProp.boolValue);
+                
+#if USE_TEXTRANSTOOL
+                if (colorChangerComponent.gameObject.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>())
+                {
+                    EditorGUILayout.HelpBox("TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、CC4Uをレイヤーとして扱えます。", MessageType.Info);
+                    if (!colorChangerComponent.gameObject.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
+                    {
+                        if (GUILayout.Button("ExternalToolAsLayerコンポーネントを追加する"))
+                        {
+                            Undo.AddComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>(colorChangerComponent.gameObject);
+                        }
+                    }
+                }
+#endif
 
                 EditorGUI.indentLevel = 1;
             }
