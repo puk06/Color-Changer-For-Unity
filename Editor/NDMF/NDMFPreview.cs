@@ -162,6 +162,10 @@ namespace net.puk06.ColorChanger.NDMF
                         material => ProcessMaterial(material, processedTextures)
                     );
 
+                // RegisterReplacedObjectに登録
+                RegisterTextureReplace(processedTextures);
+                RegisterMaterialReplace(processedMaterials);
+
                 // 変換前、変換後のマテリアルテクスチャ、生成したテクスチャの配列をまとめたものを渡してあげる。
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials, processedTextures.Values));
             }
@@ -174,7 +178,7 @@ namespace net.puk06.ColorChanger.NDMF
 
         private Material ProcessMaterial(Material material, Dictionary<Texture2D, Texture> processedTextures)
         {
-            var newMat = new Material(material);
+            var newMat = Object.Instantiate(material);
 
             MaterialUtils.ForEachTex(newMat, (tex, propName) =>
             {
@@ -182,16 +186,22 @@ namespace net.puk06.ColorChanger.NDMF
                     newMat.SetTexture(propName, texture);
             });
 
-            RegisterReplace(processedTextures);
-
             return newMat;
         }
 
-        private void RegisterReplace(Dictionary<Texture2D, Texture> processedTextures)
+        private void RegisterTextureReplace(Dictionary<Texture2D, Texture> processedTextures)
         {
             foreach (var processedTexture in processedTextures)
             {
                 ObjectRegistry.RegisterReplacedObject(processedTexture.Key, processedTexture.Value);
+            }
+        }
+
+        private void RegisterMaterialReplace(Dictionary<Material, Material> processedMaterials)
+        {
+            foreach (var processedMaterial in processedMaterials)
+            {
+                ObjectRegistry.RegisterReplacedObject(processedMaterial.Key, processedMaterial.Value);
             }
         }
 

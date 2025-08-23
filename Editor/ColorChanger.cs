@@ -131,15 +131,27 @@ namespace net.puk06.ColorChanger
                 previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle("CPUレンダリングの有効化", previewOnCPUButtonProp.boolValue);
 
 #if USE_TEXTRANSTOOL
-                if (colorChangerComponent.gameObject.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>())
+                var mlicComponent = colorChangerComponent.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>();
+                var etalComponent = colorChangerComponent.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>();
+
+                if (mlicComponent && !etalComponent)
                 {
                     EditorGUILayout.HelpBox("TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、MultiLayerImageCanvasのレイヤーとして扱うことができます。", MessageType.Info);
-                    if (!colorChangerComponent.gameObject.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
+                    if (!etalComponent)
                     {
                         if (GUILayout.Button("ExternalToolAsLayerコンポーネントを追加する"))
                         {
                             Undo.AddComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>(colorChangerComponent.gameObject);
                         }
+                    }
+                }
+
+                if (!mlicComponent && etalComponent)
+                {
+                    EditorGUILayout.HelpBox("TexTransToolのMultiLayerImageCanvasが親オブジェクトにありません。\n通常通り動作するにはExternalToolAsLayerコンポーネントを外す必要があります。", MessageType.Warning);
+                    if (GUILayout.Button("ExternalToolAsLayerコンポーネントを削除する"))
+                    {
+                        Undo.DestroyObjectImmediate(etalComponent);
                     }
                 }
 #endif
