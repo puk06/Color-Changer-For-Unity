@@ -168,6 +168,25 @@ namespace net.puk06.ColorChanger.Utils
         }
 
         /// <summary>
+        /// レンダラー内の全てのテクスチャのオブジェクトリファレンスを取得します。
+        /// </summary>
+        /// <param name="renderers"></param>
+        /// <returns></returns>
+        internal static ObjectReference[] GetRenderersTexturesReferences(IEnumerable<Renderer> renderers)
+        {
+            return renderers
+                .SelectMany(r => r.sharedMaterials)
+                .SelectMany(m =>
+                {
+                    var referenceList = new List<ObjectReference>();
+                    MaterialUtils.ForEachTex(m, (texture, _) => referenceList.Add(NDMFUtils.GetReference(texture)));
+                    return referenceList;
+                })
+                .Distinct()
+                .ToArray();
+        }
+
+        /// <summary>
         /// レンダラー内の全てのテクスチャのハッシュセット(比較用)を取得します。
         /// </summary>
         /// <param name="renderers"></param>
@@ -179,7 +198,7 @@ namespace net.puk06.ColorChanger.Utils
                 .SelectMany(m =>
                 {
                     var textureList = new List<Texture>();
-                    MaterialUtils.ForEachTex(m, (texture, _) => textureList.Add(GetReferenceTexture(texture)));
+                    MaterialUtils.ForEachTex(m, (texture, _) => textureList.Add(texture));
                     return textureList;
                 })
                 .OfType<Texture2D>()
@@ -194,18 +213,6 @@ namespace net.puk06.ColorChanger.Utils
         /// <returns></returns>
         internal static Renderer[] GetRenderers(GameObject avatar)
             => avatar.GetComponentsInChildren<Renderer>(true);
-
-        /// <summary>
-        /// 与えられたテクスチャの元のテクスチャを取得します。
-        /// </summary>
-        /// <param name="texture"></param>
-        /// <returns></returns>
-        internal static Texture GetReferenceTexture(Texture texture)
-        {
-            var referenceObject = ObjectRegistry.GetReference(texture);
-            if (referenceObject == null) return texture;
-            return referenceObject.Object as Texture;
-        }
 
         /// <summary>
         /// Texture2DのRawTextureを取得します。内部でRenderTextureを使います。

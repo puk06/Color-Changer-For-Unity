@@ -97,14 +97,14 @@ namespace net.puk06.ColorChanger.NDMF
                 var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x, context) && x.PreviewEnabled);
                 if (enabledComponents == null || !enabledComponents.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
-                // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
-                var avatarTexturesHashSet = TextureUtils.GetRenderersTexturesHashSet(group.Renderers);
-                if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
+                // このアバター配下の全てのRendererが使っている全てのテクスチャのオブジェクトリファレンス一覧
+                var avatarTexturesReferences = TextureUtils.GetRenderersTexturesReferences(group.Renderers);
+                if (avatarTexturesReferences == null || !avatarTexturesReferences.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // 変更される予定のテクスチャ（アバター配下で使われている物だけ）
                 var targetTextures = enabledComponents
                     .Select(c => c.targetTexture)
-                    .Where(t => avatarTexturesHashSet.Contains(TextureUtils.GetReferenceTexture(t)))
+                    .Where(t => avatarTexturesReferences.Any(r => r.Equals(NDMFUtils.GetReference(t))))
                     .Distinct()
                     .ToArray();
                 if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
