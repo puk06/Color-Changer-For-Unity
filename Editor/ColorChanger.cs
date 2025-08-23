@@ -127,13 +127,13 @@ namespace net.puk06.ColorChanger
                 enabledButtonProp.boolValue = EditorGUILayout.Toggle("スクリプトの有効化", enabledButtonProp.boolValue);
                 previewEnabledButtonProp.boolValue = EditorGUILayout.Toggle("プレビューの有効化", previewEnabledButtonProp.boolValue);
 
-                EditorGUILayout.HelpBox("CPUレンダリングはGPUがプレビューに対応していなかったときのみ使用してください。\nCPUプレビューは毎回プレビューを作成するのに時間がかかります。扱いには注意してください。", MessageType.Warning);
+                EditorGUILayout.HelpBox("CPUレンダリングは、GPUがプレビューに対応していなかったときのみ使用してください。\nCPUプレビューは毎回プレビューを作成するのに時間がかかります。扱いには注意してください。", MessageType.Warning);
                 previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle("CPUレンダリングの有効化", previewOnCPUButtonProp.boolValue);
                 
 #if USE_TEXTRANSTOOL
                 if (colorChangerComponent.gameObject.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>())
                 {
-                    EditorGUILayout.HelpBox("TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、CC4Uをレイヤーとして扱えます。", MessageType.Info);
+                    EditorGUILayout.HelpBox("TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、MultiLayerImageCanvasのレイヤーとして扱うことができます。", MessageType.Info);
                     if (!colorChangerComponent.gameObject.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
                     {
                         if (GUILayout.Button("ExternalToolAsLayerコンポーネントを追加する"))
