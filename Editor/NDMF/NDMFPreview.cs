@@ -1,11 +1,11 @@
-﻿using nadena.dev.ndmf.preview;
-using net.puk06.ColorChanger.Utils;
-using net.puk06.ColorChanger.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using nadena.dev.ndmf.preview;
+using net.puk06.ColorChanger.Models;
+using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -180,7 +180,7 @@ namespace net.puk06.ColorChanger.NDMF
                 if (processedTextures.TryGetValue(tex as Texture2D, out var texture))
                     newMat.SetTexture(propName, texture);
             });
-            
+
             return newMat;
         }
 

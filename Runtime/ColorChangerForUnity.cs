@@ -1,6 +1,6 @@
-using UnityEngine;
-using net.puk06.ColorChanger.Models;
 using System;
+using net.puk06.ColorChanger.Models;
+using UnityEngine;
 
 namespace net.puk06.ColorChanger
 {

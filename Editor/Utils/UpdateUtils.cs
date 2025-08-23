@@ -1,11 +1,11 @@
-using net.puk06.ColorChanger.Models;
+using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using UnityEngine;
+using net.puk06.ColorChanger.Models;
 using UnityEditor;
-using System.Linq;
-using System;
 using UnityEditor.PackageManager;
+using UnityEngine;
 
 namespace net.puk06.ColorChanger.Utils
 {
@@ -70,7 +70,7 @@ namespace net.puk06.ColorChanger.Utils
             {
                 return request.Result.FirstOrDefault(pkg => pkg.name == packageName);
             }
-            
+
             return null;
         }
     }

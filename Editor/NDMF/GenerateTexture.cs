@@ -1,10 +1,10 @@
-using nadena.dev.ndmf;
-using net.puk06.ColorChanger.Utils;
-using net.puk06.ColorChanger.Localization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using nadena.dev.ndmf;
+using net.puk06.ColorChanger.Localization;
+using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;

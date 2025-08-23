@@ -1,6 +1,6 @@
-using net.puk06.ColorChanger.Utils;
 using System;
 using System.IO;
+using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -129,7 +129,7 @@ namespace net.puk06.ColorChanger
 
                 EditorGUILayout.HelpBox("CPUレンダリングは、GPUがプレビューに対応していなかったときのみ使用してください。\nCPUプレビューは毎回プレビューを作成するのに時間がかかります。扱いには注意してください。", MessageType.Warning);
                 previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle("CPUレンダリングの有効化", previewOnCPUButtonProp.boolValue);
-                
+
 #if USE_TEXTRANSTOOL
                 if (colorChangerComponent.gameObject.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>())
                 {
@@ -319,7 +319,7 @@ namespace net.puk06.ColorChanger
 
                     v3GradientProp.gradientValue = EditorGUILayout.GradientField("グラデーション", v3GradientProp.gradientValue);
                     v3GradientResolutionProp.intValue = EditorGUILayout.IntField("プレビュー解像度", v3GradientResolutionProp.intValue);
-                    
+
                     EditorGUI.indentLevel = 2;
                 }
             }
@@ -358,7 +358,7 @@ namespace net.puk06.ColorChanger
                 gammaProp.floatValue = EditorGUILayout.FloatField("ガンマ", gammaProp.floatValue);
                 exposureProp.floatValue = EditorGUILayout.FloatField("露出", exposureProp.floatValue);
                 transparencyProp.floatValue = EditorGUILayout.FloatField("透明度", transparencyProp.floatValue);
-                
+
                 EditorGUI.indentLevel = 1;
             }
 

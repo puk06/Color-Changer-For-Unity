@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
+using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
-using net.puk06.ColorChanger.Utils;
-using System.Collections.Generic;
 
 namespace net.puk06.ColorChanger
 {
