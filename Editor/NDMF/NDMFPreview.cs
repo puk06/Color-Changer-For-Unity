@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using nadena.dev.ndmf;
 using nadena.dev.ndmf.preview;
 using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
@@ -181,7 +182,17 @@ namespace net.puk06.ColorChanger.NDMF
                     newMat.SetTexture(propName, texture);
             });
 
+            RegisterReplace(processedTextures);
+
             return newMat;
+        }
+
+        private void RegisterReplace(Dictionary<Texture2D, Texture> processedTextures)
+        {
+            foreach (var processedTexture in processedTextures)
+            {
+                ObjectRegistry.RegisterReplacedObject(processedTexture.Key, processedTexture.Value);
+            }
         }
 
         private static ExtendedRenderTexture ComputeTextureOverrides(ColorChangerForUnity component)
