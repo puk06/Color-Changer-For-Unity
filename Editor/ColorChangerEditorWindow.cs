@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using net.puk06.ColorChanger.Localization;
 using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -27,12 +28,14 @@ namespace net.puk06.ColorChanger
 
         private void OnGUI()
         {
+            LocalizationUtils.GenerateLanguagePopup();
+
             //アバターを選ぶ欄
             var avatars = FindObjectsOfType<VRC_AvatarDescriptor>().Select(c => c.gameObject).ToArray();
             if (avatars.Length == 0) return;
 
             _selectedAvatarIndex = Mathf.Clamp(_selectedAvatarIndex, 0, avatars.Length - 1);
-            _selectedAvatarIndex = EditorGUILayout.Popup("アバター", _selectedAvatarIndex, avatars.Select(a => a.name).ToArray());
+            _selectedAvatarIndex = EditorGUILayout.Popup(LocalizationManager.Get("editorwindow.componentmanager.avatar"), _selectedAvatarIndex, avatars.Select(a => a.name).ToArray());
 
             if (_selectedAvatarIndex >= 0 && _selectedAvatarIndex < avatars.Length && avatars[_selectedAvatarIndex] != null)
             {
@@ -54,7 +57,7 @@ namespace net.puk06.ColorChanger
 
                     _foldoutStates[groupedComponent.Key].Main = EditorGUILayout.Foldout(
                         _foldoutStates[groupedComponent.Key].Main,
-                        $"テクスチャ: {groupedComponent.Key.name} ({groupedComponent.Count()})",
+                        LocalizationManager.Get("editorwindow.componentmanager.texture", groupedComponent.Key.name, groupedComponent.Count().ToString()),
                         true,
                         UnityUtils.TitleStyle
                     );
@@ -68,7 +71,7 @@ namespace net.puk06.ColorChanger
 
                         _foldoutStates[groupedComponent.Key].Enabled = EditorGUILayout.Foldout(
                             _foldoutStates[groupedComponent.Key].Enabled,
-                            $"有効なコンポーネント ({enabledComponents.Count()})",
+                            LocalizationManager.Get("editorwindow.componentmanager.enabledcomponents", enabledComponents.Count().ToString()),
                             true,
                             UnityUtils.SubTitleStyle
                         );
@@ -85,7 +88,7 @@ namespace net.puk06.ColorChanger
 
                         _foldoutStates[groupedComponent.Key].Disabled = EditorGUILayout.Foldout(
                             _foldoutStates[groupedComponent.Key].Disabled,
-                            $"無効なコンポーネント ({disabledComponents.Count()})",
+                            LocalizationManager.Get("editorwindow.componentmanager.disabledcomponents", disabledComponents.Count().ToString()),
                             true,
                             UnityUtils.SubTitleStyle
                         );

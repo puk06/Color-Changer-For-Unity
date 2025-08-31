@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using net.puk06.ColorChanger.Localization;
 using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -67,6 +68,8 @@ namespace net.puk06.ColorChanger
                 GUI.DrawTexture(rect, logoTexture, ScaleMode.ScaleToFit);
             }
 
+            LocalizationUtils.GenerateLanguagePopup();
+
             ColorChangerForUnity comp = (ColorChangerForUnity)target;
 
             var componentIcon = AssetUtils.Icon;
@@ -74,7 +77,7 @@ namespace net.puk06.ColorChanger
 
             if (comp != null && comp.GetComponentInParent<VRC_AvatarDescriptor>() == null)
             {
-                EditorGUILayout.HelpBox("このオブジェクトはアバターの子オブジェクトとして配置する必要があります。", MessageType.Error);
+                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.childObject.warning"), MessageType.Error);
             }
             else
             {
@@ -111,7 +114,7 @@ namespace net.puk06.ColorChanger
 
             showColorChangerSettings = EditorGUILayout.Foldout(
                 showColorChangerSettings,
-                "スクリプト設定",
+                LocalizationManager.Get("editorwindow.scriptsetting"),
                 true,
                 UnityUtils.TitleStyle
             );
@@ -124,11 +127,11 @@ namespace net.puk06.ColorChanger
                 SerializedProperty previewEnabledButtonProp = serializedObject.FindProperty("PreviewEnabled");
                 SerializedProperty previewOnCPUButtonProp = serializedObject.FindProperty("PreviewOnCPU");
 
-                enabledButtonProp.boolValue = EditorGUILayout.Toggle("スクリプトの有効化", enabledButtonProp.boolValue);
-                previewEnabledButtonProp.boolValue = EditorGUILayout.Toggle("プレビューの有効化", previewEnabledButtonProp.boolValue);
+                enabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.enable"), enabledButtonProp.boolValue);
+                previewEnabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.previewenable"), previewEnabledButtonProp.boolValue);
 
-                EditorGUILayout.HelpBox("CPUレンダリングは、GPUがプレビューに対応していなかったときのみ使用してください。\nCPUプレビューは毎回プレビューを作成するのに時間がかかります。扱いには注意してください。", MessageType.Warning);
-                previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle("CPUレンダリングの有効化", previewOnCPUButtonProp.boolValue);
+                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.scriptsetting.cpurendering.warning"), MessageType.Warning);
+                previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.cpurendering.enable"), previewOnCPUButtonProp.boolValue);
 
 #if USE_TEXTRANSTOOL
                 var mlicComponent = colorChangerComponent.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>();
@@ -136,10 +139,10 @@ namespace net.puk06.ColorChanger
 
                 if (mlicComponent && !etalComponent)
                 {
-                    EditorGUILayout.HelpBox("TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、MultiLayerImageCanvasのレイヤーとして扱うことができます。", MessageType.Info);
+                    EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.scriptsetting.mlic.info"), MessageType.Info);
                     if (!etalComponent)
                     {
-                        if (GUILayout.Button("ExternalToolAsLayerコンポーネントを追加する"))
+                        if (GUILayout.Button(LocalizationManager.Get("editorwindow.scriptsetting.mlic.add")))
                         {
                             Undo.AddComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>(colorChangerComponent.gameObject);
                         }
@@ -148,8 +151,8 @@ namespace net.puk06.ColorChanger
 
                 if (!mlicComponent && etalComponent)
                 {
-                    EditorGUILayout.HelpBox("TexTransToolのMultiLayerImageCanvasが親オブジェクトにありません。\n通常通り動作するにはExternalToolAsLayerコンポーネントを外す必要があります。", MessageType.Warning);
-                    if (GUILayout.Button("ExternalToolAsLayerコンポーネントを削除する"))
+                    EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.scriptsetting.mlic.warning"), MessageType.Warning);
+                    if (GUILayout.Button(LocalizationManager.Get("editorwindow.scriptsetting.mlic.remove")))
                     {
                         Undo.DestroyObjectImmediate(etalComponent);
                     }
@@ -171,14 +174,14 @@ namespace net.puk06.ColorChanger
 
             showTextureSettings = EditorGUILayout.Foldout(
                 showTextureSettings,
-                "テクスチャ設定",
+                LocalizationManager.Get("editorwindow.texturesetting"),
                 true,
                 UnityUtils.TitleStyle
             );
 
             if (showTextureSettings)
             {
-                targetTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField("適用したいテクスチャ", (Texture2D)targetTextureProp.objectReferenceValue, typeof(Texture2D), true);
+                targetTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationManager.Get("editorwindow.texturesetting.target"), (Texture2D)targetTextureProp.objectReferenceValue, typeof(Texture2D), true);
 
                 if (colorChangerComponent.targetTexture != null)
                 {
@@ -219,7 +222,7 @@ namespace net.puk06.ColorChanger
 
             showColorSettings = EditorGUILayout.Foldout(
                 showColorSettings,
-                "色設定",
+                LocalizationManager.Get("editorwindow.colorsetting"),
                 true,
                 UnityUtils.TitleStyle
             );
@@ -228,8 +231,8 @@ namespace net.puk06.ColorChanger
             {
                 EditorGUI.indentLevel = 2;
 
-                previousColorProp.colorValue = EditorGUILayout.ColorField("変更前の色", previousColorProp.colorValue);
-                newColorProp.colorValue = EditorGUILayout.ColorField("変更後の色", newColorProp.colorValue);
+                previousColorProp.colorValue = EditorGUILayout.ColorField(LocalizationManager.Get("editorwindow.colorsetting.previouscolor"), previousColorProp.colorValue);
+                newColorProp.colorValue = EditorGUILayout.ColorField(LocalizationManager.Get("editorwindow.colorsetting.newcolor"), newColorProp.colorValue);
 
                 EditorGUI.indentLevel = 1;
             }
@@ -239,11 +242,6 @@ namespace net.puk06.ColorChanger
             EditorGUILayout.EndVertical();
         }
 
-        private static readonly GUIContent BalanceModeLabel = new GUIContent(
-            "バランスモード",
-            "色変更の計算式を、テクスチャ改変に適した形式に切り替えます。"
-        );
-
         private void DrawBalanceModeSettingsGUI()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -252,7 +250,7 @@ namespace net.puk06.ColorChanger
 
             showBalanceModeSettings = EditorGUILayout.Foldout(
                 showBalanceModeSettings,
-                "バランスモード設定",
+                LocalizationManager.Get("editorwindow.balancemode.setting"),
                 true,
                 UnityUtils.TitleStyle
             );
@@ -263,12 +261,16 @@ namespace net.puk06.ColorChanger
 
                 SerializedProperty modeVersionProp = balanceModeConfigProp.FindPropertyRelative("ModeVersion");
                 modeVersionProp.intValue = (int)(BalanceModeSettings)EditorGUILayout.EnumPopup(
-                    BalanceModeLabel, (BalanceModeSettings)modeVersionProp.intValue
+                    new GUIContent(
+                        LocalizationManager.Get("editorwindow.balancemode"),
+                        LocalizationManager.Get("editorwindow.balancemode.description")
+                    ),
+                    (BalanceModeSettings)modeVersionProp.intValue
                 );
 
                 showBalanceModeV1Settings = EditorGUILayout.Foldout(
                     showBalanceModeV1Settings,
-                    "バランスモードV1",
+                    LocalizationManager.Get("editorwindow.balancemode.v1"),
                     true,
                     UnityUtils.SubTitleStyle
                 );
@@ -277,20 +279,20 @@ namespace net.puk06.ColorChanger
                 {
                     EditorGUI.indentLevel = 3;
 
-                    EditorGUILayout.HelpBox("選んだ色と各ピクセルの色の距離、およびその延長線上の位置から変化率を計算します。\nデメリット: RGB空間の端に近い色は変化が小さくなります。", MessageType.Info);
+                    EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v1.description"), MessageType.Info);
 
                     SerializedProperty v1WeightProp = balanceModeConfigProp.FindPropertyRelative("V1Weight");
                     SerializedProperty v1MinValueProp = balanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
 
-                    v1WeightProp.floatValue = EditorGUILayout.FloatField("変化率グラフの重み", v1WeightProp.floatValue);
-                    v1MinValueProp.floatValue = EditorGUILayout.FloatField("変化率グラフの最低値", v1MinValueProp.floatValue);
+                    v1WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.weight"), v1WeightProp.floatValue);
+                    v1MinValueProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.minvalue"), v1MinValueProp.floatValue);
 
                     EditorGUI.indentLevel = 2;
                 }
 
                 showBalanceModeV2Settings = EditorGUILayout.Foldout(
                     showBalanceModeV2Settings,
-                    "バランスモードV2",
+                    LocalizationManager.Get("editorwindow.balancemode.v2"),
                     true,
                     UnityUtils.SubTitleStyle
                 );
@@ -299,24 +301,24 @@ namespace net.puk06.ColorChanger
                 {
                     EditorGUI.indentLevel = 3;
 
-                    EditorGUILayout.HelpBox("選んだ色を中心に球状に色の変化率を計算し、半径の位置を基準とします。\nデメリット: RGB空間の制限を受けませんが、設定が少し複雑です。", MessageType.Info);
+                    EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v2.description"), MessageType.Info);
 
                     SerializedProperty v2RadiusProp = balanceModeConfigProp.FindPropertyRelative("V2Radius");
                     SerializedProperty v2WeightProp = balanceModeConfigProp.FindPropertyRelative("V2Weight");
                     SerializedProperty v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
                     SerializedProperty v2IncludeOutsideProp = balanceModeConfigProp.FindPropertyRelative("V2IncludeOutside");
 
-                    v2RadiusProp.floatValue = EditorGUILayout.FloatField("球の半径の最大値", v2RadiusProp.floatValue);
-                    v2WeightProp.floatValue = EditorGUILayout.FloatField("変化率グラフの重み", v2WeightProp.floatValue);
-                    v2MinValueProp.floatValue = EditorGUILayout.FloatField("変化率グラフの最低値", v2MinValueProp.floatValue);
-                    v2IncludeOutsideProp.boolValue = EditorGUILayout.Toggle("範囲外にも最低値を適用する", v2IncludeOutsideProp.boolValue);
+                    v2RadiusProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.radius"), v2RadiusProp.floatValue);
+                    v2WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.weight"), v2WeightProp.floatValue);
+                    v2MinValueProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.minvalue"), v2MinValueProp.floatValue);
+                    v2IncludeOutsideProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.balancemode.v2.includeoutside"), v2IncludeOutsideProp.boolValue);
 
                     EditorGUI.indentLevel = 2;
                 }
 
                 showBalanceModeV3Settings = EditorGUILayout.Foldout(
                     showBalanceModeV3Settings,
-                    "バランスモードV3",
+                    LocalizationManager.Get("editorwindow.balancemode.v3"),
                     true,
                     UnityUtils.SubTitleStyle
                 );
@@ -325,12 +327,13 @@ namespace net.puk06.ColorChanger
                 {
                     EditorGUI.indentLevel = 3;
 
-                    EditorGUILayout.HelpBox("設定されたグラデーションに沿って、ピクセルの明るさから変化率を決めます。\nデメリット: 色が均一に変わりますが、意図しない部分も変化する可能性があります。", MessageType.Info);
+                    EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.description"), MessageType.Info);
+
                     SerializedProperty v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
                     SerializedProperty v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
 
-                    v3GradientProp.gradientValue = EditorGUILayout.GradientField("グラデーション", v3GradientProp.gradientValue);
-                    v3GradientResolutionProp.intValue = EditorGUILayout.IntField("プレビュー解像度", v3GradientResolutionProp.intValue);
+                    v3GradientProp.gradientValue = EditorGUILayout.GradientField(LocalizationManager.Get("editorwindow.balancemode.v3.gradient"), v3GradientProp.gradientValue);
+                    v3GradientResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.previewresolution"), v3GradientResolutionProp.intValue);
 
                     EditorGUI.indentLevel = 2;
                 }
@@ -352,7 +355,7 @@ namespace net.puk06.ColorChanger
             // インデントリセット
             EditorGUI.indentLevel = 1;
 
-            showAdvancedColorSettings = EditorGUILayout.Foldout(showAdvancedColorSettings, "色の追加設定", true, titleStyle);
+            showAdvancedColorSettings = EditorGUILayout.Foldout(showAdvancedColorSettings, LocalizationManager.Get("editorwindow.advancedsettings"), true, titleStyle);
             if (showAdvancedColorSettings)
             {
                 EditorGUI.indentLevel = 2;
@@ -364,12 +367,12 @@ namespace net.puk06.ColorChanger
                 SerializedProperty exposureProp = advancedColorConfigProp.FindPropertyRelative("Exposure");
                 SerializedProperty transparencyProp = advancedColorConfigProp.FindPropertyRelative("Transparency");
 
-                enabledProp.boolValue = EditorGUILayout.Toggle("有効", enabledProp.boolValue);
-                brightnessProp.floatValue = EditorGUILayout.FloatField("明るさ", brightnessProp.floatValue);
-                contrastProp.floatValue = EditorGUILayout.FloatField("コントラスト", contrastProp.floatValue);
-                gammaProp.floatValue = EditorGUILayout.FloatField("ガンマ", gammaProp.floatValue);
-                exposureProp.floatValue = EditorGUILayout.FloatField("露出", exposureProp.floatValue);
-                transparencyProp.floatValue = EditorGUILayout.FloatField("透明度", transparencyProp.floatValue);
+                enabledProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.advancedsettings.enable"), enabledProp.boolValue);
+                brightnessProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.brightness"), brightnessProp.floatValue);
+                contrastProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.contrast"), contrastProp.floatValue);
+                gammaProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.gamma"), gammaProp.floatValue);
+                exposureProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.exposure"), exposureProp.floatValue);
+                transparencyProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.transparency"), transparencyProp.floatValue);
 
                 EditorGUI.indentLevel = 1;
             }
@@ -381,8 +384,8 @@ namespace net.puk06.ColorChanger
         private void DrawTextureOutputGUI(ColorChangerForUnity colorChangerComponent)
         {
             EditorGUI.indentLevel = 0;
-            EditorGUILayout.HelpBox("テクスチャはビルド時に自動で非破壊で作成、適用されます。\nテクスチャ画像の細かな修正が必要な場合はテクスチャを出力して各自で編集してください。", MessageType.Warning);
-            if (GUILayout.Button("テクスチャ出力(非推奨)", GUILayout.ExpandWidth(true)))
+            EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.textureoutput.warning"), MessageType.Warning);
+            if (GUILayout.Button(LocalizationManager.Get("editorwindow.textureoutput.button"), GUILayout.ExpandWidth(true)))
             {
                 GenerateTexture(colorChangerComponent);
             }
@@ -392,7 +395,7 @@ namespace net.puk06.ColorChanger
         {
             if (colorChangerComponent.targetTexture == null)
             {
-                LogUtils.LogError("ターゲットテクスチャが選択されていません。");
+                LogUtils.LogError(LocalizationManager.Get("editorwindow.generatetexture.missingtexture"));
                 return;
             }
 
@@ -409,10 +412,10 @@ namespace net.puk06.ColorChanger
                 string savedPath = SaveTexture(colorChangerComponent.targetTexture, newTexture);
 
                 bool confirm = EditorUtility.DisplayDialog(
-                    "確認",
-                    "テクスチャの作成が完了しました。\nこのテクスチャを使用しているマテリアルを、現在のシーン内で更新しますか？",
-                    "はい",
-                    "いいえ"
+                    LocalizationManager.Get("editorwindow.generatetexture.success.confirm"),
+                    LocalizationManager.Get("editorwindow.generatetexture.success"),
+                    LocalizationManager.Get("editorwindow.generatetexture.success.yes"),
+                    LocalizationManager.Get("editorwindow.generatetexture.success.no")
                 );
 
                 if (string.IsNullOrEmpty(savedPath)) return;
@@ -426,7 +429,7 @@ namespace net.puk06.ColorChanger
             }
             catch (Exception ex)
             {
-                LogUtils.LogError($"Failed to process texture: '{colorChangerComponent.name}'\n{ex}");
+                LogUtils.LogError(LocalizationManager.Get("editorwindow.generatetexture.failed", colorChangerComponent.name, ex.ToString()));
             }
             finally
             {
@@ -440,7 +443,7 @@ namespace net.puk06.ColorChanger
             string originalPath = AssetDatabase.GetAssetPath(originalTexture);
             if (string.IsNullOrEmpty(originalPath))
             {
-                LogUtils.LogError("元テクスチャのパスが取得できません");
+                LogUtils.LogError(LocalizationManager.Get("editorwindow.generatetexture.save.missingpath"));
                 return string.Empty;
             }
 
@@ -460,12 +463,12 @@ namespace net.puk06.ColorChanger
             byte[] pngData = newTexture.EncodeToPNG();
             if (pngData == null)
             {
-                LogUtils.LogError("PNGデータのエンコードに失敗しました");
+                LogUtils.LogError(LocalizationManager.Get("editorwindow.generatetexture.save.encodefailed"));
                 return string.Empty;
             }
 
             File.WriteAllBytes(savePath, pngData);
-            LogUtils.Log($"テクスチャを保存しました: {savePath}");
+            LogUtils.Log(LocalizationManager.Get("editorwindow.generatetexture.save.success", savePath));
 
             AssetDatabase.ImportAsset(savePath);
             AssetDatabase.Refresh();
