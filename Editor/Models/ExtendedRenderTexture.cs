@@ -16,8 +16,9 @@ namespace net.puk06.ColorChanger.Models
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public ExtendedRenderTexture(int width, int height)
-            : base(width, height, 0, RenderTextureFormat.ARGB32)
+        /// <param name="readWrite"></param>
+        public ExtendedRenderTexture(int width, int height, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB)
+            : base(width, height, 0, RenderTextureFormat.ARGB32, readWrite)
         {
             enableRandomWrite = true;
             wrapMode = TextureWrapMode.Clamp;
@@ -28,8 +29,9 @@ namespace net.puk06.ColorChanger.Models
         /// 作成時、中身はコピーされません。中身をコピーしたい場合は <see cref="Create(Texture)"/> を使ってください。
         /// </summary>
         /// <param name="texture"></param>
-        public ExtendedRenderTexture(Texture texture)
-            : this(texture.width, texture.height)
+        /// <param name="readWrite"></param>
+        public ExtendedRenderTexture(Texture texture, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB)
+            : this(texture.width, texture.height, readWrite)
         {
         }
 
@@ -69,7 +71,7 @@ namespace net.puk06.ColorChanger.Models
         /// <param name="action"></param>
         public static void ProcessTemporary(int width, int height, Action<RenderTexture> action)
         {
-            RenderTexture temporaryRenderTexture = GetTemporary(width, height, 0, RenderTextureFormat.Default);
+            RenderTexture temporaryRenderTexture = GetTemporary(width, height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.sRGB);
 
             RenderTexture previousActiveRenderTexture = active;
             active = temporaryRenderTexture;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace net.puk06.ColorChanger.NDMF
                         .ToArray();
 
                     // アバター内の全てのレンダラー
-                    var avatarRenderers = avatar.GetComponentsInChildren<Renderer>()?
+                    var avatarRenderers = avatar.GetComponentsInChildren<Renderer>()
                         .Where(r => r is MeshRenderer or SkinnedMeshRenderer)
                         .GroupBy(r => r.gameObject);
                     if (!avatarRenderers.Any()) continue;
@@ -124,12 +125,12 @@ namespace net.puk06.ColorChanger.NDMF
 
                     if (groupedComponent.Count() >= 2)
                     {
-                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key.name}' (using settings from '{firstComponent.gameObject.name}')");
+                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.gameObject.name}')");
                     }
 
                     // テクスチャを作る
                     // CPUプレビューがオンのときはCPUでテクスチャが作成される。
-                    Texture processedTexture = null;
+                    Texture? processedTexture = null;
                     if (firstComponent.PreviewOnCPU)
                     {
                         processedTexture = ComputeTextureOverridesCPU(firstComponent);
@@ -145,7 +146,7 @@ namespace net.puk06.ColorChanger.NDMF
                         continue;
                     }
 
-                    processedTextures.Add(groupedComponent.Key, processedTexture);
+                    processedTextures.Add(groupedComponent.Key!, processedTexture);
                 }
 
                 // テクスチャが含まれているマテリアルすべてを探す。
@@ -182,7 +183,10 @@ namespace net.puk06.ColorChanger.NDMF
 
             MaterialUtils.ForEachTex(newMat, (tex, propName) =>
             {
-                if (processedTextures.TryGetValue(tex as Texture2D, out var texture))
+                Texture2D? tex2D = tex as Texture2D;
+                if (tex2D == null) return;
+                
+                if (processedTextures.TryGetValue(tex2D, out var texture))
                     newMat.SetTexture(propName, texture);
             });
 
@@ -205,7 +209,7 @@ namespace net.puk06.ColorChanger.NDMF
             }
         }
 
-        private static ExtendedRenderTexture ComputeTextureOverrides(ColorChangerForUnity component)
+        private static ExtendedRenderTexture? ComputeTextureOverrides(ColorChangerForUnity component)
         {
             if (component == null || component.targetTexture == null) return null;
 
@@ -227,7 +231,7 @@ namespace net.puk06.ColorChanger.NDMF
             return newTexture;
         }
 
-        private static Texture2D ComputeTextureOverridesCPU(ColorChangerForUnity component)
+        private static Texture2D? ComputeTextureOverridesCPU(ColorChangerForUnity component)
         {
             if (component == null || component.targetTexture == null) return null;
 
@@ -241,19 +245,19 @@ namespace net.puk06.ColorChanger.NDMF
             return newTexture;
         }
 
-        //このノードはアバター1体につき1個作られる。OnFrameは、RenderGroupの中身分のみ呼ばれる
+        // このノードはアバター1体につき1個作られる。OnFrameは、RenderGroupの中身分のみ呼ばれる
         private class TextureReplacerNode : IRenderFilterNode, IDisposable
         {
-            private readonly Dictionary<Material, Material> _processedMaterialsDictionary;
-            private readonly IEnumerable<Texture> _generatedTextures;
+            private readonly Dictionary<Material, Material>? _processedMaterialsDictionary;
+            private readonly IEnumerable<Texture>? _generatedTextures;
 
             public RenderAspects WhatChanged { get; private set; } = RenderAspects.Texture & RenderAspects.Material;
 
-            public TextureReplacerNode(Dictionary<Material, Material> materialDictionary, IEnumerable<Texture> generatedTextures)
+            public TextureReplacerNode(Dictionary<Material, Material>? materialDictionary, IEnumerable<Texture>? generatedTextures)
             {
                 if (materialDictionary != null)
                 {
-                    _processedMaterialsDictionary = materialDictionary; // ここで渡されるものは、OnFrameで、置き換えられるものがあるのが確定したマテリアルと、その処理済みマテリアルのDictionaryである
+                    _processedMaterialsDictionary = materialDictionary; // ここで渡されるものは、OnFrameで置き換えられるものがあるのが確定したマテリアルと、その処理済みマテリアルのDictionaryである
                 }
 
                 if (generatedTextures != null)
@@ -277,9 +281,9 @@ namespace net.puk06.ColorChanger.NDMF
                 }
             }
 
-            private Material[] GenerateSwappedMaterials(Material[] proxyMaterials)
+            private Material?[] GenerateSwappedMaterials(Material[] proxyMaterials)
             {
-                var processedMaterials = new Material[proxyMaterials.Length];
+                var processedMaterials = new Material?[proxyMaterials.Length];
 
                 for (int i = 0; i < proxyMaterials.Length; i++)
                 {
@@ -290,7 +294,7 @@ namespace net.puk06.ColorChanger.NDMF
                         continue;
                     }
 
-                    if (_processedMaterialsDictionary.TryGetValue(proxyMaterial, out var processedMaterial))
+                    if (_processedMaterialsDictionary != null && _processedMaterialsDictionary.TryGetValue(proxyMaterial, out var processedMaterial))
                     {
                         processedMaterials[i] = processedMaterial;
                     }

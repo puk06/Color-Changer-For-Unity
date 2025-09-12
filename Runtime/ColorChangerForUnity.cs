@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using net.puk06.ColorChanger.Models;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace net.puk06.ColorChanger
         public bool Enabled = true;
         public bool PreviewEnabled = true;
         public bool PreviewOnCPU = false;
-        public Texture2D targetTexture;
+        public Texture2D? targetTexture = null;
 
         public Color previousColor = Color.white;
         public Color newColor = Color.white;
@@ -24,7 +25,7 @@ namespace net.puk06.ColorChanger
         /// <summary>
         /// TTTのExternalToolAsLayer用のものです。
         /// </summary>
-        public static Action<RenderTexture, ColorChangerForUnity> action;
+        public static Action<RenderTexture, ColorChangerForUnity> action = null!;
 
         public void GrabBlending(RenderTexture renderTexture)
             => action(renderTexture, this);

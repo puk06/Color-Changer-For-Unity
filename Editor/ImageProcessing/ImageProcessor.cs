@@ -1,3 +1,4 @@
+#nullable enable
 using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using System;
@@ -54,8 +55,10 @@ namespace net.puk06.ColorChanger.ImageProcessing
             _isAdvancedColorMode = true;
         }
 
-        internal void ProcessAllPixels(Texture2D source, Texture2D target)
+        internal void ProcessAllPixels(Texture2D? source, Texture2D? target)
         {
+            if (source == null || target == null) return;
+
             NativeArray<Color32> rawData = source.GetRawTextureData<Color32>();
             NativeArray<Color32> targetData = target.GetRawTextureData<Color32>();
 
@@ -67,9 +70,11 @@ namespace net.puk06.ColorChanger.ImageProcessing
             target.Apply();
         }
 
-        internal void ProcessAllPixelsGPU(RenderTexture source, RenderTexture target)
+        internal void ProcessAllPixelsGPU(RenderTexture? source, RenderTexture? target)
         {
-            ExtendedRenderTexture gradientRenderTexture = null;
+            if (source == null || target == null) return;
+            
+            ExtendedRenderTexture? gradientRenderTexture = null;
 
             try
             {

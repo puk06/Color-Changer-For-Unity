@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,7 +30,7 @@ namespace net.puk06.ColorChanger.NDMF
             {
                 // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
                 var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x));
-                if (enabledComponents == null || !enabledComponents.Any()) return;
+                if (!enabledComponents.Any()) return;
 
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
                 var avatarRenderers = TextureUtils.GetRenderers(avatar);
@@ -37,8 +38,8 @@ namespace net.puk06.ColorChanger.NDMF
                 if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
 
                 var avatarComponents = enabledComponents
-                    .Where(c => avatarTexturesHashSet.Contains(c.targetTexture));
-                if (avatarComponents == null || !avatarComponents.Any()) return;
+                    .Where(c => avatarTexturesHashSet.Contains(c.targetTexture!));
+                if (!avatarComponents.Any()) return;
 
                 Dictionary<Texture2D, Texture2D> processedDictionary = new();
 
@@ -49,13 +50,13 @@ namespace net.puk06.ColorChanger.NDMF
 
                     try
                     {
-                        Texture2D originalTexture = TextureUtils.GetRawTexture(component.targetTexture);
-                        Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
+                        Texture2D originalTexture = TextureUtils.GetRawTexture(component.targetTexture!);
+                        Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
 
                         TextureUtils.ProcessTexture(originalTexture, newTexture, component);
 
                         AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
-                        processedDictionary.Add(component.targetTexture, newTexture);
+                        processedDictionary.Add(component.targetTexture!, newTexture);
 
                         Object.DestroyImmediate(originalTexture);
                         stopwatch.Stop();
@@ -63,7 +64,7 @@ namespace net.puk06.ColorChanger.NDMF
                         LogUtils.Log($"Texture Processing Done: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms");
 
                         //NDMF Console Log
-                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", component, component.targetTexture.name, stopwatch.ElapsedMilliseconds.ToString());
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", component, component.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                     catch (Exception ex)
                     {
@@ -72,7 +73,7 @@ namespace net.puk06.ColorChanger.NDMF
                         LogUtils.LogError($"Texture Processing Error: '{component.name}' | {stopwatch.ElapsedMilliseconds} ms\n{ex}");
 
                         //NDMF Console Log
-                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", component, component.targetTexture.name, stopwatch.ElapsedMilliseconds.ToString());
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", component, component.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                 }
 
@@ -110,7 +111,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                         MaterialUtils.ForEachTex(newMaterials[i], (texture, propName) =>
                         {
-                            if (!processedTextureDictionary.TryGetValue(texture as Texture2D, out Texture2D newTexture)) return;
+                            if (!processedTextureDictionary.TryGetValue((Texture2D)texture, out Texture2D newTexture)) return;
                             newMaterials[i].SetTexture(propName, newTexture);
                         });
                     }

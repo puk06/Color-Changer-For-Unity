@@ -45,6 +45,7 @@ namespace net.puk06.ColorChanger
                 if (components == null) return;
 
                 var groupedComponents = components
+                    .Where(c => c.targetTexture != null)
                     .GroupBy(c => c.targetTexture);
 
                 foreach (var groupedComponent in groupedComponents)

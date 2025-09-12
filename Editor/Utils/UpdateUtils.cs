@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -62,7 +63,7 @@ namespace net.puk06.ColorChanger.Utils
         /// パッケージ名からパッケージ情報を取得します。
         /// 元コード: https://qiita.com/from2001vr/items/dc0154969b9e1c2f14fd
         /// </summary>
-        public static UnityEditor.PackageManager.PackageInfo GetPackageInfo(string packageName)
+        public static UnityEditor.PackageManager.PackageInfo? GetPackageInfo(string packageName)
         {
             var request = Client.List(true, true);
             while (!request.IsCompleted) { } // リクエストが終わるまで待機

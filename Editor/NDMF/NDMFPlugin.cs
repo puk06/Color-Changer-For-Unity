@@ -1,3 +1,4 @@
+#nullable enable
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.NDMF;
 

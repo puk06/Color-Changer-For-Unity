@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using nadena.dev.ndmf;
@@ -148,7 +149,7 @@ namespace net.puk06.ColorChanger.Utils
         /// </summary>
         /// <param name="gameObject"></param>
         /// <returns></returns>
-        internal static Texture GetMainTextureFromGameobject(GameObject gameObject)
+        internal static Texture? GetMainTextureFromGameobject(GameObject gameObject)
         {
             if (gameObject == null) return null;
 
@@ -221,7 +222,7 @@ namespace net.puk06.ColorChanger.Utils
         /// <returns></returns>
         internal static Texture2D GetRawTexture(Texture2D source)
         {
-            Texture2D rawTexture2D = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
+            Texture2D rawTexture2D = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false, false);
 
             ExtendedRenderTexture.ProcessTemporary(source.width, source.height, (renderTexture) =>
             {

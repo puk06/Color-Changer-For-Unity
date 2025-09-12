@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.IO;
 using net.puk06.ColorChanger.Localization;
@@ -12,12 +13,12 @@ namespace net.puk06.ColorChanger
     [CanEditMultipleObjects]
     public class ColorChanger : Editor
     {
-        private SerializedProperty targetTextureProp;
-        private SerializedProperty previousColorProp;
-        private SerializedProperty newColorProp;
+        private SerializedProperty targetTextureProp = null!;
+        private SerializedProperty previousColorProp = null!;
+        private SerializedProperty newColorProp = null!;
 
-        private SerializedProperty balanceModeConfigProp;
-        private SerializedProperty advancedColorConfigProp;
+        private SerializedProperty balanceModeConfigProp = null!;
+        private SerializedProperty advancedColorConfigProp = null!;
 
         private bool showColorChangerSettings = true;
         private bool showTextureSettings = false;
@@ -70,12 +71,13 @@ namespace net.puk06.ColorChanger
 
             LocalizationUtils.GenerateLanguagePopup();
 
-            ColorChangerForUnity comp = (ColorChangerForUnity)target;
+            ColorChangerForUnity? comp = target as ColorChangerForUnity;
+            if (comp == null) return;
 
             var componentIcon = AssetUtils.Icon;
             if (componentIcon != null) EditorGUIUtility.SetIconForObject(comp, componentIcon);
 
-            if (comp != null && comp.GetComponentInParent<VRC_AvatarDescriptor>() == null)
+            if (comp.GetComponentInParent<VRC_AvatarDescriptor>() == null)
             {
                 EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.childObject.warning"), MessageType.Error);
             }
@@ -399,13 +401,13 @@ namespace net.puk06.ColorChanger
                 return;
             }
 
-            Texture2D originalTexture = null;
-            Texture2D newTexture = null;
+            Texture2D? originalTexture = null;
+            Texture2D? newTexture = null;
 
             try
             {
                 originalTexture = TextureUtils.GetRawTexture(colorChangerComponent.targetTexture);
-                newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
+                newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
 
                 TextureUtils.ProcessTexture(originalTexture, newTexture, colorChangerComponent);
 

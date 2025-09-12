@@ -1,3 +1,4 @@
+#nullable enable
 using nadena.dev.ndmf.preview;
 
 namespace net.puk06.ColorChanger.Utils
