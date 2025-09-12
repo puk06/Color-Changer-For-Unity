@@ -336,6 +336,12 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Disabled Components ({0}) ",
                 ["ko"] = "비활성화된 컴포넌트 ({0}) "
             },
+            ["editorwindow.componentmanager.texturemissing"] = new()
+            {
+                ["ja"] = "未割り当て",
+                ["en"] = "Unassigned",
+                ["ko"] = "미할당"
+            },
         };
 
         internal static Dictionary<string, Dictionary<string, string>> LocalizationDictionary = _localizationDictionary;

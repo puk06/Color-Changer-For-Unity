@@ -20,6 +20,8 @@ namespace net.puk06.ColorChanger
         private int _selectedAvatarIndex;
         private readonly Dictionary<Texture, FoldoutState> _foldoutStates = new Dictionary<Texture, FoldoutState>();
 
+        private bool _showMissing = false;
+
         [MenuItem("Tools/ぷこのつーる/Color Changer For Unity")]
         public static void ShowWindow()
         {
@@ -103,6 +105,40 @@ namespace net.puk06.ColorChanger
                             }
                             EditorGUI.indentLevel = 2;
                         }
+                    }
+
+                    EditorGUI.indentLevel = 1;
+
+                    EditorGUILayout.EndVertical();
+                }
+
+                var missingTextureComponents = components
+                    .Where(c => c.targetTexture == null)
+                    .ToList();
+
+                if (missingTextureComponents.Count > 0)
+                {
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+                    EditorGUI.indentLevel = 1;
+
+                    _showMissing = EditorGUILayout.Foldout(
+                        _showMissing,
+                        LocalizationManager.Get("editorwindow.componentmanager.texture", LocalizationManager.Get("editorwindow.componentmanager.texturemissing"), missingTextureComponents.Count.ToString()),
+                        true,
+                        UnityUtils.TitleStyle
+                    );
+
+                    EditorGUI.indentLevel = 2;
+
+                    if (_showMissing)
+                    {
+                        EditorGUI.indentLevel = 3;
+                        foreach (var component in missingTextureComponents)
+                        {
+                            EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
+                        }
+                        EditorGUI.indentLevel = 2;
                     }
 
                     EditorGUI.indentLevel = 1;
