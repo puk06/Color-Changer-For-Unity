@@ -14,7 +14,7 @@ namespace net.puk06.ColorChanger.Localization
             {
                 var enDict = new Dictionary<string, string>
                 {
-                    { "colorchanger.process.success", "Texture Processing dome\nComponent: {0}\nTexture: {1}\nProcessing time: {2} ms" },
+                    { "colorchanger.process.success", "Texture Processing done\nComponent: {0}\nTexture: {1}\nProcessing time: {2} ms" },
                     { "colorchanger.process.error", "Texture Processing Error. See the console for details.\nComponent: {0}\nTexture: {1}\nProcessing time: {2} ms" }
                 };
 

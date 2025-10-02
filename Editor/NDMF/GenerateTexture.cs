@@ -84,10 +84,6 @@ namespace net.puk06.ColorChanger.NDMF
             {
                 throw new Exception($"Error occured while processing avatar: '{avatar.name}'\n{ex}");
             }
-            finally
-            {
-                DeleteAllComponents(components);
-            }
         }
 
         private void ReplaceTextures(Renderer[] renderers, Dictionary<Texture2D, Texture2D> processedTextureDictionary)
@@ -122,14 +118,6 @@ namespace net.puk06.ColorChanger.NDMF
                 }
 
                 renderer.sharedMaterials = newMaterials;
-            }
-        }
-
-        private void DeleteAllComponents(ColorChangerForUnity[] components)
-        {
-            foreach (var component in components)
-            {
-                Object.DestroyImmediate(component);
             }
         }
     }

@@ -3,7 +3,6 @@ using nadena.dev.ndmf;
 using net.puk06.ColorChanger.NDMF;
 
 [assembly: ExportsPlugin(typeof(NDMFPlugin))]
-
 namespace net.puk06.ColorChanger.NDMF
 {
     internal class NDMFPlugin : Plugin<NDMFPlugin>
@@ -18,6 +17,11 @@ namespace net.puk06.ColorChanger.NDMF
                 .AfterPlugin("nadena.dev.modular-avatar") // å„Ç…ìÆÇ¢ÇƒÇŸÇµÇ¢Ç©ÇÁÇÀÅI
                 .Run(GenerateColorChangedTexture.Instance)
                 .PreviewingWith(new NDMFPreview());
+
+            InPhase(BuildPhase.Optimizing)
+                .AfterPlugin("net.rs64.tex-trans-tool")
+                .BeforePlugin("com.anatawa12.avatar-optimizer")
+                .Run(RemoveComponents.Instance);
         }
     }
 }
