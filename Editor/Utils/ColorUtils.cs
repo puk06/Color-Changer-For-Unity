@@ -64,7 +64,13 @@ namespace net.puk06.ColorChanger.Utils
                         (grayScaleWeightB * (pixel.b / 255.0))
                     );
 
-                    return balanceModeConfiguration.V3GradientColor.Evaluate(grayScale);
+                    Color32 gradientEvaluatedColor = (Color32)balanceModeConfiguration.V3GradientColor.Evaluate(grayScale);
+
+                    pixel.r = gradientEvaluatedColor.r;
+                    pixel.g = gradientEvaluatedColor.g;
+                    pixel.b = gradientEvaluatedColor.b;
+
+                    return pixel;
             }
 
             pixel.r = MathUtils.ClampColorValue(pixel.r + (int)(diff.DiffR * adjustmentFactor));
