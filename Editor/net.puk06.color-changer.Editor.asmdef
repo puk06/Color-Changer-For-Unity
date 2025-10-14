@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "net.puk06.color-changer.runtime",
+        "net.puk06.texture-replacer.runtime",
         "nadena.dev.ndmf",
         "net.rs64.tex-trans-tool.runtime"
     ],

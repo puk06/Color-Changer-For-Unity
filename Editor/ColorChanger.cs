@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using net.puk06.ColorChanger.Localization;
 using net.puk06.ColorChanger.Utils;
+using net.puk06.TextureReplacer;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -424,7 +425,12 @@ namespace net.puk06.ColorChanger
 
                 if (confirm)
                 {
-                    TextureUtils.ReplaceTextureInSceneObjects(colorChangerComponent.targetTexture, savedPath);
+                    var textureReplacer = new GameObject();
+                    textureReplacer.transform.SetParent(colorChangerComponent.GetComponentInParent<VRC_AvatarDescriptor>().gameObject.transform);
+                    var component = textureReplacer.AddComponent<PukosTextureReplacer>();
+                    
+                    component.originalTexture = colorChangerComponent.targetTexture;
+                    component.targetTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(savedPath);
                 }
 
                 UnityUtils.SelectAssetAtPath(savedPath);

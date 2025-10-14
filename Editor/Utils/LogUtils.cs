@@ -1,37 +1,40 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-internal static class LogUtils
+namespace net.puk06.ColorChanger.Utils
 {
-    private const string LOG_PREFIX = "<color=#f9b7e7>Color Changer</color> <color=#ffffff>>";
-
-    /// <summary>
-    /// 普通のログを表示する時に使います。
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="caller"></param>
-    internal static void Log(string message, [CallerMemberName] string caller = "")
+    internal static class LogUtils
     {
-        Debug.Log($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
-    }
+        private const string LOG_PREFIX = "<color=#f9b7e7>Color Changer</color> <color=#ffffff>>";
 
-    /// <summary>
-    /// 注意用のメッセージを表示する時に使います。
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="caller"></param>
-    internal static void LogWarning(string message, [CallerMemberName] string caller = "")
-    {
-        Debug.LogWarning($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
-    }
+        /// <summary>
+        /// 普通のログを表示する時に使います。
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="caller"></param>
+        internal static void Log(string message, [CallerMemberName] string caller = "")
+        {
+            Debug.Log($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
+        }
 
-    /// <summary>
-    /// エラーを表示する時に使います。
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="caller"></param>
-    internal static void LogError(string message, [CallerMemberName] string caller = "")
-    {
-        Debug.LogError($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
+        /// <summary>
+        /// 注意用のメッセージを表示する時に使います。
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="caller"></param>
+        internal static void LogWarning(string message, [CallerMemberName] string caller = "")
+        {
+            Debug.LogWarning($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
+        }
+
+        /// <summary>
+        /// エラーを表示する時に使います。
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="caller"></param>
+        internal static void LogError(string message, [CallerMemberName] string caller = "")
+        {
+            Debug.LogError($"{LOG_PREFIX} <color=#7dd3e8>{caller}</color> ></color> {message}");
+        }
     }
 }
