@@ -436,8 +436,8 @@ namespace net.puk06.ColorChanger
             
                         textureReplacerObject.transform.SetParent(avatarObject.transform);
 
-                        component.originalTexture = colorChangerComponent.targetTexture;
-                        component.targetTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(savedPath);
+                        component.sourceTexture = colorChangerComponent.targetTexture;
+                        component.destinationTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(savedPath);
                     }
                     else
                     {
