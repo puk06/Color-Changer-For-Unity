@@ -425,12 +425,24 @@ namespace net.puk06.ColorChanger
 
                 if (confirm)
                 {
-                    var textureReplacer = new GameObject();
-                    textureReplacer.transform.SetParent(colorChangerComponent.GetComponentInParent<VRC_AvatarDescriptor>().gameObject.transform);
-                    var component = textureReplacer.AddComponent<PukosTextureReplacer>();
-                    
-                    component.originalTexture = colorChangerComponent.targetTexture;
-                    component.targetTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(savedPath);
+                    var avatarObject = colorChangerComponent.GetComponentInParent<VRC_AvatarDescriptor>().gameObject;
+                    if (avatarObject != null)
+                    {
+                        var textureReplacerObject = new GameObject("Puko's Texture Replacer");
+                        Undo.RegisterCreatedObjectUndo(textureReplacerObject, "Create Puko's Texture Replacer Object");
+
+                        // コンポーネントの追加 + テクスチャの割り当て
+                        var component = Undo.AddComponent<PukosTextureReplacer>(textureReplacerObject);
+            
+                        textureReplacerObject.transform.SetParent(avatarObject.transform);
+
+                        component.originalTexture = colorChangerComponent.targetTexture;
+                        component.targetTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(savedPath);
+                    }
+                    else
+                    {
+                        LogUtils.LogError("Couldn't find root avatar object.");
+                    }
                 }
 
                 UnityUtils.SelectAssetAtPath(savedPath);
