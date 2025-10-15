@@ -254,9 +254,9 @@ namespace net.puk06.ColorChanger.Localization
             },
             ["editorwindow.textureoutput.button"] = new()
             {
-                ["ja"] = "テクスチャ出力(非推奨)",
-                ["en"] = "Export Texture (Not Recommended)",
-                ["ko"] = "텍스처 출력(비추천)"
+                ["ja"] = "テクスチャ出力",
+                ["en"] = "Export Texture",
+                ["ko"] = "텍스처 출력"
             },
             ["editorwindow.generatetexture.missingtexture"] = new()
             {
