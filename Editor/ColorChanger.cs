@@ -432,7 +432,7 @@ namespace net.puk06.ColorChanger
                         Undo.RegisterCreatedObjectUndo(textureReplacerObject, "Create Puko's Texture Replacer Object");
 
                         // コンポーネントの追加 + テクスチャの割り当て
-                        var component = Undo.AddComponent<PukosTextureReplacer>(textureReplacerObject);
+                        var component = Undo.AddComponent<PukoTextureReplacer>(textureReplacerObject);
             
                         textureReplacerObject.transform.SetParent(avatarObject.transform);
 
