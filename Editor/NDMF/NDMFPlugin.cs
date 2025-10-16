@@ -14,7 +14,7 @@ namespace net.puk06.ColorChanger.NDMF
         {
             InPhase(BuildPhase.Transforming)
                 .AfterPlugin("net.rs64.tex-trans-tool")
-                .AfterPlugin("nadena.dev.modular-avatar") // Œã‚É“®‚¢‚Ä‚Ù‚µ‚¢‚©‚ç‚ËI
+                .AfterPlugin("nadena.dev.modular-avatar")
                 .Run(GenerateColorChangedTexture.Instance)
                 .PreviewingWith(new NDMFPreview());
 
