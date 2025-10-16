@@ -441,7 +441,7 @@ namespace net.puk06.ColorChanger
                     }
                     else
                     {
-                        LogUtils.LogError("Couldn't find root avatar object.");
+                        LogUtils.LogError("Couldn't find VRC Avatar Descriptor in Parent Objects.");
                     }
                 }
 
