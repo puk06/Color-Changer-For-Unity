@@ -32,7 +32,7 @@ namespace net.puk06.ColorChanger
         {
             LocalizationUtils.GenerateLanguagePopup();
 
-            //アバターを選ぶ欄
+            // アバターを選ぶ欄
             var avatars = FindObjectsOfType<VRC_AvatarDescriptor>().Select(c => c.gameObject).ToArray();
             if (avatars.Length == 0) return;
 
