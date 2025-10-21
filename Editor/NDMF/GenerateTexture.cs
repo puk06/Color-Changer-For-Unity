@@ -50,7 +50,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                     try
                     {
-                        Texture2D originalTexture = TextureUtils.GetRawTexture(component.targetTexture!);
+                        Texture2D originalTexture = TextureUtils.GetRawTexture(component.ComponentTexture!);
                         Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
 
                         TextureUtils.ProcessTexture(originalTexture, newTexture, component);

@@ -12,9 +12,12 @@ namespace net.puk06.ColorChanger
 #endif
     {
         public bool Enabled = true;
+
         public bool PreviewEnabled = true;
         public bool PreviewOnCPU = false;
+
         public Texture2D? targetTexture = null;
+        public Texture2D? replacementTexture = null;
 
         public Color previousColor = Color.white;
         public Color newColor = Color.white;
@@ -29,5 +32,17 @@ namespace net.puk06.ColorChanger
 
         public void GrabBlending(RenderTexture renderTexture)
             => action(renderTexture, this);
+
+        /// <summary>
+        /// テクスチャ置き換え先があればそのテクスチャを返し、なければTargetTextureが返されます。
+        /// </summary>
+        public Texture2D? ComponentTexture
+        {
+            get
+            {
+                if (targetTexture == null) return null;
+                return replacementTexture == null ? targetTexture : replacementTexture;
+            }
+        }
     }
 }

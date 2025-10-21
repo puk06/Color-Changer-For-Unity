@@ -15,6 +15,7 @@ namespace net.puk06.ColorChanger
     public class ColorChanger : Editor
     {
         private SerializedProperty targetTextureProp = null!;
+        private SerializedProperty replacementTextureProp = null!;
         private SerializedProperty previousColorProp = null!;
         private SerializedProperty newColorProp = null!;
 
@@ -23,6 +24,7 @@ namespace net.puk06.ColorChanger
 
         private bool showColorChangerSettings = true;
         private bool showTextureSettings = false;
+        private bool showTextureReplacementSettings = false;
         private bool showColorSettings = true;
         private bool showBalanceModeSettings = true;
         private bool showBalanceModeV1Settings = false;
@@ -42,6 +44,7 @@ namespace net.puk06.ColorChanger
         void OnEnable()
         {
             targetTextureProp = serializedObject.FindProperty("targetTexture");
+            replacementTextureProp = serializedObject.FindProperty("replacementTexture");
             previousColorProp = serializedObject.FindProperty("previousColor");
             newColorProp = serializedObject.FindProperty("newColor");
 
@@ -89,6 +92,9 @@ namespace net.puk06.ColorChanger
 
                 // テクスチャ設定画面
                 DrawTextureSettingsGUI(comp);
+
+                // テクスチャ置き換え設定画面
+                DrawTextureReplacementSettingsGUI();
 
                 // 色設定画面
                 DrawColorSettingsGUI();
@@ -210,6 +216,30 @@ namespace net.puk06.ColorChanger
                         targetTextureProp.objectReferenceValue = mainTexture;
                     }
                 }
+            }
+
+            EditorGUI.indentLevel = 0;
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawTextureReplacementSettingsGUI()
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            EditorGUI.indentLevel = 1;
+
+            showTextureReplacementSettings = EditorGUILayout.Foldout(
+                showTextureReplacementSettings,
+                LocalizationManager.Get("editorwindow.texturereplacementsetting"),
+                true,
+                UnityUtils.TitleStyle
+            );
+
+            if (showTextureReplacementSettings)
+            {
+                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.texturereplacementsetting.description"), MessageType.Info);
+                replacementTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationManager.Get("editorwindow.texturereplacementsetting.destination"), (Texture2D)replacementTextureProp.objectReferenceValue, typeof(Texture2D), true);
             }
 
             EditorGUI.indentLevel = 0;
@@ -407,7 +437,7 @@ namespace net.puk06.ColorChanger
 
             try
             {
-                originalTexture = TextureUtils.GetRawTexture(colorChangerComponent.targetTexture);
+                originalTexture = TextureUtils.GetRawTexture(colorChangerComponent.ComponentTexture!);
                 newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
 
                 TextureUtils.ProcessTexture(originalTexture, newTexture, colorChangerComponent);

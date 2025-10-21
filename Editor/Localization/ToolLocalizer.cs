@@ -78,6 +78,24 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Texture to Apply",
                 ["ko"] = "적용할 텍스처"
             },
+            ["editorwindow.texturereplacementsetting"] = new()
+            {
+                ["ja"] = "テクスチャ置き換え設定",
+                ["en"] = "Texture Replacement Settings",
+                ["ko"] = "텍스처 교체 설정"
+            },
+            ["editorwindow.texturereplacementsetting.description"] = new()
+            {
+                ["ja"] = "選択中のテクスチャを指定したテクスチャに置き換え、その後に色の変更処理を実行します。",
+                ["en"] = "Replaces the selected texture with the specified one, then applies the color modification.",
+                ["ko"] = "선택한 텍스처를 지정된 텍스처로 교체한 후 색상 변경을 적용합니다."
+            },
+            ["editorwindow.texturereplacementsetting.destination"] = new()
+            {
+                ["ja"] = "置き換え先テクスチャ",
+                ["en"] = "Replacement Texture",
+                ["ko"] = "교체할 텍스처"
+            },
             ["editorwindow.colorsetting"] = new()
             {
                 ["ja"] = "色設定",
