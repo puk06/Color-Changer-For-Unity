@@ -111,12 +111,12 @@ namespace net.puk06.ColorChanger.NDMF
                     .ToArray();
                 if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
-                // 元のテクスチャ、処理されたテクスチャのDictionary
-                var processedTextures = new Dictionary<Texture2D, Texture>();
-
                 // ターゲットテクスチャごとに分ける。これは複数同じテクスチャがあった時対策
                 var groupedComponents = enabledComponents
                     .GroupBy(c => c.targetTexture);
+
+                // 元のテクスチャ、処理されたテクスチャのDictionary
+                var processedTextures = new Dictionary<Texture2D, Texture>();
 
                 foreach (var groupedComponent in groupedComponents)
                 {
