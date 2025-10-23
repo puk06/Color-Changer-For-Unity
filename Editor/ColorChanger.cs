@@ -14,13 +14,49 @@ namespace net.puk06.ColorChanger
     [CanEditMultipleObjects]
     public class ColorChanger : Editor
     {
+        #region Script Settings Serialized Property
+        private SerializedProperty enabledButtonProp = null!;
+        private SerializedProperty previewEnabledButtonProp = null!;
+        private SerializedProperty previewOnCPUButtonProp = null!;
         private SerializedProperty targetTextureProp = null!;
         private SerializedProperty replacementTextureProp = null!;
+        #endregion
+
+        #region Color Settings Serialized Property
         private SerializedProperty previousColorProp = null!;
         private SerializedProperty newColorProp = null!;
+        #endregion
 
+        #region Balance Mode Serialized Property
         private SerializedProperty balanceModeConfigProp = null!;
+
+        private SerializedProperty modeVersionProp = null!;
+        
+        private SerializedProperty v1WeightProp = null!;
+        private SerializedProperty v1MinValueProp = null!;
+        
+        private SerializedProperty v2RadiusProp = null!;
+        private SerializedProperty v2WeightProp = null!;
+        private SerializedProperty v2MinValueProp = null!;
+        private SerializedProperty v2IncludeOutsideProp = null!;
+
+        private SerializedProperty v3GradientProp = null!;
+        private SerializedProperty v3GradientResolutionProp = null!;
+
+        private SerializedProperty v3UsePrecomputedLUTProp = null!;
+        private SerializedProperty v3GradientLUTSizeProp = null!;
+        #endregion
+
+        #region Advanced Color Settings Serialized Property
         private SerializedProperty advancedColorConfigProp = null!;
+        private SerializedProperty enabledProp = null!;
+
+        private SerializedProperty brightnessProp = null!;
+        private SerializedProperty contrastProp = null!;
+        private SerializedProperty gammaProp = null!;
+        private SerializedProperty exposureProp = null!;
+        private SerializedProperty transparencyProp = null!;
+        #endregion
 
         private bool showColorChangerSettings = true;
         private bool showTextureSettings = false;
@@ -31,7 +67,6 @@ namespace net.puk06.ColorChanger
         private bool showBalanceModeV2Settings = false;
         private bool showBalanceModeV3Settings = false;
         private bool showBalanceModeV3LUTSettings = false;
-
         private bool showAdvancedColorSettings = false;
 
         private enum BalanceModeSettings
@@ -44,13 +79,36 @@ namespace net.puk06.ColorChanger
 
         void OnEnable()
         {
+            enabledButtonProp = serializedObject.FindProperty("Enabled");
+            previewEnabledButtonProp = serializedObject.FindProperty("PreviewEnabled");
+            previewOnCPUButtonProp = serializedObject.FindProperty("PreviewOnCPU");
+
             targetTextureProp = serializedObject.FindProperty("targetTexture");
             replacementTextureProp = serializedObject.FindProperty("replacementTexture");
+            
             previousColorProp = serializedObject.FindProperty("previousColor");
             newColorProp = serializedObject.FindProperty("newColor");
 
             balanceModeConfigProp = serializedObject.FindProperty("balanceModeConfiguration");
+            modeVersionProp = balanceModeConfigProp.FindPropertyRelative("ModeVersion");
+            v1WeightProp = balanceModeConfigProp.FindPropertyRelative("V1Weight");
+            v1MinValueProp = balanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
+            v2RadiusProp = balanceModeConfigProp.FindPropertyRelative("V2Radius");
+            v2WeightProp = balanceModeConfigProp.FindPropertyRelative("V2Weight");
+            v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
+            v2IncludeOutsideProp = balanceModeConfigProp.FindPropertyRelative("V2IncludeOutside");
+            v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
+            v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
+            v3UsePrecomputedLUTProp = balanceModeConfigProp.FindPropertyRelative("V3UsePrecomputedLUT");
+            v3GradientLUTSizeProp = balanceModeConfigProp.FindPropertyRelative("V3GradientLUTSize");
+
             advancedColorConfigProp = serializedObject.FindProperty("advancedColorConfiguration");
+            enabledProp = advancedColorConfigProp.FindPropertyRelative("Enabled");
+            brightnessProp = advancedColorConfigProp.FindPropertyRelative("Brightness");
+            contrastProp = advancedColorConfigProp.FindPropertyRelative("Contrast");
+            gammaProp = advancedColorConfigProp.FindPropertyRelative("Gamma");
+            exposureProp = advancedColorConfigProp.FindPropertyRelative("Exposure");
+            transparencyProp = advancedColorConfigProp.FindPropertyRelative("Transparency");
         }
 
         public override void OnInspectorGUI()
@@ -132,10 +190,6 @@ namespace net.puk06.ColorChanger
             if (showColorChangerSettings)
             {
                 EditorGUI.indentLevel = 2;
-
-                SerializedProperty enabledButtonProp = serializedObject.FindProperty("Enabled");
-                SerializedProperty previewEnabledButtonProp = serializedObject.FindProperty("PreviewEnabled");
-                SerializedProperty previewOnCPUButtonProp = serializedObject.FindProperty("PreviewOnCPU");
 
                 enabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.enable"), enabledButtonProp.boolValue);
                 previewEnabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.previewenable"), previewEnabledButtonProp.boolValue);
@@ -293,7 +347,6 @@ namespace net.puk06.ColorChanger
             {
                 EditorGUI.indentLevel = 2;
 
-                SerializedProperty modeVersionProp = balanceModeConfigProp.FindPropertyRelative("ModeVersion");
                 modeVersionProp.intValue = (int)(BalanceModeSettings)EditorGUILayout.EnumPopup(
                     new GUIContent(
                         LocalizationManager.Get("editorwindow.balancemode"),
@@ -315,9 +368,6 @@ namespace net.puk06.ColorChanger
 
                     EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v1.description"), MessageType.Info);
 
-                    SerializedProperty v1WeightProp = balanceModeConfigProp.FindPropertyRelative("V1Weight");
-                    SerializedProperty v1MinValueProp = balanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
-
                     v1WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.weight"), v1WeightProp.floatValue);
                     v1MinValueProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.minvalue"), v1MinValueProp.floatValue);
 
@@ -336,11 +386,6 @@ namespace net.puk06.ColorChanger
                     EditorGUI.indentLevel = 3;
 
                     EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v2.description"), MessageType.Info);
-
-                    SerializedProperty v2RadiusProp = balanceModeConfigProp.FindPropertyRelative("V2Radius");
-                    SerializedProperty v2WeightProp = balanceModeConfigProp.FindPropertyRelative("V2Weight");
-                    SerializedProperty v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
-                    SerializedProperty v2IncludeOutsideProp = balanceModeConfigProp.FindPropertyRelative("V2IncludeOutside");
 
                     v2RadiusProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.radius"), v2RadiusProp.floatValue);
                     v2WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.weight"), v2WeightProp.floatValue);
@@ -363,14 +408,8 @@ namespace net.puk06.ColorChanger
 
                     EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.description"), MessageType.Info);
 
-                    SerializedProperty v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
-                    SerializedProperty v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
-
                     v3GradientProp.gradientValue = EditorGUILayout.GradientField(LocalizationManager.Get("editorwindow.balancemode.v3.gradient"), v3GradientProp.gradientValue);
                     v3GradientResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.previewresolution"), v3GradientResolutionProp.intValue);
-                    
-                    SerializedProperty v3UsePrecomputedLUTProp = balanceModeConfigProp.FindPropertyRelative("V3UsePrecomputedLUT");
-                    SerializedProperty v3GradientLUTSizeProp = balanceModeConfigProp.FindPropertyRelative("V3GradientLUTSize");
 
                     showBalanceModeV3LUTSettings = EditorGUILayout.Foldout(
                         showBalanceModeV3LUTSettings,
@@ -384,8 +423,17 @@ namespace net.puk06.ColorChanger
                         EditorGUI.indentLevel = 4;
 
                         EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutdescription"), MessageType.Info);
+                        
                         v3UsePrecomputedLUTProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.balancemode.v3.uselut"), v3UsePrecomputedLUTProp.boolValue);
-                        if (v3UsePrecomputedLUTProp.boolValue) v3GradientLUTSizeProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolution"), v3GradientLUTSizeProp.intValue);
+                        if (v3UsePrecomputedLUTProp.boolValue)
+                        {
+                            v3GradientLUTSizeProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolution"), v3GradientLUTSizeProp.intValue);
+
+                            if (v3GradientLUTSizeProp.intValue < v3GradientResolutionProp.intValue && !previewOnCPUButtonProp.boolValue)
+                            {
+                                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolutionwarning"), MessageType.Warning);
+                            }
+                        }
 
                         EditorGUI.indentLevel = 3;
                     }
@@ -414,13 +462,6 @@ namespace net.puk06.ColorChanger
             if (showAdvancedColorSettings)
             {
                 EditorGUI.indentLevel = 2;
-
-                SerializedProperty enabledProp = advancedColorConfigProp.FindPropertyRelative("Enabled");
-                SerializedProperty brightnessProp = advancedColorConfigProp.FindPropertyRelative("Brightness");
-                SerializedProperty contrastProp = advancedColorConfigProp.FindPropertyRelative("Contrast");
-                SerializedProperty gammaProp = advancedColorConfigProp.FindPropertyRelative("Gamma");
-                SerializedProperty exposureProp = advancedColorConfigProp.FindPropertyRelative("Exposure");
-                SerializedProperty transparencyProp = advancedColorConfigProp.FindPropertyRelative("Transparency");
 
                 enabledProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.advancedsettings.enable"), enabledProp.boolValue);
                 brightnessProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.brightness"), brightnessProp.floatValue);

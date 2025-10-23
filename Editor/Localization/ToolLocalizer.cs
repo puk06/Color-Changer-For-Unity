@@ -247,6 +247,12 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "LUT Resolution",
                 ["ko"] = "LUT 해상도"
             },
+            ["editorwindow.balancemode.v3.lutresolutionwarning"] = new()
+            {
+                ["ja"] = "グラデーションのLUT解像度がプレビュー解像度より低いため、表示がプレビューより粗くなったり、意図した見た目にならない可能性があります。より高い解像度のLUTを使用することを検討してください。",
+                ["en"] = "The Gradient LUT resolution is lower than the preview resolution, which may result in a rougher or less accurate appearance than expected. Consider using a higher LUT resolution for more consistent results.",
+                ["ko"] = "그라디언트 LUT 해상도가 프리뷰 해상도보다 낮기 때문에 예상보다 거칠거나 부정확한 결과가 표시될 수 있습니다. 보다 일관된 결과를 위해 더 높은 LUT 해상도를 사용하는 것을 권장합니다."
+            },
             ["editorwindow.advancedsettings"] = new()
             {
                 ["ja"] = "色の追加設定",
