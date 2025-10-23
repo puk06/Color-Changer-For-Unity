@@ -12,7 +12,8 @@ namespace net.puk06.ColorChanger.Utils
         internal static Color32 BalanceColorAdjustment(
             Color32 pixel,
             ColorDifference diff,
-            BalanceModeConfiguration balanceModeConfiguration
+            BalanceModeConfiguration balanceModeConfiguration,
+            Color32[]? gradientLUT
         )
         {
             double distance = GetColorDistance(pixel, diff.PreviousColor);
@@ -64,7 +65,16 @@ namespace net.puk06.ColorChanger.Utils
                         (grayScaleWeightB * (pixel.b / 255.0))
                     );
 
-                    Color32 gradientEvaluatedColor = (Color32)balanceModeConfiguration.V3GradientColor.Evaluate(grayScale);
+                    Color32 gradientEvaluatedColor;
+                    if (balanceModeConfiguration.V3UsePrecomputedLUT && gradientLUT != null)
+                    {
+                        int idx = Mathf.Clamp(Mathf.RoundToInt(grayScale * (gradientLUT.Length - 1)), 0, gradientLUT.Length - 1);
+                        gradientEvaluatedColor = gradientLUT[idx];
+                    }
+                    else
+                    {
+                        gradientEvaluatedColor = (Color32)balanceModeConfiguration.V3GradientColor.Evaluate(grayScale);
+                    }
 
                     pixel.r = gradientEvaluatedColor.r;
                     pixel.g = gradientEvaluatedColor.g;
@@ -190,6 +200,24 @@ namespace net.puk06.ColorChanger.Utils
 
             // 交差しない場合
             return (false, -1);
+        }
+
+        /// <summary>
+        /// GradientのLUTを作成します。
+        /// </summary>
+        /// <param name="gradient"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        internal static Color32[] CalculateGradientLUT(Gradient gradient, int size)
+        {
+            Color32[] gradientLUT = new Color32[size];
+            for (int i = 0; i < size; i++)
+            {
+                float t = i / (float)(size - 1);
+                gradientLUT[i] = gradient.Evaluate(t);
+            }
+
+            return gradientLUT;
         }
 
         /// <summary>

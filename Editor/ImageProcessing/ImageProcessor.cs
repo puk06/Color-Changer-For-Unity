@@ -24,11 +24,11 @@ namespace net.puk06.ColorChanger.ImageProcessing
             _colorOffset = colorDifference;
         }
 
-        private Color32 ProcessPixel(Color32 source)
+        private Color32 ProcessPixel(Color32 source, Color32[]? v3GradientLUT)
         {
             if (_isBalanceMode)
             {
-                source = ColorUtils.BalanceColorAdjustment(source, _colorOffset, _balanceModeConfiguration);
+                source = ColorUtils.BalanceColorAdjustment(source, _colorOffset, _balanceModeConfiguration, v3GradientLUT);
             }
             else
             {
@@ -62,9 +62,17 @@ namespace net.puk06.ColorChanger.ImageProcessing
             NativeArray<Color32> rawData = source.GetRawTextureData<Color32>();
             NativeArray<Color32> targetData = target.GetRawTextureData<Color32>();
 
+
+            Color32[]? v3GradientLUT = null;
+            if (_isBalanceMode && _balanceModeConfiguration.V3UsePrecomputedLUT)
+            {
+                int resolution = Math.Clamp(_balanceModeConfiguration.V3GradientLUTSize, 2, 4096);
+                v3GradientLUT = ColorUtils.CalculateGradientLUT(_balanceModeConfiguration.V3GradientColor, resolution);
+            }
+
             for (int i = 0; i < targetData.Length; i++)
             {
-                targetData[i] = ProcessPixel(rawData[i]);
+                targetData[i] = ProcessPixel(rawData[i], v3GradientLUT);
             }
 
             target.Apply();

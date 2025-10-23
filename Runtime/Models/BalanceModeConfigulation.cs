@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using UnityEngine;
 
@@ -18,5 +19,7 @@ namespace net.puk06.ColorChanger.Models
 
         public Gradient V3GradientColor = new Gradient();
         public int V3GradientPreviewResolution = 256;
+        public bool V3UsePrecomputedLUT = false;
+        public int V3GradientLUTSize = 1024;
     }
 }

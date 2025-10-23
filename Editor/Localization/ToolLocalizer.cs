@@ -222,6 +222,31 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Preview Resolution",
                 ["ko"] = "프리뷰 해상도"
             },
+            ["editorwindow.balancemode.v3.lutsetting"] = new()
+            {
+                ["ja"] = "LUT設定",
+                ["en"] = "LUT Settings",
+                ["ko"] = "LUT 설정"
+            },
+            ["editorwindow.balancemode.v3.lutdescription"] = new()
+            {
+                ["ja"] = "グラデーションのLUT（ルックアップテーブル）を事前に生成して使用することで、処理を大幅に高速化できます。ただし、LUTの解像度を下げすぎると、色の精度やグラデーションの品質が低下する可能性があります。",
+                ["en"] = "By pre-generating a Gradient LUT (Lookup Table), processing can be greatly accelerated. However, lowering the LUT resolution too much may cause a noticeable loss in color accuracy and gradient quality.",
+                ["ko"] = "그라디언트 LUT(룩업 테이블)을 미리 생성하여 사용하면 처리 속도를 크게 향상시킬 수 있습니다. 그러나 LUT 해상도를 너무 낮추면 색상 정확도와 그라디언트 품질이 저하될 수 있습니다."
+            },
+            ["editorwindow.balancemode.v3.uselut"] = new()
+            {
+                ["ja"] = "LUTを使用する",
+                ["en"] = "Use Gradient LUT",
+                ["ko"] = "그라디언트 LUT 사용"
+            },
+
+            ["editorwindow.balancemode.v3.lutresolution"] = new()
+            {
+                ["ja"] = "LUT解像度",
+                ["en"] = "LUT Resolution",
+                ["ko"] = "LUT 해상도"
+            },
             ["editorwindow.advancedsettings"] = new()
             {
                 ["ja"] = "色の追加設定",

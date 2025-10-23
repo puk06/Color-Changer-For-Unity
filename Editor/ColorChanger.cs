@@ -30,6 +30,7 @@ namespace net.puk06.ColorChanger
         private bool showBalanceModeV1Settings = false;
         private bool showBalanceModeV2Settings = false;
         private bool showBalanceModeV3Settings = false;
+        private bool showBalanceModeV3LUTSettings = false;
 
         private bool showAdvancedColorSettings = false;
 
@@ -367,6 +368,27 @@ namespace net.puk06.ColorChanger
 
                     v3GradientProp.gradientValue = EditorGUILayout.GradientField(LocalizationManager.Get("editorwindow.balancemode.v3.gradient"), v3GradientProp.gradientValue);
                     v3GradientResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.previewresolution"), v3GradientResolutionProp.intValue);
+                    
+                    SerializedProperty v3UsePrecomputedLUTProp = balanceModeConfigProp.FindPropertyRelative("V3UsePrecomputedLUT");
+                    SerializedProperty v3GradientLUTSizeProp = balanceModeConfigProp.FindPropertyRelative("V3GradientLUTSize");
+
+                    showBalanceModeV3LUTSettings = EditorGUILayout.Foldout(
+                        showBalanceModeV3LUTSettings,
+                        LocalizationManager.Get("editorwindow.balancemode.v3.lutsetting"),
+                        true,
+                        UnityUtils.TitleStyle
+                    );
+
+                    if (showBalanceModeV3LUTSettings)
+                    {
+                        EditorGUI.indentLevel = 4;
+
+                        EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutdescription"), MessageType.Info);
+                        v3UsePrecomputedLUTProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.balancemode.v3.uselut"), v3UsePrecomputedLUTProp.boolValue);
+                        if (v3UsePrecomputedLUTProp.boolValue) v3GradientLUTSizeProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolution"), v3GradientLUTSizeProp.intValue);
+
+                        EditorGUI.indentLevel = 3;
+                    }
 
                     EditorGUI.indentLevel = 2;
                 }
