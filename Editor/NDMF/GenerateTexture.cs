@@ -75,7 +75,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                         LogUtils.Log($"Texture Processing Done: '{firstComponent.name}' | {stopwatch.ElapsedMilliseconds} ms");
 
-                        //NDMF Console Log
+                        // NDMF Console Log
                         ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", firstComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                     catch (Exception ex)
@@ -84,7 +84,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                         LogUtils.LogError($"Texture Processing Error: '{firstComponent.name}' | {stopwatch.ElapsedMilliseconds} ms\n{ex}");
 
-                        //NDMF Console Log
+                        // NDMF Console Log
                         ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", firstComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                 }
