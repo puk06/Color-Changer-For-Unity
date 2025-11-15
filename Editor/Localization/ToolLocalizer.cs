@@ -78,6 +78,18 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Texture to Apply",
                 ["ko"] = "적용할 텍스처"
             },
+            ["editorwindow.settingsinheritedtextures"] = new()
+            {
+                ["ja"] = "設定を継承するテクスチャの設定",
+                ["en"] = "Inherited Textures Settings",
+                ["ko"] = "상속 텍스처들 설정"
+            },
+            ["editorwindow.settingsinheritedtextures.description"] = new()
+            {
+                ["ja"] = "ここに設定されたテクスチャ全てにこのコンポーネントの設定を適用します。同じ設定のコンポーネントが複数ある状態と同じになります。",
+                ["en"] = "Applies this component's settings to all textures configured here. It will behave the same as having multiple components with identical settings.",
+                ["ko"] = "여기에 설정된 모든 텍스처에 이 컴포넌트의 설정이 적용됩니다. 동일한 설정의 컴포넌트를 여러 개 사용하는 것과 동일한 동작을 합니다."
+            },
             ["editorwindow.texturereplacementsetting"] = new()
             {
                 ["ja"] = "テクスチャ置き換え設定",

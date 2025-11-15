@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.Localization;
+using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -31,13 +32,24 @@ namespace net.puk06.ColorChanger.NDMF
                 // 中身が有効なコンポーネントだけ取り出す。Enabledもここでチェック。
                 var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x));
                 if (!enabledComponents.Any()) return;
+                
+                var enabledInternalComponentsValues = new List<InternalColorChangerValues>();
+                foreach (var component in enabledComponents)
+                {
+                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture));
+                    foreach (var otherTexture in component.settingsInheritedTextures)
+                    {
+                        if (otherTexture == null) continue;
+                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture));
+                    }
+                }
 
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのハッシュ一覧
                 var avatarRenderers = TextureUtils.GetRenderers(avatar);
                 var avatarTexturesHashSet = TextureUtils.GetRenderersTexturesHashSet(avatarRenderers);
                 if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
 
-                var avatarComponents = enabledComponents
+                var avatarComponents = enabledInternalComponentsValues
                     .Where(c => avatarTexturesHashSet.Contains(c.targetTexture!));
                 if (!avatarComponents.Any()) return;
 
@@ -54,26 +66,47 @@ namespace net.puk06.ColorChanger.NDMF
 
                     if (groupedComponent.Count() >= 2)
                     {
-                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.gameObject.name}')");
+                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.parentComponent.name}')");
                     }
 
                     Stopwatch stopwatch = Stopwatch.StartNew();
-                    LogUtils.Log($"Texture Processing Start: '{firstComponent.name}'");
+                    LogUtils.Log($"Texture Processing Start: '{firstComponent.parentComponent.name}'");
 
                     try
                     {
-                        Texture2D originalTexture = TextureUtils.GetRawTexture(firstComponent.ComponentTexture!);
-                        Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
+                        // TODO: GPUメモリリークするかも
+                        ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(firstComponent.targetTexture!)
+                            .Create(firstComponent.targetTexture!);
 
-                        TextureUtils.ProcessTexture(originalTexture, newTexture, firstComponent);
+                        ExtendedRenderTexture newTexture = new ExtendedRenderTexture(firstComponent.targetTexture!)
+                            .Create();
 
-                        AssetDatabase.AddObjectToAsset(newTexture, buildContext.AssetContainer);
-                        processedDictionary.Add(firstComponent.targetTexture!, newTexture);
+                        Texture2D newTexture2D = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
 
-                        Object.DestroyImmediate(originalTexture);
+                        if (originalTexture == null || newTexture == null)
+                        {
+                            Texture2D originalTexture2D = TextureUtils.GetRawTexture(firstComponent.targetTexture!);
+                            TextureUtils.ProcessTexture(originalTexture2D, newTexture2D, firstComponent.parentComponent);
+                            Object.DestroyImmediate(originalTexture2D);
+                        }
+                        else
+                        {
+                            TextureUtils.ProcessTexture(originalTexture, newTexture, firstComponent.parentComponent);
+                        
+                            RenderTexture.active = newTexture;
+                            newTexture2D.ReadPixels(new Rect(0, 0, newTexture.width, newTexture.height), 0, 0);
+                            newTexture2D.Apply();
+
+                            originalTexture.Dispose();
+                            newTexture.Dispose();
+                        }
+
+                        AssetDatabase.AddObjectToAsset(newTexture2D, buildContext.AssetContainer);
+                        processedDictionary.Add(firstComponent.targetTexture!, newTexture2D);
+
                         stopwatch.Stop();
 
-                        LogUtils.Log($"Texture Processing Done: '{firstComponent.name}' | {stopwatch.ElapsedMilliseconds} ms");
+                        LogUtils.Log($"Texture Processing Done: '{firstComponent.parentComponent.name}' | {stopwatch.ElapsedMilliseconds} ms");
 
                         // NDMF Console Log
                         ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", firstComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
@@ -82,10 +115,10 @@ namespace net.puk06.ColorChanger.NDMF
                     {
                         stopwatch.Stop();
 
-                        LogUtils.LogError($"Texture Processing Error: '{firstComponent.name}' | {stopwatch.ElapsedMilliseconds} ms\n{ex}");
+                        LogUtils.LogError($"Texture Processing Error: '{firstComponent.parentComponent.name}' | {stopwatch.ElapsedMilliseconds} ms\n{ex}");
 
                         // NDMF Console Log
-                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", firstComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", firstComponent.parentComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                 }
 

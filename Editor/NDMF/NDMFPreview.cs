@@ -39,7 +39,16 @@ namespace net.puk06.ColorChanger.NDMF
                         .Select(c => context.Observe(c, c => c.targetTexture))
                         .Where(t => t != null)
                         .Distinct()
-                        .ToArray();
+                        .ToList();
+                        
+                    foreach (var component in components)
+                    {
+                        foreach (var otherTexture in component.settingsInheritedTextures.Where(t => t != null).Distinct())
+                        {
+                            if (otherTexture == null) continue;
+                            targetTextures.Add(context.Observe(otherTexture));
+                        }
+                    }
 
                     // アバター内の全てのレンダラー
                     var avatarRenderers = avatar.GetComponentsInChildren<Renderer>()
@@ -99,12 +108,23 @@ namespace net.puk06.ColorChanger.NDMF
                 var enabledComponents = components.Where(x => ColorChangerUtils.IsEnabled(x, context) && x.PreviewEnabled);
                 if (enabledComponents == null || !enabledComponents.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
+                var enabledInternalComponentsValues = new List<InternalColorChangerValues>();
+                foreach (var component in enabledComponents)
+                {
+                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture));
+                    foreach (var otherTexture in component.settingsInheritedTextures)
+                    {
+                        if (otherTexture == null) continue;
+                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture));
+                    }
+                }
+
                 // このアバター配下の全てのRendererが使っている全てのテクスチャのオブジェクトリファレンス一覧
                 var avatarTexturesReferences = TextureUtils.GetRenderersTexturesReferences(group.Renderers);
                 if (avatarTexturesReferences == null || !avatarTexturesReferences.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // 変更される予定のテクスチャ（アバター配下で使われている物だけ）
-                var targetTextures = enabledComponents
+                var targetTextures = enabledInternalComponentsValues
                     .Select(c => c.targetTexture)
                     .Where(t => avatarTexturesReferences.Any(r => r.Equals(NDMFUtils.GetReference(t))))
                     .Distinct()
@@ -112,7 +132,7 @@ namespace net.puk06.ColorChanger.NDMF
                 if (targetTextures == null || !targetTextures.Any()) return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
 
                 // ターゲットテクスチャごとに分ける。これは複数同じテクスチャがあった時対策
-                var groupedComponents = enabledComponents
+                var groupedComponents = enabledInternalComponentsValues
                     .GroupBy(c => c.targetTexture);
 
                 // 元のテクスチャ、処理されたテクスチャのDictionary
@@ -125,13 +145,13 @@ namespace net.puk06.ColorChanger.NDMF
 
                     if (groupedComponent.Count() >= 2)
                     {
-                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.gameObject.name}')");
+                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.parentComponent.gameObject.name}')");
                     }
 
                     // テクスチャを作る
                     // CPUプレビューがオンのときはCPUでテクスチャが作成される。
                     Texture? processedTexture = null;
-                    if (firstComponent.PreviewOnCPU)
+                    if (firstComponent.parentComponent.PreviewOnCPU)
                     {
                         processedTexture = ComputeTextureOverridesCPU(firstComponent);
                     }
@@ -142,7 +162,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                     if (processedTexture == null)
                     {
-                        LogUtils.LogError($"Failed to process texture: '{firstComponent.name}'. This may be due to the platform not supporting GPU-based computation.");
+                        LogUtils.LogError($"Failed to process texture: '{firstComponent.parentComponent.name}'. This may be due to the platform not supporting GPU-based computation.");
                         continue;
                     }
 
@@ -209,14 +229,14 @@ namespace net.puk06.ColorChanger.NDMF
             }
         }
 
-        private static ExtendedRenderTexture? ComputeTextureOverrides(ColorChangerForUnity component)
+        private static ExtendedRenderTexture? ComputeTextureOverrides(InternalColorChangerValues componentValue)
         {
-            if (component == null || component.targetTexture == null) return null;
+            if (componentValue == null || componentValue.targetTexture == null) return null;
 
-            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(component.ComponentTexture!)
-                .Create(component.ComponentTexture!);
+            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(componentValue.targetTexture!)
+                .Create(componentValue.targetTexture!);
 
-            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(component.ComponentTexture!)
+            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(componentValue.targetTexture!)
                 .Create();
 
             if (originalTexture == null || newTexture == null)
@@ -224,21 +244,21 @@ namespace net.puk06.ColorChanger.NDMF
                 return null;
             }
 
-            TextureUtils.ProcessTexture(originalTexture, newTexture, component);
+            TextureUtils.ProcessTexture(originalTexture, newTexture, componentValue.parentComponent);
 
             originalTexture.Dispose();
 
             return newTexture;
         }
 
-        private static Texture2D? ComputeTextureOverridesCPU(ColorChangerForUnity component)
+        private static Texture2D? ComputeTextureOverridesCPU(InternalColorChangerValues componentValue)
         {
-            if (component == null || component.targetTexture == null) return null;
+            if (componentValue == null || componentValue.targetTexture == null) return null;
 
-            Texture2D originalTexture = TextureUtils.GetRawTexture(component.ComponentTexture!);
+            Texture2D originalTexture = TextureUtils.GetRawTexture(componentValue.targetTexture!);
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
-            TextureUtils.ProcessTexture(originalTexture, newTexture, component);
+            TextureUtils.ProcessTexture(originalTexture, newTexture, componentValue.parentComponent);
 
             Object.DestroyImmediate(originalTexture);
 

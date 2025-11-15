@@ -19,6 +19,7 @@ namespace net.puk06.ColorChanger
         private SerializedProperty previewEnabledButtonProp = null!;
         private SerializedProperty previewOnCPUButtonProp = null!;
         private SerializedProperty targetTextureProp = null!;
+        private SerializedProperty settingsInheritedTexturesProp = null!;
         private SerializedProperty replacementTextureProp = null!;
         #endregion
 
@@ -60,6 +61,7 @@ namespace net.puk06.ColorChanger
 
         private bool showColorChangerSettings = true;
         private bool showTextureSettings = false;
+        private bool showSettingsInheritedTextureSettings = false;
         private bool showTextureReplacementSettings = false;
         private bool showColorSettings = true;
         private bool showBalanceModeSettings = true;
@@ -84,6 +86,7 @@ namespace net.puk06.ColorChanger
             previewOnCPUButtonProp = serializedObject.FindProperty("PreviewOnCPU");
 
             targetTextureProp = serializedObject.FindProperty("targetTexture");
+            settingsInheritedTexturesProp = serializedObject.FindProperty("settingsInheritedTextures");
             replacementTextureProp = serializedObject.FindProperty("replacementTexture");
             
             previousColorProp = serializedObject.FindProperty("previousColor");
@@ -151,6 +154,9 @@ namespace net.puk06.ColorChanger
 
                 // テクスチャ設定画面
                 DrawTextureSettingsGUI(comp);
+
+                // 設定を継承しているテクスチャの設定画面
+                DrawSettingsInheritedTexturesSettings();
 
                 // テクスチャ置き換え設定画面
                 DrawTextureReplacementSettingsGUI();
@@ -271,6 +277,34 @@ namespace net.puk06.ColorChanger
                         targetTextureProp.objectReferenceValue = mainTexture;
                     }
                 }
+            }
+
+            EditorGUI.indentLevel = 0;
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawSettingsInheritedTexturesSettings()
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            EditorGUI.indentLevel = 1;
+
+            showSettingsInheritedTextureSettings = EditorGUILayout.Foldout(
+                showSettingsInheritedTextureSettings,
+                LocalizationManager.Get("editorwindow.settingsinheritedtextures"),
+                true,
+                UnityUtils.TitleStyle
+            );
+
+            if (showSettingsInheritedTextureSettings)
+            {
+                EditorGUI.indentLevel = 2;
+
+                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.settingsinheritedtextures.description"), MessageType.Info);
+                EditorGUILayout.PropertyField(settingsInheritedTexturesProp, true);
+
+                EditorGUI.indentLevel = 1;
             }
 
             EditorGUI.indentLevel = 0;
