@@ -228,12 +228,6 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Gradient",
                 ["ko"] = "그라데이션"
             },
-            ["editorwindow.balancemode.v3.previewresolution"] = new()
-            {
-                ["ja"] = "プレビュー解像度",
-                ["en"] = "Preview Resolution",
-                ["ko"] = "프리뷰 해상도"
-            },
             ["editorwindow.balancemode.v3.lutsetting"] = new()
             {
                 ["ja"] = "LUT設定",
@@ -242,22 +236,21 @@ namespace net.puk06.ColorChanger.Localization
             },
             ["editorwindow.balancemode.v3.lutdescription"] = new()
             {
-                ["ja"] = "グラデーションのLUT（ルックアップテーブル）を事前に生成して使用することで、処理を大幅に高速化できます。ただし、LUTの解像度を下げすぎると、色の精度やグラデーションの品質が低下する可能性があります。",
-                ["en"] = "By pre-generating a Gradient LUT (Lookup Table), processing can be greatly accelerated. However, lowering the LUT resolution too much may cause a noticeable loss in color accuracy and gradient quality.",
-                ["ko"] = "그라디언트 LUT(룩업 테이블)을 미리 생성하여 사용하면 처리 속도를 크게 향상시킬 수 있습니다. 그러나 LUT 해상도를 너무 낮추면 색상 정확도와 그라디언트 품질이 저하될 수 있습니다."
+                ["ja"] = "グラデーションのLUT（ルックアップテーブル）を事前生成することで処理を大幅に高速化します。ただし、LUTの解像度を下げすぎると色の精度やグラデーションの品質が低下する可能性があります。なお、LUTの生成に失敗した場合のみ、通常の Evaluate 処理が実行されます。",
+                ["en"] = "Pre-generating a Gradient LUT (Lookup Table) can significantly accelerate processing. However, lowering the LUT resolution too much may reduce color accuracy and gradient quality. If the LUT fails to generate due to any error, the normal Evaluate process will be executed instead.",
+                ["ko"] = "그라디언트 LUT(룩업 테이블)를 미리 생성하면 처리 속도를 크게 향상시킬 수 있습니다. 그러나 LUT 해상도를 너무 낮추면 색상 정확도와 그라디언트 품질이 저하될 수 있습니다. 또한 LUT 생성에 실패한 경우에만 기본 Evaluate 처리가 실행됩니다."
             },
-            ["editorwindow.balancemode.v3.uselut"] = new()
+            ["editorwindow.balancemode.v3.previewresolution"] = new()
             {
-                ["ja"] = "LUTを使用する",
-                ["en"] = "Use Gradient LUT",
-                ["ko"] = "그라디언트 LUT 사용"
+                ["ja"] = "プレビュー解像度",
+                ["en"] = "Preview Resolution",
+                ["ko"] = "프리뷰 해상도"
             },
-
-            ["editorwindow.balancemode.v3.lutresolution"] = new()
+            ["editorwindow.balancemode.v3.buildresolution"] = new()
             {
-                ["ja"] = "LUT解像度",
-                ["en"] = "LUT Resolution",
-                ["ko"] = "LUT 해상도"
+                ["ja"] = "ビルド解像度",
+                ["en"] = "Build Resolution",
+                ["ko"] = "빌드 해상도"
             },
             ["editorwindow.balancemode.v3.lutresolutionwarning"] = new()
             {
@@ -312,6 +305,26 @@ namespace net.puk06.ColorChanger.Localization
                 ["ja"] = "テクスチャはビルド時に自動で非破壊で作成、適用されます。\nテクスチャ画像の細かな修正が必要な場合はテクスチャを出力して各自で編集してください。",
                 ["en"] = "Textures are automatically created and applied non-destructively at build time.\nIf you need to make detailed corrections to the texture image, please export and edit it yourself.",
                 ["ko"] = "텍스처는 빌드 시 자동으로 비파괴적으로 생성 및 적용됩니다.\n텍스처 이미지를 세밀하게 수정해야 하는 경우 텍스처를 출력하여 직접 편집하세요."
+            },
+            ["editorwindow.textureoutput.texturetype.original"] = new()
+            {
+                ["ja"] = "元テクスチャ",
+                ["en"] = "Original Texture",
+                ["ko"] = "원본 텍스처"
+            },
+
+            ["editorwindow.textureoutput.texturetype.settingsinherited"] = new()
+            {
+                ["ja"] = "設定継承テクスチャ",
+                ["en"] = "Settings-Inherited Texture",
+                ["ko"] = "설정 상속 텍스처"
+            },
+
+            ["editorwindow.textureoutput.select"] = new()
+            {
+                ["ja"] = "出力テクスチャの選択",
+                ["en"] = "Select Output Texture",
+                ["ko"] = "출력 텍스처 선택"
             },
             ["editorwindow.textureoutput.button"] = new()
             {

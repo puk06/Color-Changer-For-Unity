@@ -19,9 +19,12 @@ namespace net.puk06.ColorChanger.ImageProcessing
         private bool _isAdvancedColorMode = false;
         private AdvancedColorConfiguration _advancedColorConfiguration = new();
 
-        internal ImageProcessor(ColorDifference colorDifference)
+        private readonly bool _isBuildMode = false;
+
+        internal ImageProcessor(ColorDifference colorDifference, bool isBuild = false)
         {
             _colorOffset = colorDifference;
+            _isBuildMode = isBuild;
         }
 
         private Color32 ProcessPixel(Color32 source, Color32[]? v3GradientLUT)
@@ -64,9 +67,9 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
 
             Color32[]? v3GradientLUT = null;
-            if (_isBalanceMode && _balanceModeConfiguration.V3UsePrecomputedLUT)
+            if (_isBalanceMode)
             {
-                int resolution = Math.Clamp(_balanceModeConfiguration.V3GradientLUTSize, 2, 4096);
+                int resolution = Math.Clamp(_isBuildMode ? _balanceModeConfiguration.V3GradientBuildResolution : _balanceModeConfiguration.V3GradientPreviewResolution, 2, 4096);
                 v3GradientLUT = ColorUtils.CalculateGradientLUT(_balanceModeConfiguration.V3GradientColor, resolution);
             }
 
@@ -113,7 +116,7 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
                 if (_balanceModeConfiguration.ModeVersion == 3)
                 {
-                    var previewResolution = Math.Clamp(_balanceModeConfiguration.V3GradientPreviewResolution, 2, 4096);
+                    var previewResolution = Math.Clamp(_isBuildMode ? _balanceModeConfiguration.V3GradientBuildResolution : _balanceModeConfiguration.V3GradientPreviewResolution, 2, 4096);
                     gradientRenderTexture = GradientToRenderTexture(_balanceModeConfiguration.V3GradientColor, previewResolution);
 
                     if (gradientRenderTexture == null)

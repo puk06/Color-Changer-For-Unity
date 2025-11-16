@@ -109,7 +109,7 @@ namespace net.puk06.ColorChanger.NDMF
                         LogUtils.Log($"Texture Processing Done: '{firstComponent.parentComponent.name}' | {stopwatch.ElapsedMilliseconds} ms");
 
                         // NDMF Console Log
-                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", firstComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", firstComponent.parentComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                     catch (Exception ex)
                     {

@@ -66,7 +66,7 @@ namespace net.puk06.ColorChanger.Utils
                     );
 
                     Color32 gradientEvaluatedColor;
-                    if (balanceModeConfiguration.V3UsePrecomputedLUT && gradientLUT != null)
+                    if (gradientLUT != null)
                     {
                         int idx = Mathf.Clamp(Mathf.RoundToInt(grayScale * (gradientLUT.Length - 1)), 0, gradientLUT.Length - 1);
                         gradientEvaluatedColor = gradientLUT[idx];

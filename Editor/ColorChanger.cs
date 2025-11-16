@@ -1,7 +1,10 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using net.puk06.ColorChanger.Localization;
+using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using net.puk06.TextureReplacer;
 using UnityEditor;
@@ -42,10 +45,8 @@ namespace net.puk06.ColorChanger
         private SerializedProperty v2IncludeOutsideProp = null!;
 
         private SerializedProperty v3GradientProp = null!;
-        private SerializedProperty v3GradientResolutionProp = null!;
-
-        private SerializedProperty v3UsePrecomputedLUTProp = null!;
-        private SerializedProperty v3GradientLUTSizeProp = null!;
+        private SerializedProperty v3GradientPreviewResolutionProp = null!;
+        private SerializedProperty v3GradientBuildResolutionProp = null!;
         #endregion
 
         #region Advanced Color Settings Serialized Property
@@ -68,8 +69,9 @@ namespace net.puk06.ColorChanger
         private bool showBalanceModeV1Settings = false;
         private bool showBalanceModeV2Settings = false;
         private bool showBalanceModeV3Settings = false;
-        private bool showBalanceModeV3LUTSettings = false;
+        private bool showBalanceModeV3LUTSettings = true;
         private bool showAdvancedColorSettings = false;
+        private int selectedTextureIndex = -1;
 
         private enum BalanceModeSettings
         {
@@ -101,9 +103,8 @@ namespace net.puk06.ColorChanger
             v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
             v2IncludeOutsideProp = balanceModeConfigProp.FindPropertyRelative("V2IncludeOutside");
             v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
-            v3GradientResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
-            v3UsePrecomputedLUTProp = balanceModeConfigProp.FindPropertyRelative("V3UsePrecomputedLUT");
-            v3GradientLUTSizeProp = balanceModeConfigProp.FindPropertyRelative("V3GradientLUTSize");
+            v3GradientPreviewResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
+            v3GradientBuildResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientBuildResolution");
 
             advancedColorConfigProp = serializedObject.FindProperty("advancedColorConfiguration");
             enabledProp = advancedColorConfigProp.FindPropertyRelative("Enabled");
@@ -443,7 +444,6 @@ namespace net.puk06.ColorChanger
                     EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.description"), MessageType.Info);
 
                     v3GradientProp.gradientValue = EditorGUILayout.GradientField(LocalizationManager.Get("editorwindow.balancemode.v3.gradient"), v3GradientProp.gradientValue);
-                    v3GradientResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.previewresolution"), v3GradientResolutionProp.intValue);
 
                     showBalanceModeV3LUTSettings = EditorGUILayout.Foldout(
                         showBalanceModeV3LUTSettings,
@@ -458,15 +458,12 @@ namespace net.puk06.ColorChanger
 
                         EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutdescription"), MessageType.Info);
                         
-                        v3UsePrecomputedLUTProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.balancemode.v3.uselut"), v3UsePrecomputedLUTProp.boolValue);
-                        if (v3UsePrecomputedLUTProp.boolValue)
-                        {
-                            v3GradientLUTSizeProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolution"), v3GradientLUTSizeProp.intValue);
+                        v3GradientPreviewResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.previewresolution"), v3GradientPreviewResolutionProp.intValue);
+                        v3GradientBuildResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.buildresolution"), v3GradientBuildResolutionProp.intValue);
 
-                            if (v3GradientLUTSizeProp.intValue < v3GradientResolutionProp.intValue && !previewOnCPUButtonProp.boolValue)
-                            {
-                                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolutionwarning"), MessageType.Warning);
-                            }
+                        if (v3GradientBuildResolutionProp.intValue < v3GradientPreviewResolutionProp.intValue)
+                        {
+                            EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolutionwarning"), MessageType.Warning);
                         }
 
                         EditorGUI.indentLevel = 3;
@@ -515,31 +512,68 @@ namespace net.puk06.ColorChanger
         {
             EditorGUI.indentLevel = 0;
             EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.textureoutput.warning"), MessageType.Warning);
+
+            var textureNames = new List<string>();
+            if (colorChangerComponent.targetTexture != null) textureNames.Add($"{colorChangerComponent.targetTexture.name} - {LocalizationManager.Get("editorwindow.textureoutput.texturetype.original")}");
+            textureNames.AddRange(colorChangerComponent.settingsInheritedTextures.Select(x => $"{(x == null ? "Unknown Texture" : x.name)} - {LocalizationManager.Get("editorwindow.textureoutput.texturetype.settingsinherited")}"));
+
+            var textures = new List<Texture2D?>();
+            if (colorChangerComponent.ComponentTexture != null) textures.Add(colorChangerComponent.ComponentTexture);
+            textures.AddRange(colorChangerComponent.settingsInheritedTextures);
+
+            if (textures.Count == 0) return;
+            if (selectedTextureIndex < 0 || selectedTextureIndex >= textures.Count) selectedTextureIndex = 0;
+
+            // 出力するテクスチャの選択
+            selectedTextureIndex = EditorGUILayout.Popup(
+                LocalizationManager.Get("editorwindow.textureoutput.select"),
+                selectedTextureIndex, textureNames.ToArray()
+            );
+
             if (GUILayout.Button(LocalizationManager.Get("editorwindow.textureoutput.button"), GUILayout.ExpandWidth(true)))
             {
-                GenerateTexture(colorChangerComponent);
+                GenerateTexture(colorChangerComponent, textures[selectedTextureIndex]);
             }
         }
 
-        private void GenerateTexture(ColorChangerForUnity colorChangerComponent)
+        private void GenerateTexture(ColorChangerForUnity colorChangerComponent, Texture2D? targetTexture)
         {
-            if (colorChangerComponent.targetTexture == null)
+            if (targetTexture == null)
             {
                 LogUtils.LogError(LocalizationManager.Get("editorwindow.generatetexture.missingtexture"));
                 return;
             }
 
-            Texture2D? originalTexture = null;
-            Texture2D? newTexture = null;
-
             try
             {
-                originalTexture = TextureUtils.GetRawTexture(colorChangerComponent.ComponentTexture!);
-                newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
+                ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(targetTexture)
+                    .Create(targetTexture);
 
-                TextureUtils.ProcessTexture(originalTexture, newTexture, colorChangerComponent);
+                ExtendedRenderTexture newTexture = new ExtendedRenderTexture(targetTexture)
+                    .Create();
 
-                string savedPath = SaveTexture(colorChangerComponent.targetTexture, newTexture);
+                Texture2D newTexture2D = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
+
+                if (originalTexture == null || newTexture == null)
+                {
+                    Texture2D originalTexture2D = TextureUtils.GetRawTexture(targetTexture);
+                    TextureUtils.ProcessTexture(originalTexture2D, newTexture2D, colorChangerComponent, true);
+                    DestroyImmediate(originalTexture2D);
+                }
+                else
+                {
+                    TextureUtils.ProcessTexture(originalTexture, newTexture, colorChangerComponent);
+                
+                    RenderTexture.active = newTexture;
+                    newTexture2D.ReadPixels(new Rect(0, 0, newTexture.width, newTexture.height), 0, 0);
+                    newTexture2D.Apply();
+
+                    originalTexture.Dispose();
+                    newTexture.Dispose();
+                }
+
+                string savedPath = SaveTexture(targetTexture, newTexture2D);
+                DestroyImmediate(newTexture2D);
 
                 bool confirm = EditorUtility.DisplayDialog(
                     LocalizationManager.Get("editorwindow.generatetexture.success.confirm"),
@@ -577,11 +611,6 @@ namespace net.puk06.ColorChanger
             catch (Exception ex)
             {
                 LogUtils.LogError(LocalizationManager.Get("editorwindow.generatetexture.failed", colorChangerComponent.name, ex.ToString()));
-            }
-            finally
-            {
-                DestroyImmediate(originalTexture);
-                DestroyImmediate(newTexture);
             }
         }
 

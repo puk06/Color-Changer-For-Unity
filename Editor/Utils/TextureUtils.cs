@@ -62,11 +62,12 @@ namespace net.puk06.ColorChanger.Utils
         /// <param name="originalTexture"></param>
         /// <param name="targetTexture"></param>
         /// <param name="colorChangerComponent"></param>
+        /// <param name="isBuild"></param>
         /// <exception cref="ArgumentException"></exception>
-        internal static void ProcessTexture<T>(T originalTexture, T targetTexture, ColorChangerForUnity colorChangerComponent)
+        internal static void ProcessTexture<T>(T originalTexture, T targetTexture, ColorChangerForUnity colorChangerComponent, bool isBuild = false)
         {
             var colorDifference = new ColorDifference(colorChangerComponent.previousColor, colorChangerComponent.newColor);
-            var imageProcessor = new ImageProcessor(colorDifference);
+            var imageProcessor = new ImageProcessor(colorDifference, isBuild);
 
             if (colorChangerComponent.balanceModeConfiguration.ModeVersion != 0)
                 imageProcessor.SetBalanceSettings(colorChangerComponent.balanceModeConfiguration);
