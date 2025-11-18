@@ -13,6 +13,12 @@ namespace net.puk06.ColorChanger.Utils
     [InitializeOnLoad]
     public static class UpdateUtils
     {
+        private static string _currentVersion = "";
+        private static string _latestVersion = "";
+
+        public static string CurrentVersion => _currentVersion;
+        public static string LatestVersion => _latestVersion;
+
         private const string PackageName = "net.puk06.color-changer";
         private const string UpdateCheckURL = "https://update.pukosrv.net/check/colorchangerunity";
         private static readonly HttpClient _httpClient = new HttpClient();
@@ -26,20 +32,24 @@ namespace net.puk06.ColorChanger.Utils
         {
             try
             {
-                // ちょっと待機
-                await Task.Delay(8000);
-
                 var packageInfomation = GetPackageInfo(PackageName);
                 if (packageInfomation == null) return;
 
                 var version = packageInfomation.version;
                 if (version == "") return;
 
+                _currentVersion = version;
+
                 string response = await _httpClient.GetStringAsync(UpdateCheckURL);
                 if (response == null) return;
 
                 VersionData versionData = JsonUtility.FromJson<VersionData>(response);
                 if (versionData == null) return;
+
+                _latestVersion = versionData.LatestVersion;
+
+                // ちょっと待機 (コンソールに埋まっちゃうのを防ぐため)
+                await Task.Delay(8000);
 
                 if (versionData.LatestVersion == version)
                 {
@@ -73,6 +83,46 @@ namespace net.puk06.ColorChanger.Utils
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// バージョン表記をUI上に作成します
+        /// </summary>
+        public static void GenerateUpdateLabel()
+        {
+            if (_currentVersion == "") return;
+            
+            GUIStyle versionLabel = new GUIStyle(EditorStyles.label)
+            {
+                fontSize = 16,
+                fontStyle = FontStyle.Bold,
+                normal = { textColor = _currentVersion == "" || _latestVersion == "" || _currentVersion == _latestVersion ? Color.white : Color.yellow }
+            };
+
+            if (_currentVersion == "")
+            {
+                EditorGUILayout.LabelField(
+                    "Version",
+                    $"Loading...",
+                    versionLabel
+                );
+            }
+            else if (_latestVersion == "" || _currentVersion == _latestVersion)
+            {
+                EditorGUILayout.LabelField(
+                    "Version",
+                    $"v{_currentVersion}",
+                    versionLabel
+                );
+            }
+            else
+            {
+                EditorGUILayout.LabelField(
+                    "Version",
+                    $"v{_currentVersion} → v{_latestVersion}",
+                    versionLabel
+                );
+            }
         }
     }
 }

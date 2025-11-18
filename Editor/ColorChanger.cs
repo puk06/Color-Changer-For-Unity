@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using net.puk06.ColorChanger.Localization;
-using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using net.puk06.TextureReplacer;
 using UnityEditor;
@@ -136,6 +135,7 @@ namespace net.puk06.ColorChanger
                 GUI.DrawTexture(rect, logoTexture, ScaleMode.ScaleToFit);
             }
 
+            UpdateUtils.GenerateUpdateLabel();
             LocalizationUtils.GenerateLanguagePopup();
 
             ColorChangerForUnity? comp = target as ColorChangerForUnity;
