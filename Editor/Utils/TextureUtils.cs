@@ -96,6 +96,45 @@ namespace net.puk06.ColorChanger.Utils
         }
 
         /// <summary>
+        /// テクスチャを生成します。
+        /// </summary>
+        /// <param name="originalTexture"></param>
+        /// <param name="colorChangerComponent"></param>
+        /// <returns></returns>
+        internal static Texture2D GetProcessedTexture(Texture2D originalTexture, ColorChangerForUnity colorChangerComponent)
+        {
+            ExtendedRenderTexture originalTextureRT = new ExtendedRenderTexture(originalTexture)
+                .Create(originalTexture);
+
+            ExtendedRenderTexture newTextureRT = new ExtendedRenderTexture(originalTexture)
+                .Create();
+
+            Texture2D newTexture2D = new Texture2D(originalTextureRT.width, originalTextureRT.height, TextureFormat.RGBA32, false, false);
+
+            if (originalTextureRT == null || newTextureRT == null) // GPUでのRenderTexture作成に失敗した時に使用されるCPUビルド
+            {
+                Texture2D originalTexture2D = GetRawTexture(originalTexture);
+                ProcessTexture(originalTexture2D, newTexture2D, colorChangerComponent);
+                Object.DestroyImmediate(originalTexture2D);
+            }
+            else
+            {
+                ProcessTexture(originalTextureRT, newTextureRT, colorChangerComponent);
+            
+                RenderTexture.active = newTextureRT;
+                newTexture2D.ReadPixels(new Rect(0, 0, newTextureRT.width, newTextureRT.height), 0, 0);
+                newTexture2D.Apply();
+            }
+
+            
+            if (originalTextureRT != null) originalTextureRT.Dispose();
+            if (newTextureRT != null) newTextureRT.Dispose();
+
+            return newTexture2D;
+        }
+
+
+        /// <summary>
         /// シーン上のオブジェクトで、渡されたテクスチャを使っているものを全て新しいテクスチャに置き換えます。
         /// </summary>
         /// <param name="oldTex"></param>

@@ -74,32 +74,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                     try
                     {
-                        // TODO: GPUメモリリークするかも
-                        ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(firstComponent.targetTexture!)
-                            .Create(firstComponent.targetTexture!);
-
-                        ExtendedRenderTexture newTexture = new ExtendedRenderTexture(firstComponent.targetTexture!)
-                            .Create();
-
-                        Texture2D newTexture2D = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false, false);
-
-                        if (originalTexture == null || newTexture == null)
-                        {
-                            Texture2D originalTexture2D = TextureUtils.GetRawTexture(firstComponent.targetTexture!);
-                            TextureUtils.ProcessTexture(originalTexture2D, newTexture2D, firstComponent.parentComponent);
-                            Object.DestroyImmediate(originalTexture2D);
-                        }
-                        else
-                        {
-                            TextureUtils.ProcessTexture(originalTexture, newTexture, firstComponent.parentComponent);
-                        
-                            RenderTexture.active = newTexture;
-                            newTexture2D.ReadPixels(new Rect(0, 0, newTexture.width, newTexture.height), 0, 0);
-                            newTexture2D.Apply();
-
-                            originalTexture.Dispose();
-                            newTexture.Dispose();
-                        }
+                        Texture2D newTexture2D = TextureUtils.GetProcessedTexture(firstComponent.targetTexture!, firstComponent.parentComponent);
 
                         AssetDatabase.AddObjectToAsset(newTexture2D, buildContext.AssetContainer);
                         processedDictionary.Add(firstComponent.targetTexture!, newTexture2D);

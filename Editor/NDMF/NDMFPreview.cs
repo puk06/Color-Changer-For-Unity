@@ -233,10 +233,10 @@ namespace net.puk06.ColorChanger.NDMF
         {
             if (componentValue == null || componentValue.targetTexture == null) return null;
 
-            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(componentValue.targetTexture!)
+            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(componentValue.targetTexture)
                 .Create(componentValue.targetTexture!);
 
-            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(componentValue.targetTexture!)
+            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(componentValue.targetTexture)
                 .Create();
 
             if (originalTexture == null || newTexture == null)
@@ -255,7 +255,7 @@ namespace net.puk06.ColorChanger.NDMF
         {
             if (componentValue == null || componentValue.targetTexture == null) return null;
 
-            Texture2D originalTexture = TextureUtils.GetRawTexture(componentValue.targetTexture!);
+            Texture2D originalTexture = TextureUtils.GetRawTexture(componentValue.targetTexture);
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
 
             TextureUtils.ProcessTexture(originalTexture, newTexture, componentValue.parentComponent);
