@@ -145,7 +145,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                     if (groupedComponent.Count() >= 2)
                     {
-                        LogUtils.LogWarning($"Duplicate targetTexture detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.parentComponent.gameObject.name}')");
+                        LogUtils.LogWarning($"Duplicate TargetTexture Detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.parentComponent.gameObject.name}')");
                     }
 
                     // テクスチャを作る
