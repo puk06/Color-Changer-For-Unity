@@ -17,50 +17,54 @@ namespace net.puk06.ColorChanger
     public class ColorChanger : Editor
     {
         #region Script Settings Serialized Property
-        private SerializedProperty enabledButtonProp = null!;
-        private SerializedProperty previewEnabledButtonProp = null!;
-        private SerializedProperty previewOnCPUButtonProp = null!;
-        private SerializedProperty targetTextureProp = null!;
-        private SerializedProperty settingsInheritedTexturesProp = null!;
-        private SerializedProperty replacementTextureProp = null!;
+        private SerializedProperty EnabledButtonProp => serializedObject.FindProperty("Enabled");
+        private SerializedProperty PreviewEnabledButtonProp => serializedObject.FindProperty("PreviewEnabled");
+        private SerializedProperty PreviewOnCPUButtonProp => serializedObject.FindProperty("PreviewOnCPU");
+        private SerializedProperty TargetTextureProp => serializedObject.FindProperty("targetTexture");
+        private SerializedProperty SettingsInheritedTexturesProp => serializedObject.FindProperty("settingsInheritedTextures");
+        private SerializedProperty ReplacementTextureProp => serializedObject.FindProperty("replacementTexture");
+        private SerializedProperty MaskTextureProp => serializedObject.FindProperty("maskTexture");
+        private SerializedProperty MaskSelectionTypeTextureProp => serializedObject.FindProperty("imageMaskSelectionType");
         #endregion
 
         #region Color Settings Serialized Property
-        private SerializedProperty previousColorProp = null!;
-        private SerializedProperty newColorProp = null!;
+        private SerializedProperty PreviousColorProp => serializedObject.FindProperty("previousColor");
+        private SerializedProperty NewColorProp => serializedObject.FindProperty("newColor");
         #endregion
 
         #region Balance Mode Serialized Property
-        private SerializedProperty balanceModeConfigProp = null!;
+        private SerializedProperty BalanceModeConfigProp => serializedObject.FindProperty("balanceModeConfiguration");
 
-        private SerializedProperty modeVersionProp = null!;
+        private SerializedProperty ModeVersionProp => BalanceModeConfigProp.FindPropertyRelative("ModeVersion");
         
-        private SerializedProperty v1WeightProp = null!;
-        private SerializedProperty v1MinValueProp = null!;
-        
-        private SerializedProperty v2RadiusProp = null!;
-        private SerializedProperty v2WeightProp = null!;
-        private SerializedProperty v2MinValueProp = null!;
-        private SerializedProperty v2IncludeOutsideProp = null!;
+        private SerializedProperty V1WeightProp => BalanceModeConfigProp.FindPropertyRelative("V1Weight");
+        private SerializedProperty V1MinValueProp => BalanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
 
-        private SerializedProperty v3GradientProp = null!;
-        private SerializedProperty v3GradientPreviewResolutionProp = null!;
-        private SerializedProperty v3GradientBuildResolutionProp = null!;
+        
+        private SerializedProperty V2RadiusProp => BalanceModeConfigProp.FindPropertyRelative("V2Radius");
+        private SerializedProperty V2WeightProp => BalanceModeConfigProp.FindPropertyRelative("V2Weight");
+        private SerializedProperty V2MinValueProp => BalanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
+        private SerializedProperty V2IncludeOutsideProp => BalanceModeConfigProp.FindPropertyRelative("V2IncludeOutside");
+
+        private SerializedProperty V3GradientProp => BalanceModeConfigProp.FindPropertyRelative("V3GradientColor");
+        private SerializedProperty V3GradientPreviewResolutionProp => BalanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
+        private SerializedProperty V3GradientBuildResolutionProp => BalanceModeConfigProp.FindPropertyRelative("V3GradientBuildResolution");
         #endregion
 
         #region Advanced Color Settings Serialized Property
-        private SerializedProperty advancedColorConfigProp = null!;
-        private SerializedProperty enabledProp = null!;
+        private SerializedProperty AdvancedColorConfigProp => serializedObject.FindProperty("advancedColorConfiguration");
+        private SerializedProperty EnabledProp => AdvancedColorConfigProp.FindPropertyRelative("Enabled");
 
-        private SerializedProperty brightnessProp = null!;
-        private SerializedProperty contrastProp = null!;
-        private SerializedProperty gammaProp = null!;
-        private SerializedProperty exposureProp = null!;
-        private SerializedProperty transparencyProp = null!;
+        private SerializedProperty BrightnessProp => AdvancedColorConfigProp.FindPropertyRelative("Brightness");
+        private SerializedProperty ContrastProp => AdvancedColorConfigProp.FindPropertyRelative("Contrast");
+        private SerializedProperty GammaProp => AdvancedColorConfigProp.FindPropertyRelative("Gamma");
+        private SerializedProperty ExposureProp => AdvancedColorConfigProp.FindPropertyRelative("Exposure");
+        private SerializedProperty TransparencyProp => AdvancedColorConfigProp.FindPropertyRelative("Transparency");
         #endregion
 
         private bool showColorChangerSettings = true;
         private bool showTextureSettings = false;
+        private bool showMaskTextureSettings = false;
         private bool showSettingsInheritedTextureSettings = false;
         private bool showTextureReplacementSettings = false;
         private bool showColorSettings = true;
@@ -78,40 +82,6 @@ namespace net.puk06.ColorChanger
             V1,
             V2,
             V3
-        }
-
-        void OnEnable()
-        {
-            enabledButtonProp = serializedObject.FindProperty("Enabled");
-            previewEnabledButtonProp = serializedObject.FindProperty("PreviewEnabled");
-            previewOnCPUButtonProp = serializedObject.FindProperty("PreviewOnCPU");
-
-            targetTextureProp = serializedObject.FindProperty("targetTexture");
-            settingsInheritedTexturesProp = serializedObject.FindProperty("settingsInheritedTextures");
-            replacementTextureProp = serializedObject.FindProperty("replacementTexture");
-            
-            previousColorProp = serializedObject.FindProperty("previousColor");
-            newColorProp = serializedObject.FindProperty("newColor");
-
-            balanceModeConfigProp = serializedObject.FindProperty("balanceModeConfiguration");
-            modeVersionProp = balanceModeConfigProp.FindPropertyRelative("ModeVersion");
-            v1WeightProp = balanceModeConfigProp.FindPropertyRelative("V1Weight");
-            v1MinValueProp = balanceModeConfigProp.FindPropertyRelative("V1MinimumValue");
-            v2RadiusProp = balanceModeConfigProp.FindPropertyRelative("V2Radius");
-            v2WeightProp = balanceModeConfigProp.FindPropertyRelative("V2Weight");
-            v2MinValueProp = balanceModeConfigProp.FindPropertyRelative("V2MinimumValue");
-            v2IncludeOutsideProp = balanceModeConfigProp.FindPropertyRelative("V2IncludeOutside");
-            v3GradientProp = balanceModeConfigProp.FindPropertyRelative("V3GradientColor");
-            v3GradientPreviewResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientPreviewResolution");
-            v3GradientBuildResolutionProp = balanceModeConfigProp.FindPropertyRelative("V3GradientBuildResolution");
-
-            advancedColorConfigProp = serializedObject.FindProperty("advancedColorConfiguration");
-            enabledProp = advancedColorConfigProp.FindPropertyRelative("Enabled");
-            brightnessProp = advancedColorConfigProp.FindPropertyRelative("Brightness");
-            contrastProp = advancedColorConfigProp.FindPropertyRelative("Contrast");
-            gammaProp = advancedColorConfigProp.FindPropertyRelative("Gamma");
-            exposureProp = advancedColorConfigProp.FindPropertyRelative("Exposure");
-            transparencyProp = advancedColorConfigProp.FindPropertyRelative("Transparency");
         }
 
         public override void OnInspectorGUI()
@@ -159,6 +129,9 @@ namespace net.puk06.ColorChanger
                 // 設定を継承しているテクスチャの設定画面
                 DrawSettingsInheritedTexturesSettings();
 
+                // マスク画像設定画面
+                DrawMaskTextureSettingsGUI(comp);
+
                 // テクスチャ置き換え設定画面
                 DrawTextureReplacementSettingsGUI();
 
@@ -198,11 +171,11 @@ namespace net.puk06.ColorChanger
             {
                 EditorGUI.indentLevel = 2;
 
-                enabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.enable"), enabledButtonProp.boolValue);
-                previewEnabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.previewenable"), previewEnabledButtonProp.boolValue);
+                EnabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.enable"), EnabledButtonProp.boolValue);
+                PreviewEnabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.previewenable"), PreviewEnabledButtonProp.boolValue);
 
                 EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.scriptsetting.cpurendering.warning"), MessageType.Warning);
-                previewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.cpurendering.enable"), previewOnCPUButtonProp.boolValue);
+                PreviewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsetting.cpurendering.enable"), PreviewOnCPUButtonProp.boolValue);
 
 #if USE_TEXTRANSTOOL
                 var mlicComponent = colorChangerComponent.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>();
@@ -252,7 +225,7 @@ namespace net.puk06.ColorChanger
 
             if (showTextureSettings)
             {
-                targetTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationManager.Get("editorwindow.texturesetting.target"), (Texture2D)targetTextureProp.objectReferenceValue, typeof(Texture2D), true);
+                TargetTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationManager.Get("editorwindow.texturesetting.target"), (Texture2D)TargetTextureProp.objectReferenceValue, typeof(Texture2D), true);
 
                 if (colorChangerComponent.targetTexture != null)
                 {
@@ -275,7 +248,67 @@ namespace net.puk06.ColorChanger
                     var mainTexture = TextureUtils.GetMainTextureFromGameobject(gameObject);
                     if (mainTexture != null)
                     {
-                        targetTextureProp.objectReferenceValue = mainTexture;
+                        TargetTextureProp.objectReferenceValue = mainTexture;
+                    }
+                }
+            }
+
+            EditorGUI.indentLevel = 0;
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawMaskTextureSettingsGUI(ColorChangerForUnity colorChangerComponent)
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            EditorGUI.indentLevel = 1;
+
+            showMaskTextureSettings = EditorGUILayout.Foldout(
+                showMaskTextureSettings,
+                LocalizationManager.Get("editorwindow.masktexturesetting"),
+                true,
+                UnityUtils.TitleStyle
+            );
+
+            if (showMaskTextureSettings)
+            {
+                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.masktexturesetting.description"), MessageType.Info);
+                MaskTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationManager.Get("editorwindow.masktexturesetting.texture"), (Texture2D)MaskTextureProp.objectReferenceValue, typeof(Texture2D), true);
+
+                string[] MaskLabels = {
+                    LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype.none"),
+                    LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype.black"),
+                    LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype.white"),
+                    string.Format("{0} (A = 255)", LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype.opaque")),
+                    string.Format("{0} (A ≠ 0)", LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype.opaque")),
+                    string.Format("{0} (A = 0)", LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype.transparent"))
+                };
+
+                MaskSelectionTypeTextureProp.enumValueIndex = EditorGUILayout.Popup(
+                    new GUIContent(
+                        LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype"),
+                        LocalizationManager.Get("editorwindow.masktexturesetting.selectiontype.description")
+                    ),
+                    MaskSelectionTypeTextureProp.enumValueIndex, MaskLabels
+                );
+
+                if (colorChangerComponent.ComponentTexture != null && colorChangerComponent.maskTexture != null)
+                {
+                    if (TextureUtils.IsSameSizeTexture(colorChangerComponent.ComponentTexture, colorChangerComponent.maskTexture))
+                    {
+                        float displayWidth = EditorGUIUtility.currentViewWidth - 40;
+                        float aspect = (float)colorChangerComponent.maskTexture.height / colorChangerComponent.maskTexture.width;
+                        float displayHeight = displayWidth * aspect;
+
+                        Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
+                        rect.x = ((EditorGUIUtility.currentViewWidth - rect.width) / 2) + 5;
+
+                        GUI.DrawTexture(rect, colorChangerComponent.maskTexture, ScaleMode.ScaleToFit);
+                    }
+                    else
+                    {
+                        EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.masktexturesetting.mismatchresolution"), MessageType.Error);
                     }
                 }
             }
@@ -303,7 +336,7 @@ namespace net.puk06.ColorChanger
                 EditorGUI.indentLevel = 2;
 
                 EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.settingsinheritedtextures.description"), MessageType.Info);
-                EditorGUILayout.PropertyField(settingsInheritedTexturesProp, true);
+                EditorGUILayout.PropertyField(SettingsInheritedTexturesProp, true);
 
                 EditorGUI.indentLevel = 1;
             }
@@ -329,7 +362,7 @@ namespace net.puk06.ColorChanger
             if (showTextureReplacementSettings)
             {
                 EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.texturereplacementsetting.description"), MessageType.Info);
-                replacementTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationManager.Get("editorwindow.texturereplacementsetting.destination"), (Texture2D)replacementTextureProp.objectReferenceValue, typeof(Texture2D), true);
+                ReplacementTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationManager.Get("editorwindow.texturereplacementsetting.destination"), (Texture2D)ReplacementTextureProp.objectReferenceValue, typeof(Texture2D), true);
             }
 
             EditorGUI.indentLevel = 0;
@@ -354,8 +387,8 @@ namespace net.puk06.ColorChanger
             {
                 EditorGUI.indentLevel = 2;
 
-                previousColorProp.colorValue = EditorGUILayout.ColorField(LocalizationManager.Get("editorwindow.colorsetting.previouscolor"), previousColorProp.colorValue);
-                newColorProp.colorValue = EditorGUILayout.ColorField(LocalizationManager.Get("editorwindow.colorsetting.newcolor"), newColorProp.colorValue);
+                PreviousColorProp.colorValue = EditorGUILayout.ColorField(LocalizationManager.Get("editorwindow.colorsetting.previouscolor"), PreviousColorProp.colorValue);
+                NewColorProp.colorValue = EditorGUILayout.ColorField(LocalizationManager.Get("editorwindow.colorsetting.newcolor"), NewColorProp.colorValue);
 
                 EditorGUI.indentLevel = 1;
             }
@@ -382,12 +415,12 @@ namespace net.puk06.ColorChanger
             {
                 EditorGUI.indentLevel = 2;
 
-                modeVersionProp.intValue = (int)(BalanceModeSettings)EditorGUILayout.EnumPopup(
+                ModeVersionProp.intValue = (int)(BalanceModeSettings)EditorGUILayout.EnumPopup(
                     new GUIContent(
                         LocalizationManager.Get("editorwindow.balancemode"),
                         LocalizationManager.Get("editorwindow.balancemode.description")
                     ),
-                    (BalanceModeSettings)modeVersionProp.intValue
+                    (BalanceModeSettings)ModeVersionProp.intValue
                 );
 
                 showBalanceModeV1Settings = EditorGUILayout.Foldout(
@@ -403,8 +436,8 @@ namespace net.puk06.ColorChanger
 
                     EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v1.description"), MessageType.Info);
 
-                    v1WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.weight"), v1WeightProp.floatValue);
-                    v1MinValueProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.minvalue"), v1MinValueProp.floatValue);
+                    V1WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.weight"), V1WeightProp.floatValue);
+                    V1MinValueProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v1.minvalue"), V1MinValueProp.floatValue);
 
                     EditorGUI.indentLevel = 2;
                 }
@@ -422,10 +455,10 @@ namespace net.puk06.ColorChanger
 
                     EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v2.description"), MessageType.Info);
 
-                    v2RadiusProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.radius"), v2RadiusProp.floatValue);
-                    v2WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.weight"), v2WeightProp.floatValue);
-                    v2MinValueProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.minvalue"), v2MinValueProp.floatValue);
-                    v2IncludeOutsideProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.balancemode.v2.includeoutside"), v2IncludeOutsideProp.boolValue);
+                    V2RadiusProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.radius"), V2RadiusProp.floatValue);
+                    V2WeightProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.weight"), V2WeightProp.floatValue);
+                    V2MinValueProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.balancemode.v2.minvalue"), V2MinValueProp.floatValue);
+                    V2IncludeOutsideProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.balancemode.v2.includeoutside"), V2IncludeOutsideProp.boolValue);
 
                     EditorGUI.indentLevel = 2;
                 }
@@ -443,7 +476,7 @@ namespace net.puk06.ColorChanger
 
                     EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.description"), MessageType.Info);
 
-                    v3GradientProp.gradientValue = EditorGUILayout.GradientField(LocalizationManager.Get("editorwindow.balancemode.v3.gradient"), v3GradientProp.gradientValue);
+                    V3GradientProp.gradientValue = EditorGUILayout.GradientField(LocalizationManager.Get("editorwindow.balancemode.v3.gradient"), V3GradientProp.gradientValue);
 
                     showBalanceModeV3LUTSettings = EditorGUILayout.Foldout(
                         showBalanceModeV3LUTSettings,
@@ -458,10 +491,10 @@ namespace net.puk06.ColorChanger
 
                         EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutdescription"), MessageType.Info);
                         
-                        v3GradientPreviewResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.previewresolution"), v3GradientPreviewResolutionProp.intValue);
-                        v3GradientBuildResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.buildresolution"), v3GradientBuildResolutionProp.intValue);
+                        V3GradientPreviewResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.previewresolution"), V3GradientPreviewResolutionProp.intValue);
+                        V3GradientBuildResolutionProp.intValue = EditorGUILayout.IntField(LocalizationManager.Get("editorwindow.balancemode.v3.buildresolution"), V3GradientBuildResolutionProp.intValue);
 
-                        if (v3GradientBuildResolutionProp.intValue < v3GradientPreviewResolutionProp.intValue)
+                        if (V3GradientBuildResolutionProp.intValue < V3GradientPreviewResolutionProp.intValue)
                         {
                             EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.balancemode.v3.lutresolutionwarning"), MessageType.Warning);
                         }
@@ -494,12 +527,12 @@ namespace net.puk06.ColorChanger
             {
                 EditorGUI.indentLevel = 2;
 
-                enabledProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.advancedsettings.enable"), enabledProp.boolValue);
-                brightnessProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.brightness"), brightnessProp.floatValue);
-                contrastProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.contrast"), contrastProp.floatValue);
-                gammaProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.gamma"), gammaProp.floatValue);
-                exposureProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.exposure"), exposureProp.floatValue);
-                transparencyProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.transparency"), transparencyProp.floatValue);
+                EnabledProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.advancedsettings.enable"), EnabledProp.boolValue);
+                BrightnessProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.brightness"), BrightnessProp.floatValue);
+                ContrastProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.contrast"), ContrastProp.floatValue);
+                GammaProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.gamma"), GammaProp.floatValue);
+                ExposureProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.exposure"), ExposureProp.floatValue);
+                TransparencyProp.floatValue = EditorGUILayout.FloatField(LocalizationManager.Get("editorwindow.advancedsettings.transparency"), TransparencyProp.floatValue);
 
                 EditorGUI.indentLevel = 1;
             }
@@ -532,11 +565,11 @@ namespace net.puk06.ColorChanger
 
             if (GUILayout.Button(LocalizationManager.Get("editorwindow.textureoutput.button"), GUILayout.ExpandWidth(true)))
             {
-                GenerateTexture(colorChangerComponent, textures[selectedTextureIndex]);
+                GenerateTexture(colorChangerComponent, textures[selectedTextureIndex], selectedTextureIndex == 0);
             }
         }
 
-        private void GenerateTexture(ColorChangerForUnity colorChangerComponent, Texture2D? targetTexture)
+        private void GenerateTexture(ColorChangerForUnity colorChangerComponent, Texture2D? targetTexture, bool useMask)
         {
             if (targetTexture == null)
             {
@@ -546,7 +579,7 @@ namespace net.puk06.ColorChanger
 
             try
             {
-                Texture2D newTexture2D = TextureUtils.GetProcessedTexture(targetTexture, colorChangerComponent);
+                Texture2D newTexture2D = TextureUtils.GetProcessedTexture(targetTexture, colorChangerComponent, useMask);
 
                 string savedPath = SaveTexture(targetTexture, newTexture2D);
                 DestroyImmediate(newTexture2D);

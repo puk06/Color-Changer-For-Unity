@@ -6,6 +6,11 @@
 RWTexture2D<float4> _Source;
 RWTexture2D<float4> _Target;
 
+// Mask Texture
+bool _useMask;
+RWTexture2D<float4> _maskTexture;
+int _maskSelectionType;
+
 int3 _prevColor;
 int3 _ColorOffset;
 
@@ -29,12 +34,34 @@ float _advancedColorSettingsGamma;
 float _advancedColorSettingsExposure;
 float _advancedColorSettingsTransparency;
 
+bool IsMaskSelected(float2 id)
+{
+    uint width, height;
+    _maskTexture.GetDimensions(width, height);
+    if (id.x >= width || id.y >= height) return false;
+    int4 color = (int4)(_maskTexture[id.xy] * 255.0);
+
+    if (_maskSelectionType == 1) return color.r == 0 && color.g == 0 && color.b == 0;
+    if (_maskSelectionType == 2) return color.r == 255 && color.g == 255 && color.b == 255;
+    if (_maskSelectionType == 3) return color.a == 255;
+    if (_maskSelectionType == 4) return color.a != 0;
+    if (_maskSelectionType == 5) return color.a == 0;
+
+    return false;
+}
+
 [numthreads(16, 16, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     uint width, height;
     _Target.GetDimensions(width, height);
     if (id.x >= width || id.y >= height) return;
+
+    if (_useMask && !IsMaskSelected(id.xy))
+    {
+        _Target[id.xy] = _Source[id.xy];
+        return;
+    }
 
     int4 color = (int4)(_Source[id.xy] * 255.0);
 

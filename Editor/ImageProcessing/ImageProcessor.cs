@@ -58,13 +58,14 @@ namespace net.puk06.ColorChanger.ImageProcessing
             _isAdvancedColorMode = true;
         }
 
-        internal void ProcessAllPixels(Texture2D? source, Texture2D? target)
+        internal void ProcessAllPixels(Texture2D? source, Texture2D? target, Texture2D? mask = null, ImageMaskSelectionType imageMaskSelectionType = ImageMaskSelectionType.None)
         {
             if (source == null || target == null) return;
 
             NativeArray<Color32> rawData = source.GetRawTextureData<Color32>();
             NativeArray<Color32> targetData = target.GetRawTextureData<Color32>();
-
+            NativeArray<Color32> maskData = new();
+            if (mask != null) maskData = mask.GetRawTextureData<Color32>();
 
             Color32[]? v3GradientLUT = null;
             if (_isBalanceMode)
@@ -73,15 +74,35 @@ namespace net.puk06.ColorChanger.ImageProcessing
                 v3GradientLUT = ColorUtils.CalculateGradientLUT(_balanceModeConfiguration.V3GradientColor, resolution);
             }
 
+            bool IsMaskSelected(int index)
+            {
+                if (index >= maskData.Length) return false;
+                Color32 color = maskData[index];
+
+                if (imageMaskSelectionType == ImageMaskSelectionType.Black) return color.r == 0 && color.g == 0 && color.b == 0;
+                if (imageMaskSelectionType == ImageMaskSelectionType.White) return color.r == 255 && color.g == 255 && color.b == 255;
+                if (imageMaskSelectionType == ImageMaskSelectionType.Opaque) return color.a == 255;
+                if (imageMaskSelectionType == ImageMaskSelectionType.Opaque1) return color.a != 0;
+                if (imageMaskSelectionType == ImageMaskSelectionType.Transparent) return color.a == 0;
+
+                return false;
+            }
+
             for (int i = 0; i < targetData.Length; i++)
             {
+                if (maskData.Length != 0 && !IsMaskSelected(i))
+                {
+                    targetData[i] = rawData[i];
+                    continue;
+                }
+
                 targetData[i] = ProcessPixel(rawData[i], v3GradientLUT);
             }
 
             target.Apply();
         }
 
-        internal void ProcessAllPixelsGPU(RenderTexture? source, RenderTexture? target)
+        internal void ProcessAllPixelsGPU(RenderTexture? source, RenderTexture? target, RenderTexture? mask = null, ImageMaskSelectionType imageMaskSelectionType = ImageMaskSelectionType.None)
         {
             if (source == null || target == null) return;
             
@@ -100,6 +121,10 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
                 colorComputeShader.SetTexture(kernel, "_Source", source);
                 colorComputeShader.SetTexture(kernel, "_Target", target);
+
+                colorComputeShader.SetBool("_useMask", mask != null && imageMaskSelectionType != ImageMaskSelectionType.None);
+                colorComputeShader.SetTexture(kernel, "_maskTexture", mask != null ? mask : DummyRenderTexture.Instance);
+                colorComputeShader.SetInt("_maskSelectionType", (int)imageMaskSelectionType);
 
                 colorComputeShader.SetInts("_prevColor", ColorUtils.GetIntsColorValue(_colorOffset.PreviousColor));
                 colorComputeShader.SetInts("_ColorOffset", _colorOffset.ToInts());

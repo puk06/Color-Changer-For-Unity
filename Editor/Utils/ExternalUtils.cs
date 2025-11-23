@@ -1,3 +1,4 @@
+#nullable enable
 using net.puk06.ColorChanger.Models;
 using UnityEditor;
 using UnityEngine;
@@ -19,10 +20,18 @@ namespace net.puk06.ColorChanger.Utils
             RenderTextureReadWrite readWrite = renderTexture.sRGB ? RenderTextureReadWrite.sRGB : RenderTextureReadWrite.Linear;
             ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(renderTexture, readWrite)
                 .Create(renderTexture);
+            
+            ExtendedRenderTexture? maskTexture = null;
+            if (component.maskTexture != null && TextureUtils.IsSameSizeTexture(renderTexture, component.maskTexture))
+            {
+                maskTexture = new ExtendedRenderTexture(component.maskTexture)
+                    .Create(component.maskTexture);
+            }
 
-            TextureUtils.ProcessTexture(originalTexture, renderTexture, component);
+            TextureUtils.ProcessTexture(originalTexture, renderTexture, maskTexture, component);
 
             originalTexture.Dispose();
+            if (maskTexture != null) maskTexture.Dispose();
         }
     }
 }

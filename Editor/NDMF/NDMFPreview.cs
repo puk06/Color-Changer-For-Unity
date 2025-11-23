@@ -111,11 +111,11 @@ namespace net.puk06.ColorChanger.NDMF
                 var enabledInternalComponentsValues = new List<InternalColorChangerValues>();
                 foreach (var component in enabledComponents)
                 {
-                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture));
+                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture, true));
                     foreach (var otherTexture in component.settingsInheritedTextures)
                     {
                         if (otherTexture == null) continue;
-                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture));
+                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, false));
                     }
                 }
 
@@ -234,19 +234,31 @@ namespace net.puk06.ColorChanger.NDMF
             if (componentValue == null || componentValue.targetTexture == null) return null;
 
             ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(componentValue.targetTexture)
-                .Create(componentValue.targetTexture!);
+                .Create(componentValue.targetTexture);
 
             ExtendedRenderTexture newTexture = new ExtendedRenderTexture(componentValue.targetTexture)
                 .Create();
 
+            ExtendedRenderTexture? maskTexture = null;
+            
+            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null && TextureUtils.IsSameSizeTexture(componentValue.targetTexture, componentValue.parentComponent.maskTexture) )
+            {
+                maskTexture = new ExtendedRenderTexture(componentValue.parentComponent.maskTexture)
+                        .Create(componentValue.parentComponent.maskTexture);
+            }
+
             if (originalTexture == null || newTexture == null)
             {
+                if (originalTexture != null) originalTexture.Dispose();
+                if (newTexture != null) newTexture.Dispose();
+                if (maskTexture != null) maskTexture.Dispose();
                 return null;
             }
 
-            TextureUtils.ProcessTexture(originalTexture, newTexture, componentValue.parentComponent);
+            TextureUtils.ProcessTexture(originalTexture, newTexture, maskTexture, componentValue.parentComponent);
 
             originalTexture.Dispose();
+            if (maskTexture != null) maskTexture.Dispose();
 
             return newTexture;
         }
@@ -257,10 +269,17 @@ namespace net.puk06.ColorChanger.NDMF
 
             Texture2D originalTexture = TextureUtils.GetRawTexture(componentValue.targetTexture);
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
+            Texture2D? maskTexture = null;
 
-            TextureUtils.ProcessTexture(originalTexture, newTexture, componentValue.parentComponent);
+            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null && TextureUtils.IsSameSizeTexture(componentValue.targetTexture, componentValue.parentComponent.maskTexture))
+            {
+                maskTexture = TextureUtils.GetRawTexture(componentValue.parentComponent.maskTexture);
+            }
+
+            TextureUtils.ProcessTexture(originalTexture, newTexture, maskTexture, componentValue.parentComponent);
 
             Object.DestroyImmediate(originalTexture);
+            if (maskTexture != null) Object.DestroyImmediate(maskTexture);
 
             return newTexture;
         }

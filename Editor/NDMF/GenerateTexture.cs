@@ -36,11 +36,11 @@ namespace net.puk06.ColorChanger.NDMF
                 var enabledInternalComponentsValues = new List<InternalColorChangerValues>();
                 foreach (var component in enabledComponents)
                 {
-                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture));
+                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture, true));
                     foreach (var otherTexture in component.settingsInheritedTextures)
                     {
                         if (otherTexture == null) continue;
-                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture));
+                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, false));
                     }
                 }
 
@@ -74,7 +74,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                     try
                     {
-                        Texture2D newTexture2D = TextureUtils.GetProcessedTexture(firstComponent.targetTexture!, firstComponent.parentComponent);
+                        Texture2D newTexture2D = TextureUtils.GetProcessedTexture(firstComponent.targetTexture!, firstComponent.parentComponent, firstComponent.useMask);
 
                         AssetDatabase.AddObjectToAsset(newTexture2D, buildContext.AssetContainer);
                         processedDictionary.Add(firstComponent.targetTexture!, newTexture2D);

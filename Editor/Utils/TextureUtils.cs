@@ -61,10 +61,11 @@ namespace net.puk06.ColorChanger.Utils
         /// <typeparam name="T"></typeparam>
         /// <param name="originalTexture"></param>
         /// <param name="targetTexture"></param>
+        /// <param name="maskTexture"></param>
         /// <param name="colorChangerComponent"></param>
         /// <param name="isBuild"></param>
         /// <exception cref="ArgumentException"></exception>
-        internal static void ProcessTexture<T>(T originalTexture, T targetTexture, ColorChangerForUnity colorChangerComponent, bool isBuild = false)
+        internal static void ProcessTexture<T>(T originalTexture, T targetTexture, T maskTexture, ColorChangerForUnity colorChangerComponent, bool isBuild = false)
         {
             var colorDifference = new ColorDifference(colorChangerComponent.previousColor, colorChangerComponent.newColor);
             var imageProcessor = new ImageProcessor(colorDifference, isBuild);
@@ -79,14 +80,17 @@ namespace net.puk06.ColorChanger.Utils
             {
                 imageProcessor.ProcessAllPixels(
                     originalTexture as Texture2D,
-                    targetTexture as Texture2D
+                    targetTexture as Texture2D,
+                    maskTexture as Texture2D
                 );
             }
             else if (typeof(T) == typeof(ExtendedRenderTexture) || typeof(T) == typeof(RenderTexture))
             {
                 imageProcessor.ProcessAllPixelsGPU(
                     originalTexture as RenderTexture,
-                    targetTexture as RenderTexture
+                    targetTexture as RenderTexture,
+                    maskTexture as RenderTexture,
+                    colorChangerComponent.imageMaskSelectionType
                 );
             }
             else
@@ -100,8 +104,9 @@ namespace net.puk06.ColorChanger.Utils
         /// </summary>
         /// <param name="originalTexture"></param>
         /// <param name="colorChangerComponent"></param>
+        /// <param name="useMask"></param>
         /// <returns></returns>
-        internal static Texture2D GetProcessedTexture(Texture2D originalTexture, ColorChangerForUnity colorChangerComponent)
+        internal static Texture2D GetProcessedTexture(Texture2D originalTexture, ColorChangerForUnity colorChangerComponent, bool useMask)
         {
             ExtendedRenderTexture originalTextureRT = new ExtendedRenderTexture(originalTexture)
                 .Create(originalTexture);
@@ -109,17 +114,29 @@ namespace net.puk06.ColorChanger.Utils
             ExtendedRenderTexture newTextureRT = new ExtendedRenderTexture(originalTexture)
                 .Create();
 
+            ExtendedRenderTexture? maskTextureRT = null;
+            if (useMask && colorChangerComponent.maskTexture != null)
+            {
+                maskTextureRT = new ExtendedRenderTexture(colorChangerComponent.maskTexture)
+                    .Create(colorChangerComponent.maskTexture);
+            }
+
             Texture2D newTexture2D = new Texture2D(originalTextureRT.width, originalTextureRT.height, TextureFormat.RGBA32, false, false);
 
             if (originalTextureRT == null || newTextureRT == null) // GPUでのRenderTexture作成に失敗した時に使用されるCPUビルド
             {
                 Texture2D originalTexture2D = GetRawTexture(originalTexture);
-                ProcessTexture(originalTexture2D, newTexture2D, colorChangerComponent);
+
+                Texture2D? maskTexture2D = null;
+                if (colorChangerComponent.maskTexture != null) maskTexture2D = GetRawTexture(colorChangerComponent.maskTexture);
+
+                ProcessTexture(originalTexture2D, newTexture2D, maskTexture2D, colorChangerComponent);
                 Object.DestroyImmediate(originalTexture2D);
+                if (maskTexture2D != null) Object.DestroyImmediate(maskTexture2D);
             }
             else
             {
-                ProcessTexture(originalTextureRT, newTextureRT, colorChangerComponent);
+                ProcessTexture(originalTextureRT, newTextureRT, maskTextureRT, colorChangerComponent);
             
                 RenderTexture.active = newTextureRT;
                 newTexture2D.ReadPixels(new Rect(0, 0, newTextureRT.width, newTextureRT.height), 0, 0);
@@ -129,6 +146,7 @@ namespace net.puk06.ColorChanger.Utils
             
             if (originalTextureRT != null) originalTextureRT.Dispose();
             if (newTextureRT != null) newTextureRT.Dispose();
+            if (maskTextureRT != null) maskTextureRT.Dispose();
 
             return newTexture2D;
         }
@@ -273,5 +291,8 @@ namespace net.puk06.ColorChanger.Utils
 
             return rawTexture2D;
         }
+
+        internal static bool IsSameSizeTexture(Texture texture1, Texture texture2)
+            => texture1.width == texture2.width && texture1.height == texture2.height;
     }
 }

@@ -19,6 +19,9 @@ namespace net.puk06.ColorChanger
         public Texture2D? targetTexture = null;
         public Texture2D?[] settingsInheritedTextures = Array.Empty<Texture2D>();
         public Texture2D? replacementTexture = null;
+        
+        public Texture2D? maskTexture = null;
+        public ImageMaskSelectionType imageMaskSelectionType = ImageMaskSelectionType.None;
 
         public Color previousColor = Color.white;
         public Color newColor = Color.white;

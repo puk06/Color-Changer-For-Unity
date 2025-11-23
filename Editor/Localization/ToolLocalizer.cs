@@ -108,6 +108,72 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Replacement Texture",
                 ["ko"] = "교체할 텍스처"
             },
+            ["editorwindow.masktexturesetting"] = new()
+            {
+                ["ja"] = "マスク画像設定",
+                ["en"] = "Mask Texture Settings",
+                ["ko"] = "마스크 이미지 설정"
+            },
+            ["editorwindow.masktexturesetting.description"] = new()
+            {
+                ["ja"] = "マスク画像を使うことで、テクスチャの特定の部分だけに色の変更を適用でき、他の部分は変更されません。",
+                ["en"] = "Using a mask texture allows you to apply color changes only to specific parts of a texture while leaving other areas unchanged.",
+                ["ko"] = "마스크 이미지를 사용하면 텍스처의 특정 부분에만 색상 변경을 적용하고, 나머지 영역은 그대로 유지할 수 있습니다."
+            },
+            ["editorwindow.masktexturesetting.texture"] = new()
+            {
+                ["ja"] = "マスク画像",
+                ["en"] = "Mask Texture",
+                ["ko"] = "마스크 이미지"
+            },
+            ["editorwindow.masktexturesetting.selectiontype"] = new()
+            {
+                ["ja"] = "選択条件",
+                ["en"] = "Selection Type",
+                ["ko"] = "선택 조건"
+            },
+            ["editorwindow.masktexturesetting.selectiontype.none"] = new()
+            {
+                ["ja"] = "なし",
+                ["en"] = "None",
+                ["ko"] = "없음"
+            },
+            ["editorwindow.masktexturesetting.selectiontype.black"] = new()
+            {
+                ["ja"] = "黒",
+                ["en"] = "Black",
+                ["ko"] = "검정"
+            },
+            ["editorwindow.masktexturesetting.selectiontype.white"] = new()
+            {
+                ["ja"] = "白",
+                ["en"] = "White",
+                ["ko"] = "흰색"
+            },
+            ["editorwindow.masktexturesetting.selectiontype.opaque"] = new()
+            {
+                ["ja"] = "不透明",
+                ["en"] = "Opaque",
+                ["ko"] = "불투명"
+            },
+            ["editorwindow.masktexturesetting.selectiontype.transparent"] = new()
+            {
+                ["ja"] = "透明",
+                ["en"] = "Transparent",
+                ["ko"] = "투명"
+            },
+            ["editorwindow.masktexturesetting.selectiontype.description"] = new()
+            {
+                ["ja"] = "指定された条件に合う部分のみ色が変更されます。",
+                ["en"] = "Only the parts that meet the specified condition will have their color changed.",
+                ["ko"] = "지정된 조건에 맞는 부분만 색상이 변경됩니다."
+            },
+            ["editorwindow.masktexturesetting.mismatchresolution"] = new()
+            {
+                ["ja"] = "変更対象のテクスチャとマスク画像のサイズが異なるため、マスクは適用されません。同じ解像度のマスク画像を使用してください。",
+                ["en"] = "The mask will not be applied because its size does not match the texture being modified. Please use a mask texture with the same resolution.",
+                ["ko"] = "마스크 이미지의 크기가 변경 대상 텍스처와 일치하지 않아 적용되지 않습니다. 동일한 해상도의 마스크 이미지를 사용해주세요."
+            },
             ["editorwindow.colorsetting"] = new()
             {
                 ["ja"] = "色設定",
