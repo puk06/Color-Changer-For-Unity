@@ -34,7 +34,7 @@ float _advancedColorSettingsGamma;
 float _advancedColorSettingsExposure;
 float _advancedColorSettingsTransparency;
 
-bool IsMaskSelected(float2 id)
+bool IsMaskSelected(uint2 id)
 {
     uint width, height;
     _maskTexture.GetDimensions(width, height);
