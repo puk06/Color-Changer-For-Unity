@@ -18,6 +18,7 @@ namespace net.puk06.ColorChanger.NDMF
         {
             foreach (var component in components)
             {
+                if (component == null) continue;
                 Object.DestroyImmediate(component);
             }
         }
