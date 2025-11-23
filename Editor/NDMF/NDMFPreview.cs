@@ -241,7 +241,7 @@ namespace net.puk06.ColorChanger.NDMF
 
             ExtendedRenderTexture? maskTexture = null;
             
-            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null && TextureUtils.IsSameSizeTexture(componentValue.targetTexture, componentValue.parentComponent.maskTexture) )
+            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
             {
                 maskTexture = new ExtendedRenderTexture(componentValue.parentComponent.maskTexture)
                         .Create(componentValue.parentComponent.maskTexture);
@@ -271,7 +271,7 @@ namespace net.puk06.ColorChanger.NDMF
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
             Texture2D? maskTexture = null;
 
-            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null && TextureUtils.IsSameSizeTexture(componentValue.targetTexture, componentValue.parentComponent.maskTexture))
+            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
             {
                 maskTexture = TextureUtils.GetRawTexture(componentValue.parentComponent.maskTexture);
             }

@@ -124,6 +124,8 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
                 colorComputeShader.SetBool("_useMask", mask != null && imageMaskSelectionType != ImageMaskSelectionType.None);
                 colorComputeShader.SetTexture(kernel, "_maskTexture", mask != null ? mask : DummyRenderTexture.Instance);
+                colorComputeShader.SetFloat("_maskRatioX", mask != null && source.width != 0 ? (float)mask.width / source.width : 0f);
+                colorComputeShader.SetFloat("_maskRatioY", mask != null && source.height != 0 ? (float)mask.height / source.height : 0f);
                 colorComputeShader.SetInt("_maskSelectionType", (int)imageMaskSelectionType);
 
                 colorComputeShader.SetInts("_prevColor", ColorUtils.GetIntsColorValue(_colorOffset.PreviousColor));

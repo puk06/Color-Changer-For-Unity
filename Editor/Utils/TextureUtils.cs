@@ -291,8 +291,5 @@ namespace net.puk06.ColorChanger.Utils
 
             return rawTexture2D;
         }
-
-        internal static bool IsSameSizeTexture(Texture texture1, Texture texture2)
-            => texture1.width == texture2.width && texture1.height == texture2.height;
     }
 }

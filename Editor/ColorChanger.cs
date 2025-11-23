@@ -295,21 +295,14 @@ namespace net.puk06.ColorChanger
 
                 if (colorChangerComponent.ComponentTexture != null && colorChangerComponent.maskTexture != null)
                 {
-                    if (TextureUtils.IsSameSizeTexture(colorChangerComponent.ComponentTexture, colorChangerComponent.maskTexture))
-                    {
-                        float displayWidth = EditorGUIUtility.currentViewWidth - 40;
-                        float aspect = (float)colorChangerComponent.maskTexture.height / colorChangerComponent.maskTexture.width;
-                        float displayHeight = displayWidth * aspect;
+                    float displayWidth = EditorGUIUtility.currentViewWidth - 40;
+                    float aspect = (float)colorChangerComponent.maskTexture.height / colorChangerComponent.maskTexture.width;
+                    float displayHeight = displayWidth * aspect;
 
-                        Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
-                        rect.x = ((EditorGUIUtility.currentViewWidth - rect.width) / 2) + 5;
+                    Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
+                    rect.x = ((EditorGUIUtility.currentViewWidth - rect.width) / 2) + 5;
 
-                        GUI.DrawTexture(rect, colorChangerComponent.maskTexture, ScaleMode.ScaleToFit);
-                    }
-                    else
-                    {
-                        EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.masktexturesetting.mismatchresolution"), MessageType.Error);
-                    }
+                    GUI.DrawTexture(rect, colorChangerComponent.maskTexture, ScaleMode.ScaleToFit);
                 }
             }
 

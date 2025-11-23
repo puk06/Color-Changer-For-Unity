@@ -22,7 +22,7 @@ namespace net.puk06.ColorChanger.Utils
                 .Create(renderTexture);
             
             ExtendedRenderTexture? maskTexture = null;
-            if (component.maskTexture != null && TextureUtils.IsSameSizeTexture(renderTexture, component.maskTexture))
+            if (component.maskTexture != null)
             {
                 maskTexture = new ExtendedRenderTexture(component.maskTexture)
                     .Create(component.maskTexture);
