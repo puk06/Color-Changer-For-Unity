@@ -116,9 +116,9 @@ namespace net.puk06.ColorChanger.Localization
             },
             ["editorwindow.masktexturesetting.description"] = new()
             {
-                ["ja"] = "マスク画像を使うことで、テクスチャの特定の部分だけに色の変更を適用でき、他の部分は変更されません。",
-                ["en"] = "Using a mask texture allows you to apply color changes only to specific parts of a texture while leaving other areas unchanged.",
-                ["ko"] = "마스크 이미지를 사용하면 텍스처의 특정 부분에만 색상 변경을 적용하고, 나머지 영역은 그대로 유지할 수 있습니다."
+                ["ja"] = "マスク画像を使用すると、テクスチャの特定の部分にのみ色の変更を適用でき、他の部分には影響を与えません。\nただし、設定を継承したテクスチャには反映されないので注意してください。",
+                ["en"] = "A mask texture lets you apply color changes only to specific areas of a texture while leaving the rest untouched.\nNote that this will not affect textures that inherit settings.",
+                ["ko"] = "마스크 이미지를 사용하면 텍스처의 특정 영역에만 색상을 변경할 수 있으며, 나머지 영역에는 영향을 주지 않습니다.\n단, 설정을 상속받는 텍스처에는 적용되지 않으므로 주의하세요."
             },
             ["editorwindow.masktexturesetting.texture"] = new()
             {
