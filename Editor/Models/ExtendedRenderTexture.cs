@@ -1,4 +1,5 @@
 using System;
+using Codice.Client.Commands.Matcher;
 using net.puk06.ColorChanger.Utils;
 using UnityEngine;
 
@@ -18,11 +19,13 @@ namespace net.puk06.ColorChanger.Models
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="readWrite"></param>
-        public ExtendedRenderTexture(int width, int height, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB)
-            : base(width, height, 0, RenderTextureFormat.ARGB32, readWrite)
+        /// <param name="isPreview"></param>
+        public ExtendedRenderTexture(int width, int height, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB, bool isPreview = false)
+            : base(isPreview ? width / 4 : width, isPreview ? height / 4 : height, 0, RenderTextureFormat.ARGB32, readWrite)
         {
             enableRandomWrite = true;
             wrapMode = TextureWrapMode.Clamp;
+            if (isPreview) filterMode = FilterMode.Bilinear;
         }
 
         /// <summary>
@@ -31,8 +34,9 @@ namespace net.puk06.ColorChanger.Models
         /// </summary>
         /// <param name="texture"></param>
         /// <param name="readWrite"></param>
-        public ExtendedRenderTexture(Texture texture, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB)
-            : this(texture.width, texture.height, readWrite)
+        /// <param name="isPreview"></param>
+        public ExtendedRenderTexture(Texture texture, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB, bool isPreview = false)
+            : this(texture.width, texture.height, readWrite, isPreview)
         {
         }
 

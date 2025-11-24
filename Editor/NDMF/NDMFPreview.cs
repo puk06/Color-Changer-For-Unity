@@ -233,17 +233,17 @@ namespace net.puk06.ColorChanger.NDMF
         {
             if (componentValue == null || componentValue.targetTexture == null) return null;
 
-            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(componentValue.targetTexture)
+            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(componentValue.targetTexture, isPreview: true)
                 .Create(componentValue.targetTexture);
 
-            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(componentValue.targetTexture)
+            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(componentValue.targetTexture, isPreview: true)
                 .Create();
 
             ExtendedRenderTexture? maskTexture = null;
             
             if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
             {
-                maskTexture = new ExtendedRenderTexture(componentValue.parentComponent.maskTexture)
+                maskTexture = new ExtendedRenderTexture(componentValue.parentComponent.maskTexture, isPreview: true)
                     .Create(componentValue.parentComponent.maskTexture);
             }
 
