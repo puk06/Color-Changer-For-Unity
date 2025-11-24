@@ -9,7 +9,6 @@ using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace net.puk06.ColorChanger.NDMF
 {
@@ -36,11 +35,11 @@ namespace net.puk06.ColorChanger.NDMF
                 var enabledInternalComponentsValues = new List<InternalColorChangerValues>();
                 foreach (var component in enabledComponents)
                 {
-                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture, true));
+                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.targetTexture, component.ComponentTexture, true));
                     foreach (var otherTexture in component.settingsInheritedTextures)
                     {
                         if (otherTexture == null) continue;
-                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, false));
+                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, otherTexture, false));
                     }
                 }
 
@@ -50,12 +49,12 @@ namespace net.puk06.ColorChanger.NDMF
                 if (avatarTexturesHashSet == null || !avatarTexturesHashSet.Any()) return;
 
                 var avatarComponents = enabledInternalComponentsValues
-                    .Where(c => avatarTexturesHashSet.Contains(c.targetTexture!));
+                    .Where(c => avatarTexturesHashSet.Contains(c.originalTexture!));
                 if (!avatarComponents.Any()) return;
 
                 // ターゲットテクスチャごとに分ける。これは複数同じテクスチャがあった時対策
                 var groupedComponents = avatarComponents
-                    .GroupBy(c => c.targetTexture);
+                    .GroupBy(c => c.originalTexture);
 
                 Dictionary<Texture2D, Texture2D> processedDictionary = new();
 

@@ -111,11 +111,11 @@ namespace net.puk06.ColorChanger.NDMF
                 var enabledInternalComponentsValues = new List<InternalColorChangerValues>();
                 foreach (var component in enabledComponents)
                 {
-                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.ComponentTexture, true));
+                    enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.targetTexture, component.ComponentTexture, true));
                     foreach (var otherTexture in component.settingsInheritedTextures)
                     {
                         if (otherTexture == null) continue;
-                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, false));
+                        enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, otherTexture, false));
                     }
                 }
 
@@ -125,7 +125,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                 // 変更される予定のテクスチャ（アバター配下で使われている物だけ）
                 var targetTextures = enabledInternalComponentsValues
-                    .Select(c => c.targetTexture)
+                    .Select(c => c.originalTexture)
                     .Where(t => avatarTexturesReferences.Any(r => r.Equals(NDMFUtils.GetReference(t))))
                     .Distinct()
                     .ToArray();
@@ -145,7 +145,7 @@ namespace net.puk06.ColorChanger.NDMF
 
                     if (groupedComponent.Count() >= 2)
                     {
-                        LogUtils.LogWarning($"Duplicate TargetTexture Detected: '{groupedComponent.Key!.name}' (using settings from '{firstComponent.parentComponent.gameObject.name}')");
+                        LogUtils.LogWarning($"Duplicate TargetTexture Detected: '{firstComponent.originalTexture!.name}' (using settings from '{firstComponent.parentComponent.gameObject.name}')");
                     }
 
                     // テクスチャを作る
@@ -166,7 +166,7 @@ namespace net.puk06.ColorChanger.NDMF
                         continue;
                     }
 
-                    processedTextures.Add(groupedComponent.Key!, processedTexture);
+                    processedTextures.Add(firstComponent.originalTexture!, processedTexture);
                 }
 
                 // テクスチャが含まれているマテリアルすべてを探す。
@@ -244,7 +244,7 @@ namespace net.puk06.ColorChanger.NDMF
             if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
             {
                 maskTexture = new ExtendedRenderTexture(componentValue.parentComponent.maskTexture)
-                        .Create(componentValue.parentComponent.maskTexture);
+                    .Create(componentValue.parentComponent.maskTexture);
             }
 
             if (originalTexture == null || newTexture == null)
