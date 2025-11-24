@@ -65,7 +65,16 @@ namespace net.puk06.ColorChanger.ImageProcessing
             NativeArray<Color32> rawData = source.GetRawTextureData<Color32>();
             NativeArray<Color32> targetData = target.GetRawTextureData<Color32>();
             NativeArray<Color32> maskData = new();
-            if (mask != null) maskData = mask.GetRawTextureData<Color32>();
+
+            bool useMask = false;
+            float maskArrayRatio = 0f;
+
+            if (mask != null)
+            {
+                useMask = true;
+                maskData = mask.GetRawTextureData<Color32>();
+                maskArrayRatio = (float)maskData.Length / rawData.Length;
+            }
 
             Color32[]? v3GradientLUT = null;
             if (_isBalanceMode)
@@ -76,11 +85,13 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
             bool IsMaskSelected(int index)
             {
-                if (index >= maskData.Length) return false;
-                Color32 color = maskData[index];
+                int maskIndex = Mathf.RoundToInt(index * maskArrayRatio);
+                if (maskIndex >= maskData.Length) return false;
+                
+                Color32 color = maskData[maskIndex];
 
-                if (imageMaskSelectionType == ImageMaskSelectionType.Black) return color.r == 0 && color.g == 0 && color.b == 0;
-                if (imageMaskSelectionType == ImageMaskSelectionType.White) return color.r == 255 && color.g == 255 && color.b == 255;
+                if (imageMaskSelectionType == ImageMaskSelectionType.Black) return color.r == 0 && color.g == 0 && color.b == 0 && color.a != 0;
+                if (imageMaskSelectionType == ImageMaskSelectionType.White) return color.r == 255 && color.g == 255 && color.b == 255 && color.a != 0;
                 if (imageMaskSelectionType == ImageMaskSelectionType.Opaque) return color.a == 255;
                 if (imageMaskSelectionType == ImageMaskSelectionType.Opaque1) return color.a != 0;
                 if (imageMaskSelectionType == ImageMaskSelectionType.Transparent) return color.a == 0;
@@ -90,7 +101,7 @@ namespace net.puk06.ColorChanger.ImageProcessing
 
             for (int i = 0; i < targetData.Length; i++)
             {
-                if (maskData.Length != 0 && !IsMaskSelected(i))
+                if (useMask && !IsMaskSelected(i))
                 {
                     targetData[i] = rawData[i];
                     continue;

@@ -81,7 +81,8 @@ namespace net.puk06.ColorChanger.Utils
                 imageProcessor.ProcessAllPixels(
                     originalTexture as Texture2D,
                     targetTexture as Texture2D,
-                    maskTexture as Texture2D
+                    maskTexture as Texture2D,
+                    colorChangerComponent.imageMaskSelectionType
                 );
             }
             else if (typeof(T) == typeof(ExtendedRenderTexture) || typeof(T) == typeof(RenderTexture))
@@ -277,12 +278,16 @@ namespace net.puk06.ColorChanger.Utils
         /// Texture2DのRawTextureを取得します。内部でRenderTextureを使います。
         /// </summary>
         /// <param name="source"></param>
+        /// <param name="isPreview"></param>
         /// <returns></returns>
-        internal static Texture2D GetRawTexture(Texture2D source)
+        internal static Texture2D GetRawTexture(Texture2D source, bool isPreview = false)
         {
-            Texture2D rawTexture2D = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false, false);
+            int width = isPreview ? source.width / 4 : source.width;
+            int height = isPreview ? source.height / 4 : source.height;
 
-            ExtendedRenderTexture.ProcessTemporary(source.width, source.height, (renderTexture) =>
+            Texture2D rawTexture2D = new Texture2D(width, height, TextureFormat.RGBA32, false, false);
+
+            ExtendedRenderTexture.ProcessTemporary(width, height, (renderTexture) =>
             {
                 Graphics.Blit(source, renderTexture);
                 rawTexture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);

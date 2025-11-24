@@ -24,7 +24,7 @@ namespace net.puk06.ColorChanger.Models
         {
             enableRandomWrite = true;
             wrapMode = TextureWrapMode.Clamp;
-            if (isPreview) filterMode = FilterMode.Bilinear;
+            filterMode = FilterMode.Bilinear;
         }
 
         /// <summary>
@@ -76,6 +76,7 @@ namespace net.puk06.ColorChanger.Models
         public static void ProcessTemporary(int width, int height, Action<RenderTexture> action)
         {
             RenderTexture temporaryRenderTexture = GetTemporary(width, height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.sRGB);
+            temporaryRenderTexture.filterMode = FilterMode.Bilinear;
 
             RenderTexture previousActiveRenderTexture = active;
             active = temporaryRenderTexture;

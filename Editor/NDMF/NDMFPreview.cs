@@ -267,13 +267,13 @@ namespace net.puk06.ColorChanger.NDMF
         {
             if (componentValue == null || componentValue.targetTexture == null) return null;
 
-            Texture2D originalTexture = TextureUtils.GetRawTexture(componentValue.targetTexture);
+            Texture2D originalTexture = TextureUtils.GetRawTexture(componentValue.targetTexture, true);
             Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
             Texture2D? maskTexture = null;
 
             if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
             {
-                maskTexture = TextureUtils.GetRawTexture(componentValue.parentComponent.maskTexture);
+                maskTexture = TextureUtils.GetRawTexture(componentValue.parentComponent.maskTexture, true);
             }
 
             TextureUtils.ProcessTexture(originalTexture, newTexture, maskTexture, componentValue.parentComponent);

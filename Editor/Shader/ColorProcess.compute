@@ -48,8 +48,8 @@ bool IsMaskSelected(uint2 id)
 
     int4 color = (int4)(_maskTexture[uint2(maskX, maskY)] * 255.0);
 
-    if (_maskSelectionType == 1) return color.r == 0 && color.g == 0 && color.b == 0;
-    if (_maskSelectionType == 2) return color.r == 255 && color.g == 255 && color.b == 255;
+    if (_maskSelectionType == 1) return color.r == 0 && color.g == 0 && color.b == 0 && color.a != 0;
+    if (_maskSelectionType == 2) return color.r == 255 && color.g == 255 && color.b == 255 && color.a != 0;
     if (_maskSelectionType == 3) return color.a == 255;
     if (_maskSelectionType == 4) return color.a != 0;
     if (_maskSelectionType == 5) return color.a == 0;
