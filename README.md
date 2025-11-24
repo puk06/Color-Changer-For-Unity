@@ -31,7 +31,6 @@
 This Unity edition focuses on **real-time, non-destructive workflows**.  
 Some features from the original **Texture Color Changer** are **not available**:
 
-- 🚫 Partial area selection  
 - 🚫 Transparent image output
 
 ---
