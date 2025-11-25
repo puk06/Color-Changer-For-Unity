@@ -396,7 +396,7 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Original Texture",
                 ["ko"] = "원본 텍스처"
             },
-            ["editorwindow.textureoutput.texturetype.settingsinherited"] = new()
+            ["editorwindow.textureoutputsettings.texturetype.settingsinherited"] = new()
             {
                 ["ja"] = "設定継承テクスチャ",
                 ["en"] = "Settings-Inherited Texture",
