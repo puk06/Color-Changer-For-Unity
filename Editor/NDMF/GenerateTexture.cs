@@ -75,14 +75,14 @@ namespace net.puk06.ColorChanger.NDMF
                         Texture2D newTexture2D = TextureUtils.GetProcessedTexture(firstComponent.targetTexture!, firstComponent.parentComponent, firstComponent.useMask);
 
                         AssetDatabase.AddObjectToAsset(newTexture2D, buildContext.AssetContainer);
-                        processedDictionary.Add(firstComponent.targetTexture!, newTexture2D);
+                        processedDictionary.Add(firstComponent.originalTexture!, newTexture2D);
 
                         stopwatch.Stop();
 
                         LogUtils.Log($"Texture Processing Done: '{firstComponent.parentComponent.name}' | {stopwatch.ElapsedMilliseconds} ms");
 
                         // NDMF Console Log
-                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", firstComponent.parentComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Information, "colorchanger.process.success", firstComponent.parentComponent, firstComponent.originalTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                     catch (Exception ex)
                     {
@@ -91,7 +91,7 @@ namespace net.puk06.ColorChanger.NDMF
                         LogUtils.LogError($"Texture Processing Error: '{firstComponent.parentComponent.name}' | {stopwatch.ElapsedMilliseconds} ms\n{ex}");
 
                         // NDMF Console Log
-                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", firstComponent.parentComponent, firstComponent.targetTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
+                        ErrorReport.ReportError(ColorChangerLocalizer.GetLocalizer(), ErrorSeverity.Error, "colorchanger.process.error", firstComponent.parentComponent, firstComponent.originalTexture!.name, stopwatch.ElapsedMilliseconds.ToString());
                     }
                 }
 
