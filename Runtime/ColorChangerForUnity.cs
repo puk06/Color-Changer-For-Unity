@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Linq;
 using net.puk06.ColorChanger.Models;
 using UnityEngine;
 
@@ -14,7 +15,6 @@ namespace net.puk06.ColorChanger
         public bool Enabled = true;
 
         public bool PreviewEnabled = true;
-        public bool PreviewOnCPU = false;
 
         public Texture2D? targetTexture = null;
         public Texture2D?[] settingsInheritedTextures = Array.Empty<Texture2D>();
@@ -48,5 +48,8 @@ namespace net.puk06.ColorChanger
                 return replacementTexture == null ? targetTexture : replacementTexture;
             }
         }
+
+        public Texture2D[] SettingsInheritedTextures
+            => settingsInheritedTextures.Where(t => t != null).ToArray()!;
     }
 }

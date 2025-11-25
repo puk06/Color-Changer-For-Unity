@@ -1,4 +1,5 @@
 using System.Linq;
+using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 
 namespace net.puk06.ColorChanger.Localization
@@ -23,7 +24,11 @@ namespace net.puk06.ColorChanger.Localization
 
         public static string Get(string key, params string[] parameters)
         {
-            if (!ToolLocalizer.LocalizationDictionary.TryGetValue(key, out var localizationData)) return "Unknown";
+            if (!ToolLocalizer.LocalizationDictionary.TryGetValue(key, out var localizationData))
+            {
+                LogUtils.LogWarning($"Unknown Localization Key Found: {key}");
+                return "Unknown";
+            }
 
             var currentLanguage = CurrentLanguage;
             if (!localizationData.TryGetValue(currentLanguage, out var translatedString)) return "Unknown Language";

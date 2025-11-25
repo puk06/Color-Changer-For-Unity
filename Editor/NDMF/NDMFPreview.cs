@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using nadena.dev.ndmf;
 using nadena.dev.ndmf.preview;
 using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
@@ -43,9 +42,8 @@ namespace net.puk06.ColorChanger.NDMF
                         
                     foreach (var component in components)
                     {
-                        foreach (var otherTexture in component.settingsInheritedTextures.Where(t => t != null).Distinct())
+                        foreach (var otherTexture in component.SettingsInheritedTextures.Distinct())
                         {
-                            if (otherTexture == null) continue;
                             targetTextures.Add(context.Observe(otherTexture));
                         }
                     }
@@ -112,9 +110,8 @@ namespace net.puk06.ColorChanger.NDMF
                 foreach (var component in enabledComponents)
                 {
                     enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.targetTexture, component.ComponentTexture, true));
-                    foreach (var otherTexture in component.settingsInheritedTextures)
+                    foreach (var otherTexture in component.SettingsInheritedTextures)
                     {
-                        if (otherTexture == null) continue;
                         enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, otherTexture, false));
                     }
                 }
@@ -149,20 +146,11 @@ namespace net.puk06.ColorChanger.NDMF
                     }
 
                     // テクスチャを作る
-                    // CPUプレビューがオンのときはCPUでテクスチャが作成される。
-                    Texture? processedTexture = null;
-                    if (firstComponent.parentComponent.PreviewOnCPU)
-                    {
-                        processedTexture = ComputeTextureOverridesCPU(firstComponent);
-                    }
-                    else
-                    {
-                        processedTexture = ComputeTextureOverrides(firstComponent);
-                    }
+                    Texture? processedTexture = ComputeTexture(firstComponent);
 
                     if (processedTexture == null)
                     {
-                        LogUtils.LogError($"Failed to process texture: '{firstComponent.parentComponent.name}'. This may be due to the platform not supporting GPU-based computation.");
+                        LogUtils.LogError($"Failed to process texture: '{firstComponent.parentComponent.name}'.");
                         continue;
                     }
 
@@ -184,8 +172,8 @@ namespace net.puk06.ColorChanger.NDMF
                     );
 
                 // RegisterReplacedObjectに登録
-                RegisterTextureReplace(processedTextures);
-                RegisterMaterialReplace(processedMaterials);
+                NDMFUtils.RegisterReplacements(processedTextures);
+                NDMFUtils.RegisterReplacements(processedMaterials);
 
                 // 変換前、変換後のマテリアルテクスチャ、生成したテクスチャの配列をまとめたものを渡してあげる。
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterials, processedTextures.Values));
@@ -197,6 +185,70 @@ namespace net.puk06.ColorChanger.NDMF
             }
         }
 
+        private static Texture? ComputeTexture(InternalColorChangerValues componentValue)
+        {
+            if (componentValue == null || componentValue.targetTexture == null) return null;
+
+            var gpuResult = TryComputeGPU(componentValue);
+            if (gpuResult != null) return gpuResult;
+
+            return TryComputeCPU(componentValue);
+        }
+        private static ExtendedRenderTexture? TryComputeGPU(InternalColorChangerValues componentValue)
+        {
+            ExtendedRenderTexture? original = null;
+            ExtendedRenderTexture? result;
+            ExtendedRenderTexture? mask = null;
+
+            try
+            {
+                original = new ExtendedRenderTexture(componentValue.targetTexture!, isPreview: true)
+                    .Create(componentValue.targetTexture);
+
+                result = new ExtendedRenderTexture(componentValue.targetTexture!, isPreview: true)
+                    .Create();
+
+                if (original == null || result == null)
+                    return null;
+
+                if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
+                {
+                    mask = new ExtendedRenderTexture(componentValue.parentComponent.maskTexture, isPreview: true)
+                        .Create(componentValue.parentComponent.maskTexture);
+                }
+
+                TextureUtils.ProcessTexture(original, result, mask, componentValue.parentComponent);
+                return result;
+            }
+            finally
+            {
+                if (original != null) original.Dispose();
+                if (mask != null) mask.Dispose();
+            }
+        }
+        private static Texture2D? TryComputeCPU(InternalColorChangerValues componentValue)
+        {
+            var original = TextureUtils.GetRawTexture(componentValue.targetTexture!, true);
+            if (original == null) return null;
+
+            var result = TextureUtils.GenerateEmptyTexture2D(original.width, original.height);
+            Texture2D? mask = null;
+
+            try
+            {
+                if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
+                    mask = TextureUtils.GetRawTexture(componentValue.parentComponent.maskTexture, true);
+
+                TextureUtils.ProcessTexture(original, result, mask, componentValue.parentComponent);
+                return result;
+            }
+            finally
+            {
+                Object.DestroyImmediate(original);
+                if (mask != null) Object.DestroyImmediate(mask);
+            }
+        }
+        
         private Material ProcessMaterial(Material material, Dictionary<Texture2D, Texture> processedTextures)
         {
             var newMat = Object.Instantiate(material);
@@ -211,77 +263,6 @@ namespace net.puk06.ColorChanger.NDMF
             });
 
             return newMat;
-        }
-
-        private void RegisterTextureReplace(Dictionary<Texture2D, Texture> processedTextures)
-        {
-            foreach (var processedTexture in processedTextures)
-            {
-                ObjectRegistry.RegisterReplacedObject(processedTexture.Key, processedTexture.Value);
-            }
-        }
-
-        private void RegisterMaterialReplace(Dictionary<Material, Material> processedMaterials)
-        {
-            foreach (var processedMaterial in processedMaterials)
-            {
-                ObjectRegistry.RegisterReplacedObject(processedMaterial.Key, processedMaterial.Value);
-            }
-        }
-
-        private static ExtendedRenderTexture? ComputeTextureOverrides(InternalColorChangerValues componentValue)
-        {
-            if (componentValue == null || componentValue.targetTexture == null) return null;
-
-            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(componentValue.targetTexture, isPreview: true)
-                .Create(componentValue.targetTexture);
-
-            ExtendedRenderTexture newTexture = new ExtendedRenderTexture(componentValue.targetTexture, isPreview: true)
-                .Create();
-
-            ExtendedRenderTexture? maskTexture = null;
-            
-            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
-            {
-                maskTexture = new ExtendedRenderTexture(componentValue.parentComponent.maskTexture, isPreview: true)
-                    .Create(componentValue.parentComponent.maskTexture);
-            }
-
-            if (originalTexture == null || newTexture == null)
-            {
-                if (originalTexture != null) originalTexture.Dispose();
-                if (newTexture != null) newTexture.Dispose();
-                if (maskTexture != null) maskTexture.Dispose();
-                return null;
-            }
-
-            TextureUtils.ProcessTexture(originalTexture, newTexture, maskTexture, componentValue.parentComponent);
-
-            originalTexture.Dispose();
-            if (maskTexture != null) maskTexture.Dispose();
-
-            return newTexture;
-        }
-
-        private static Texture2D? ComputeTextureOverridesCPU(InternalColorChangerValues componentValue)
-        {
-            if (componentValue == null || componentValue.targetTexture == null) return null;
-
-            Texture2D originalTexture = TextureUtils.GetRawTexture(componentValue.targetTexture, true);
-            Texture2D newTexture = new Texture2D(originalTexture.width, originalTexture.height, TextureFormat.RGBA32, false);
-            Texture2D? maskTexture = null;
-
-            if (componentValue.useMask && componentValue.parentComponent.maskTexture != null)
-            {
-                maskTexture = TextureUtils.GetRawTexture(componentValue.parentComponent.maskTexture, true);
-            }
-
-            TextureUtils.ProcessTexture(originalTexture, newTexture, maskTexture, componentValue.parentComponent);
-
-            Object.DestroyImmediate(originalTexture);
-            if (maskTexture != null) Object.DestroyImmediate(maskTexture);
-
-            return newTexture;
         }
 
         // このノードはアバター1体につき1個作られる。OnFrameは、RenderGroupの中身分のみ呼ばれる

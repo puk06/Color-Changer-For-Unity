@@ -60,18 +60,6 @@ namespace net.puk06.ColorChanger.Localization
                 ["en"] = "Enable Preview",
                 ["ko"] = "프리뷰 활성화"
             },
-            ["editorwindow.scriptsettings.cpurendering.warning"] = new()
-            {
-                ["ja"] = "CPUレンダリングは、GPUがプレビューに対応していなかったときのみ使用してください。\nCPUプレビューは毎回プレビューを作成するのに時間がかかります。扱いには注意してください。",
-                ["en"] = "Use CPU rendering only when the GPU does not support preview.\nCPU preview takes time to generate each time. Please use with caution.",
-                ["ko"] = "CPU 렌더링은 GPU가 프리뷰를 지원하지 않을 때만 사용하세요.\nCPU 프리뷰는 매번 생성하는 데 시간이 오래 걸립니다. 주의해서 사용하세요."
-            },
-            ["editorwindow.scriptsettings.cpurendering.enable"] = new()
-            {
-                ["ja"] = "CPUレンダリングの有効化",
-                ["en"] = "Enable CPU Rendering",
-                ["ko"] = "CPU 렌더링 활성화"
-            },
             ["editorwindow.scriptsettings.mlic.info"] = new()
             {
                 ["ja"] = "TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、MultiLayerImageCanvasのレイヤーとして扱うことができます。",

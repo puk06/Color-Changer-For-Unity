@@ -103,104 +103,82 @@ namespace net.puk06.ColorChanger.Utils
         /// <summary>
         /// テクスチャを生成します。
         /// </summary>
-        /// <param name="originalTexture"></param>
-        /// <param name="colorChangerComponent"></param>
+        /// <param name="original"></param>
+        /// <param name="component"></param>
         /// <param name="useMask"></param>
         /// <returns></returns>
-        internal static Texture2D GetProcessedTexture(Texture2D originalTexture, ColorChangerForUnity colorChangerComponent, bool useMask)
+        internal static Texture2D GetProcessedTexture(Texture2D original, ColorChangerForUnity component, bool useMask)
         {
-            ExtendedRenderTexture originalTextureRT = new ExtendedRenderTexture(originalTexture)
-                .Create(originalTexture);
+            var gpuResult = TryProcessGPU(original, component, useMask);
+            if (gpuResult != null) return gpuResult;
 
-            ExtendedRenderTexture newTextureRT = new ExtendedRenderTexture(originalTexture)
-                .Create();
-
-            ExtendedRenderTexture? maskTextureRT = null;
-            if (useMask && colorChangerComponent.maskTexture != null)
-            {
-                maskTextureRT = new ExtendedRenderTexture(colorChangerComponent.maskTexture)
-                    .Create(colorChangerComponent.maskTexture);
-            }
-
-            Texture2D newTexture2D = new Texture2D(originalTextureRT.width, originalTextureRT.height, TextureFormat.RGBA32, false, false);
-
-            if (originalTextureRT == null || newTextureRT == null) // GPUでのRenderTexture作成に失敗した時に使用されるCPUビルド
-            {
-                Texture2D originalTexture2D = GetRawTexture(originalTexture);
-
-                Texture2D? maskTexture2D = null;
-                if (colorChangerComponent.maskTexture != null) maskTexture2D = GetRawTexture(colorChangerComponent.maskTexture);
-
-                ProcessTexture(originalTexture2D, newTexture2D, maskTexture2D, colorChangerComponent);
-                Object.DestroyImmediate(originalTexture2D);
-                if (maskTexture2D != null) Object.DestroyImmediate(maskTexture2D);
-            }
-            else
-            {
-                ProcessTexture(originalTextureRT, newTextureRT, maskTextureRT, colorChangerComponent);
-            
-                RenderTexture.active = newTextureRT;
-                newTexture2D.ReadPixels(new Rect(0, 0, newTextureRT.width, newTextureRT.height), 0, 0);
-                newTexture2D.Apply();
-            }
-
-            
-            if (originalTextureRT != null) originalTextureRT.Dispose();
-            if (newTextureRT != null) newTextureRT.Dispose();
-            if (maskTextureRT != null) maskTextureRT.Dispose();
-
-            return newTexture2D;
+            return TryProcessCPU(original, component, useMask);
         }
-
-
-        /// <summary>
-        /// シーン上のオブジェクトで、渡されたテクスチャを使っているものを全て新しいテクスチャに置き換えます。
-        /// </summary>
-        /// <param name="oldTex"></param>
-        /// <param name="newTexPath"></param>
-        internal static void ReplaceTextureInSceneObjects(Texture2D oldTex, string newTexPath)
+        private static Texture2D? TryProcessGPU(Texture2D originalTexture, ColorChangerForUnity component, bool useMask)
         {
-            if (oldTex == null || string.IsNullOrEmpty(newTexPath))
-            {
-                LogUtils.LogError("Failed to load texture because it was null.");
-                return;
-            }
+            ExtendedRenderTexture? originalRT = null;
+            ExtendedRenderTexture? newRT = null;
+            ExtendedRenderTexture? maskRT = null;
 
-            Texture2D newTex = AssetDatabase.LoadAssetAtPath<Texture2D>(newTexPath);
-            if (newTex == null)
+            try
             {
-                LogUtils.LogError($"Failed to load texture from the specified path: {newTexPath}");
-                return;
-            }
+                originalRT = new ExtendedRenderTexture(originalTexture)
+                    .Create(originalTexture);
 
-            Renderer[] renderers = Object.FindObjectsOfType<Renderer>();
-            int replacedCount = 0;
+                newRT = new ExtendedRenderTexture(originalTexture)
+                    .Create();
 
-            foreach (var renderer in renderers)
-            {
-                foreach (var mat in renderer.sharedMaterials)
+                if (originalRT == null || newRT == null)
+                    return null;
+
+                if (useMask && component.maskTexture != null)
                 {
-                    if (mat == null) continue;
-
-                    Undo.RecordObject(mat, "Replace Texture");
-                    bool replaced = false;
-
-                    MaterialUtils.ForEachTex(mat, (texture, propName) =>
-                    {
-                        if (texture != oldTex) return;
-                        mat.SetTexture(propName, newTex);
-                        replaced = true;
-                    });
-
-                    if (replaced)
-                    {
-                        replacedCount++;
-                        EditorUtility.SetDirty(mat);
-                    }
+                    maskRT = new ExtendedRenderTexture(component.maskTexture)
+                        .Create(component.maskTexture);
                 }
-            }
 
-            LogUtils.Log($"Replaced textures for {replacedCount} materials in the scene.");
+                ProcessTexture(originalRT, newRT, maskRT, component);
+
+                Texture2D result = GenerateEmptyTexture2D(newRT.width, newRT.height);
+
+                RenderTexture.active = newRT;
+                result.ReadPixels(new Rect(0, 0, newRT.width, newRT.height), 0, 0);
+                result.Apply();
+
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                if (originalRT != null) originalRT.Dispose();
+                if (newRT != null) newRT.Dispose();
+                if (maskRT != null) maskRT.Dispose();
+            }
+        }
+        private static Texture2D TryProcessCPU(Texture2D originalTexture, ColorChangerForUnity component, bool useMask)
+        {
+            Texture2D original2D = GetRawTexture(originalTexture);
+            Texture2D result = GenerateEmptyTexture2D(original2D.width, original2D.height);
+
+            Texture2D? mask2D = null;
+
+            try
+            {
+                if (useMask && component.maskTexture != null)
+                    mask2D = GetRawTexture(component.maskTexture);
+
+                ProcessTexture(original2D, result, mask2D, component);
+
+                return result;
+            }
+            finally
+            {
+                Object.DestroyImmediate(original2D);
+                if (mask2D != null) Object.DestroyImmediate(mask2D);
+            }
         }
 
         /// <summary>
@@ -285,7 +263,7 @@ namespace net.puk06.ColorChanger.Utils
             int width = isPreview ? source.width / 4 : source.width;
             int height = isPreview ? source.height / 4 : source.height;
 
-            Texture2D rawTexture2D = new Texture2D(width, height, TextureFormat.RGBA32, false, false);
+            Texture2D rawTexture2D = GenerateEmptyTexture2D(width, height);
 
             ExtendedRenderTexture.ProcessTemporary(width, height, (renderTexture) =>
             {
@@ -296,5 +274,8 @@ namespace net.puk06.ColorChanger.Utils
 
             return rawTexture2D;
         }
+
+        internal static Texture2D GenerateEmptyTexture2D(int width, int height)
+            => new(width, height, TextureFormat.RGBA32, false, false);
     }
 }

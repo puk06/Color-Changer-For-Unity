@@ -36,9 +36,8 @@ namespace net.puk06.ColorChanger.NDMF
                 foreach (var component in enabledComponents)
                 {
                     enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, component.targetTexture, component.ComponentTexture, true));
-                    foreach (var otherTexture in component.settingsInheritedTextures)
+                    foreach (var otherTexture in component.SettingsInheritedTextures)
                     {
-                        if (otherTexture == null) continue;
                         enabledInternalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, otherTexture, false));
                     }
                 }

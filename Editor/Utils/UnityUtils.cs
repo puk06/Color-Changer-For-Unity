@@ -37,6 +37,35 @@ namespace net.puk06.ColorChanger.Utils
         }
 
         /// <summary>
+        /// セクションヘッダーを作成します
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="lineThickness"></param>
+        /// <param name="space"></param>
+        internal static void DrawSectionHeader(string title, int lineThickness = 2, int space = 4)
+        {
+            EditorGUILayout.Space(10);
+
+            Rect rect = EditorGUILayout.GetControlRect(false, 20f);
+
+            GUIStyle style = EditorStyles.boldLabel;
+            style.fontSize = 15;
+            EditorGUI.LabelField(rect, title, style);
+
+            Vector2 titleSize = style.CalcSize(new GUIContent(title));
+
+            float lineX = rect.x + titleSize.x + 8f;
+            float lineY = rect.y + rect.height / 2f;
+
+            EditorGUI.DrawRect(
+                new Rect(lineX, lineY, rect.width - titleSize.x - 10f, lineThickness),
+                new Color(0.3f, 0.3f, 0.3f)
+            );
+
+            GUILayout.Space(space);
+        }
+
+        /// <summary>
         /// Foldout用のタイトルスタイルです
         /// </summary>
         internal static GUIStyle TitleStyle = _titleStyle;

@@ -123,12 +123,12 @@ namespace net.puk06.ColorChanger
             }
             else
             {
-                DrawSectionHeader(LocalizationManager.Get("editorwindow.section.scriptsettings"));
+                UnityUtils.DrawSectionHeader(LocalizationManager.Get("editorwindow.section.scriptsettings"));
 
                 // スクリプト設定画面
                 DrawColorChangerSettingsGUI(comp);
 
-                DrawSectionHeader(LocalizationManager.Get("editorwindow.section.texturesetings"));
+                UnityUtils.DrawSectionHeader(LocalizationManager.Get("editorwindow.section.texturesetings"));
 
                 // テクスチャ設定画面
                 DrawTextureSettingsGUI(comp);
@@ -142,7 +142,7 @@ namespace net.puk06.ColorChanger
                 // テクスチャ置き換え設定画面
                 DrawTextureReplacementSettingsGUI();
 
-                DrawSectionHeader(LocalizationManager.Get("editorwindow.section.colorsetings"));
+                UnityUtils.DrawSectionHeader(LocalizationManager.Get("editorwindow.section.colorsetings"));
 
                 // 色設定画面
                 DrawColorSettingsGUI();
@@ -153,7 +153,7 @@ namespace net.puk06.ColorChanger
                 // 色の追加設定画面
                 DrawAdvancedColorModeSettingsGUI();
 
-                DrawSectionHeader(LocalizationManager.Get("editorwindow.section.outputtexture"));
+                UnityUtils.DrawSectionHeader(LocalizationManager.Get("editorwindow.section.outputtexture"));
 
                 // テクスチャ作成ボタン
                 DrawTextureOutputGUI(comp);
@@ -182,9 +182,6 @@ namespace net.puk06.ColorChanger
 
                 EnabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsettings.enable"), EnabledButtonProp.boolValue);
                 PreviewEnabledButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsettings.previewenable"), PreviewEnabledButtonProp.boolValue);
-
-                EditorGUILayout.HelpBox(LocalizationManager.Get("editorwindow.scriptsettings.cpurendering.warning"), MessageType.Warning);
-                PreviewOnCPUButtonProp.boolValue = EditorGUILayout.Toggle(LocalizationManager.Get("editorwindow.scriptsettings.cpurendering.enable"), PreviewOnCPUButtonProp.boolValue);
 
 #if USE_TEXTRANSTOOL
                 var mlicComponent = colorChangerComponent.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>();
@@ -569,11 +566,11 @@ namespace net.puk06.ColorChanger
 
                 var textureNames = new List<string>();
                 if (colorChangerComponent.targetTexture != null) textureNames.Add($"{colorChangerComponent.targetTexture.name} - {LocalizationManager.Get("editorwindow.textureoutputsettings.texturetype.original")}");
-                textureNames.AddRange(colorChangerComponent.settingsInheritedTextures.Select(x => $"{(x == null ? "Unknown Texture" : x.name)} - {LocalizationManager.Get("editorwindow.textureoutputsettings.texturetype.settingsinherited")}"));
+                textureNames.AddRange(colorChangerComponent.SettingsInheritedTextures.Select(x => $"{x.name} - {LocalizationManager.Get("editorwindow.textureoutputsettings.texturetype.settingsinherited")}"));
 
                 var textures = new List<Texture2D?>();
                 if (colorChangerComponent.ComponentTexture != null) textures.Add(colorChangerComponent.ComponentTexture);
-                textures.AddRange(colorChangerComponent.settingsInheritedTextures);
+                textures.AddRange(colorChangerComponent.SettingsInheritedTextures);
 
                 if (textures.Count == 0) return;
                 if (selectedTextureIndex < 0 || selectedTextureIndex >= textures.Count) selectedTextureIndex = 0;
@@ -687,29 +684,6 @@ namespace net.puk06.ColorChanger
             AssetDatabase.Refresh();
 
             return savePath;
-        }
-
-        private void DrawSectionHeader(string title, int lineThickness = 2, int space = 4)
-        {
-            EditorGUILayout.Space(10);
-
-            Rect rect = EditorGUILayout.GetControlRect(false, 20f);
-
-            GUIStyle style = EditorStyles.boldLabel;
-            style.fontSize = 15;
-            EditorGUI.LabelField(rect, title, style);
-
-            Vector2 titleSize = style.CalcSize(new GUIContent(title));
-
-            float lineX = rect.x + titleSize.x + 8f;
-            float lineY = rect.y + rect.height / 2f;
-
-            EditorGUI.DrawRect(
-                new Rect(lineX, lineY, rect.width - titleSize.x - 10f, lineThickness),
-                new Color(0.3f, 0.3f, 0.3f)
-            );
-
-            GUILayout.Space(space);
         }
     }
 }

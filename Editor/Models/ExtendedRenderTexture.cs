@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using net.puk06.ColorChanger.Utils;
 using UnityEngine;
@@ -46,7 +47,7 @@ namespace net.puk06.ColorChanger.Models
         /// <param name="texture"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ExtendedRenderTexture Create(Texture texture = null)
+        public ExtendedRenderTexture Create(Texture? texture = null)
         {
             if (_isCreated) throw new Exception("RenderTexture has already created.");
             if (_disposed) throw new Exception("RenderTexture has already disposed.");
