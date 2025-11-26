@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using net.puk06.ColorChanger.Localization;
+using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -46,9 +47,19 @@ namespace net.puk06.ColorChanger
                 var components = selectedAvatar.GetComponentsInChildren<ColorChangerForUnity>(true);
                 if (components == null) return;
 
-                var groupedComponents = components
-                    .Where(c => c.targetTexture != null)
-                    .GroupBy(c => c.targetTexture);
+                var internalComponentsValues = new List<InternalColorChangerValues>();
+                foreach (var component in components)
+                {
+                    internalComponentsValues.Add(new InternalColorChangerValues(component, component.targetTexture, component.ComponentTexture, true));
+                    foreach (var otherTexture in component.SettingsInheritedTextures)
+                    {
+                        internalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, otherTexture, false));
+                    }
+                }
+
+                var groupedComponents = internalComponentsValues
+                    .Where(c => c.originalTexture != null)
+                    .GroupBy(c => c.originalTexture);
 
                 foreach (var groupedComponent in groupedComponents)
                 {
@@ -69,7 +80,7 @@ namespace net.puk06.ColorChanger
 
                     if (_foldoutStates[groupedComponent.Key].Main)
                     {
-                        var enabledComponents = groupedComponent.Where(x => ColorChangerUtils.IsEnabled(x));
+                        var enabledComponents = groupedComponent.Where(x => ColorChangerUtils.IsEnabled(x.parentComponent));
                         var disabledComponents = groupedComponent.Except(enabledComponents);
 
                         _foldoutStates[groupedComponent.Key].Enabled = EditorGUILayout.Foldout(
@@ -84,7 +95,7 @@ namespace net.puk06.ColorChanger
                             EditorGUI.indentLevel = 3;
                             foreach (var component in enabledComponents)
                             {
-                                EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component.parentComponent, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }
@@ -101,7 +112,7 @@ namespace net.puk06.ColorChanger
                             EditorGUI.indentLevel = 3;
                             foreach (var component in disabledComponents)
                             {
-                                EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component.parentComponent, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }

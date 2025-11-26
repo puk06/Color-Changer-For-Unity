@@ -19,7 +19,6 @@ namespace net.puk06.ColorChanger
         #region Script Settings Serialized Property
         private SerializedProperty EnabledButtonProp => serializedObject.FindProperty("Enabled");
         private SerializedProperty PreviewEnabledButtonProp => serializedObject.FindProperty("PreviewEnabled");
-        private SerializedProperty PreviewOnCPUButtonProp => serializedObject.FindProperty("PreviewOnCPU");
         private SerializedProperty TargetTextureProp => serializedObject.FindProperty("targetTexture");
         private SerializedProperty SettingsInheritedTexturesProp => serializedObject.FindProperty("settingsInheritedTextures");
         private SerializedProperty ReplacementTextureProp => serializedObject.FindProperty("replacementTexture");
