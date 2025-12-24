@@ -253,13 +253,10 @@ namespace net.puk06.ColorChanger.NDMF
         {
             var newMat = Object.Instantiate(material);
 
-            MaterialUtils.ForEachTex(newMat, (tex, propName) =>
+            MaterialUtils.ForEachTex(newMat, (texture, propName) =>
             {
-                Texture2D? tex2D = tex as Texture2D;
-                if (tex2D == null) return;
-                
-                if (processedTextures.TryGetValue(tex2D, out var texture))
-                    newMat.SetTexture(propName, texture);
+                if (texture is not Texture2D texture2D || !processedTextures.TryGetValue(texture2D, out var newTexture)) return;
+                newMat.SetTexture(propName, newTexture);
             });
 
             return newMat;
