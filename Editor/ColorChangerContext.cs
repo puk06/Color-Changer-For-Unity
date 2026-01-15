@@ -42,6 +42,9 @@ namespace net.puk06.ColorChanger
             if (useTextureFromActive && activeObject != null)
             {
                 component.targetTexture = TextureUtils.GetMainTextureFromGameobject(activeObject) as Texture2D;
+
+                // テクスチャが自動で適用された場合は、そのテクスチャ名をオブジェクト名にする
+                if (component.targetTexture != null) colorChangerObject.name = $"Color Changer For {component.targetTexture.name}";
             }
 
             LogUtils.Log($"Component created on '{colorChangerObject.name}'.");
