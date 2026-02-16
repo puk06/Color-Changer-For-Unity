@@ -289,6 +289,8 @@ namespace net.puk06.ColorChanger.Utils
             var sStreamingMipmaps = textureObject.FindProperty("m_StreamingMipmaps");
             sStreamingMipmaps.boolValue = true;
 
+            textureObject.ApplyModifiedPropertiesWithoutUndo();
+
             return newTexture;
         }
     }
