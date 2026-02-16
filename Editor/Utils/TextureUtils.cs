@@ -276,6 +276,20 @@ namespace net.puk06.ColorChanger.Utils
         }
 
         internal static Texture2D GenerateEmptyTexture2D(int width, int height)
-            => new(width, height, TextureFormat.RGBA32, false, false);
+        {
+            Texture2D newTexture = new(width, height, TextureFormat.RGBA32, false, false);
+
+            // どうやらStreaming Mipmapをここで有効にしないといけないらしい
+            // 普通に罠過ぎる。
+
+            // This code is borrowed from ReinaS-64892/TexTranstool
+            // Github Code URL: https://github.com/ReinaS-64892/TexTransTool/blob/a1f3f1e6e77a066b5fd47f2b692e069cf18b8ff0/Editor/Domain/TextureManager.cs#L192-L200
+            // License: MIT License (https://github.com/ReinaS-64892/TexTransTool/blob/master/LICENSE.md)
+            SerializedObject textureObject = new(newTexture);
+            var sStreamingMipmaps = textureObject.FindProperty("m_StreamingMipmaps");
+            sStreamingMipmaps.boolValue = true;
+
+            return newTexture;
+        }
     }
 }
