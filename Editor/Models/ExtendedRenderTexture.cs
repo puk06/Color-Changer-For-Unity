@@ -1,17 +1,15 @@
 #nullable enable
 using System;
-using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Editor.Utils;
 using UnityEngine;
 
-namespace net.puk06.ColorChanger.Models
+namespace net.puk06.ColorChanger.Editor.Models
 {
-    /// <summary>
-    /// RenderTextureの継承クラスです。Color Changer用に作られてます。
-    /// </summary>
     public class ExtendedRenderTexture : RenderTexture, IDisposable
     {
         private bool _isCreated = false;
         private bool _disposed = false;
+        public bool Created => _isCreated;
 
         /// <summary>
         /// 渡されたサイズの大きさのExtendedRenderTextureをInitializeします。Createはこの時点では実行されません。
@@ -19,9 +17,8 @@ namespace net.puk06.ColorChanger.Models
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="readWrite"></param>
-        /// <param name="isPreview"></param>
-        public ExtendedRenderTexture(int width, int height, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB, bool isPreview = false)
-            : base(isPreview ? width / 4 : width, isPreview ? height / 4 : height, 0, RenderTextureFormat.ARGB32, readWrite)
+        public ExtendedRenderTexture(int width, int height, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB)
+            : base(width, height : height, 0, RenderTextureFormat.ARGB32, readWrite)
         {
             enableRandomWrite = true;
             wrapMode = TextureWrapMode.Clamp;
@@ -34,9 +31,8 @@ namespace net.puk06.ColorChanger.Models
         /// </summary>
         /// <param name="texture"></param>
         /// <param name="readWrite"></param>
-        /// <param name="isPreview"></param>
-        public ExtendedRenderTexture(Texture texture, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB, bool isPreview = false)
-            : this(texture.width, texture.height, readWrite, isPreview)
+        public ExtendedRenderTexture(Texture texture, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB)
+            : this(texture.width, texture.height, readWrite)
         {
         }
 
@@ -55,42 +51,32 @@ namespace net.puk06.ColorChanger.Models
             if (base.Create())
             {
                 _isCreated = true;
-
                 if (texture != null) Graphics.Blit(texture, this);
             }
             else
             {
-                LogUtils.LogError($"Failed to create RenderTexture. This may be due to the platform not supporting GPU-based computation.");
-                Dispose();
+                Debug.LogError($"Failed to create RenderTexture. This may be due to the platform not supporting GPU-based computation.");
             }
 
             return this;
         }
 
-        /// <summary>
-        /// 一時的にRenderTextureでしたい処理をaction内に書くことができます。
-        /// 処理中に作成された内部のRenderTextureは自動で開放されます。
-        /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="action"></param>
-        public static void ProcessTemporary(int width, int height, Action<RenderTexture> action)
+        public Texture2D ToTexture2D()
         {
-            RenderTexture temporaryRenderTexture = GetTemporary(width, height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.sRGB);
-            temporaryRenderTexture.filterMode = FilterMode.Bilinear;
+            Texture2D texture = new(width, height, TextureFormat.RGBA32, false, false);
+            TextureUtils.ApplyStreamingMipmaps(texture);
 
-            RenderTexture previousActiveRenderTexture = active;
-            active = temporaryRenderTexture;
+            RenderTexture previous = active;
+            active = this;
 
-            action(temporaryRenderTexture);
+            texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            texture.Apply();
 
-            active = previousActiveRenderTexture;
-            ReleaseTemporary(temporaryRenderTexture);
+            active = previous;
+
+            return texture;
         }
 
-        /// <summary>
-        /// ExtendedRenderTextureをDisposeします。
-        /// </summary>
         public void Dispose()
         {
             if (_disposed) return;

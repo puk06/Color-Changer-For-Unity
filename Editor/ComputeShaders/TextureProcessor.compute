@@ -1,0 +1,108 @@
+#pragma kernel CSMain
+
+#include "GammaLinear.hlsl"
+#include "BalanceModeShader.hlsl"
+#include "AdvancedColorShader.hlsl"
+
+RWTexture2D<float4> _SourceTex;
+RWTexture2D<float4> _TargetTex;
+
+// Mask Texture
+bool _UseMask;
+RWTexture2D<float4> _MaskTex;
+float2 _MaskTexScale;
+int _MaskSelectionType;
+
+int4 _SourceColor;
+int4 _TargetColor;
+
+// Balance Mode
+bool _BalanceModeEnabled;
+int _BalanceModeVersion;
+float _BalanceModeV1Weight;
+float _BalanceModeV1MinimumValue;
+float _BalanceModeV2Weight;
+float _BalanceModeV2Radius;
+float _BalanceModeV2MinimumValue;
+bool _BalanceModeV2IncludeOutside;
+Texture2D<float4> _BalanceModeV3Gradient;
+int _BalanceModeV3GradientResolution;
+
+// Advanced Color Settings
+bool _AdvancedColorModeEnabled;
+float _AdvancedColorSettingsBrightness;
+float _AdvancedColorSettingsContrast;
+float _AdvancedColorSettingsGamma;
+float _AdvancedColorSettingsExposure;
+float _AdvancedColorSettingsTransparency;
+
+bool IsMaskSelected(uint2 id)
+{
+    uint width, height;
+    _MaskTex.GetDimensions(width, height);
+
+    uint2 maskUv = id.xy * _MaskTexScale;
+    if ((maskUv.x < 0 || maskUv.x >= width) || (maskUv.y < 0 || maskUv.y >= height)) return false;
+
+    int4 color = (int4)(_MaskTex[maskUv] * 255.0);
+
+    if (_MaskSelectionType == 1) return color.r == 0 && color.g == 0 && color.b == 0 && color.a != 0;
+    if (_MaskSelectionType == 2) return color.r == 255 && color.g == 255 && color.b == 255 && color.a != 0;
+    if (_MaskSelectionType == 3) return color.a == 255;
+    if (_MaskSelectionType == 4) return color.a != 0;
+    if (_MaskSelectionType == 5) return color.a == 0;
+
+    return false;
+}
+
+[numthreads(16, 16, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    uint width, height;
+    _TargetTex.GetDimensions(width, height);
+    if (id.x >= width || id.y >= height) return;
+
+    if (_UseMask && !IsMaskSelected(id.xy))
+    {
+        _TargetTex[id.xy] = _SourceTex[id.xy];
+        return;
+    }
+
+    int4 color = (int4)(_SourceTex[id.xy] * 255.0);
+
+    int3 colorOffset = (int3)_TargetColor - (int3)_SourceColor;
+
+    if (_BalanceModeEnabled)
+    {
+        color.rgb = BalanceColorAdjustment(
+            color.rgb, (int3)_SourceColor, colorOffset,
+            _BalanceModeVersion,
+            _BalanceModeV1Weight,
+            _BalanceModeV1MinimumValue,
+            _BalanceModeV2Radius,
+            _BalanceModeV2Weight,
+            _BalanceModeV2MinimumValue,
+            _BalanceModeV2IncludeOutside,
+            _BalanceModeV3Gradient,
+            _BalanceModeV3GradientResolution
+        );
+    }
+    else
+    {
+        color.rgb += colorOffset;
+    }
+
+    if (_AdvancedColorModeEnabled)
+    {
+        color = AdvancedColorAdjustment(
+            color,
+            _AdvancedColorSettingsBrightness,
+            _AdvancedColorSettingsContrast,
+            _AdvancedColorSettingsGamma,
+            _AdvancedColorSettingsExposure,
+            _AdvancedColorSettingsTransparency
+        );
+    }
+    
+    _TargetTex[id.xy] = saturate(color / 255.0);
+}

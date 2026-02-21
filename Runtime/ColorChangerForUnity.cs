@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using net.puk06.ColorChanger.Models;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace net.puk06.ColorChanger
 {
@@ -16,18 +17,32 @@ namespace net.puk06.ColorChanger
 
         public bool PreviewEnabled = true;
 
-        public Texture2D? targetTexture = null;
-        public Texture2D?[] settingsInheritedTextures = Array.Empty<Texture2D>();
-        public Texture2D? replacementTexture = null;
+        [FormerlySerializedAs("targetTexture")]
+        public Texture2D? TargetTexture = null;
+
+        [FormerlySerializedAs("settingsInheritedTextures")]
+        public Texture2D?[] SettingsInheritedTextures = Array.Empty<Texture2D>();
+
+        [FormerlySerializedAs("replacementTexture")]
+        public Texture2D? ReplacementTexture = null;
         
-        public Texture2D? maskTexture = null;
-        public ImageMaskSelectionType imageMaskSelectionType = ImageMaskSelectionType.None;
+        [FormerlySerializedAs("maskTexture")]
+        public Texture2D? MaskTexture = null;
 
-        public Color previousColor = Color.white;
-        public Color newColor = Color.white;
+        [FormerlySerializedAs("imageMaskSelectionType")]
+        public ImageMaskSelectionType ImageMaskSelectionType = ImageMaskSelectionType.None;
 
-        public BalanceModeConfiguration balanceModeConfiguration = new BalanceModeConfiguration();
-        public AdvancedColorConfiguration advancedColorConfiguration = new AdvancedColorConfiguration();
+        [FormerlySerializedAs("previousColor")]
+        public Color SourceColor = Color.white;
+
+        [FormerlySerializedAs("newColor")]
+        public Color TargetColor = Color.white;
+
+        [FormerlySerializedAs("balanceModeConfiguration")]
+        public BalanceModeConfiguration BalanceModeConfiguration = new BalanceModeConfiguration();
+
+        [FormerlySerializedAs("advancedColorConfiguration")]
+        public AdvancedColorConfiguration AdvancedColorConfiguration = new AdvancedColorConfiguration();
 
         /// <summary>
         /// TTTのExternalToolAsLayer用のものです。
@@ -44,12 +59,12 @@ namespace net.puk06.ColorChanger
         {
             get
             {
-                if (targetTexture == null) return null;
-                return replacementTexture == null ? targetTexture : replacementTexture;
+                if (TargetTexture == null) return null;
+                return ReplacementTexture == null ? TargetTexture : ReplacementTexture;
             }
         }
 
-        public Texture2D[] SettingsInheritedTextures
-            => settingsInheritedTextures.Where(t => t != null).ToArray()!;
+        public Texture2D[] SafeSettingsInheritedTextures
+            => SettingsInheritedTextures.Where(t => t != null).ToArray()!;
     }
 }

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using net.puk06.ColorChanger.Localization;
+using net.puk06.ColorChanger.Editor.Services;
 using net.puk06.ColorChanger.Models;
 using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
 
-namespace net.puk06.ColorChanger
+namespace net.puk06.ColorChanger.Editor
 {
     public class FoldoutState
     {
@@ -31,37 +31,36 @@ namespace net.puk06.ColorChanger
 
         private void OnGUI()
         {
-            LocalizationUtils.GenerateLanguagePopup();
+            LocalizationUtils.DrawLanguageSelectionPopup();
 
-            // アバターを選ぶ欄
-            var avatars = FindObjectsOfType<VRC_AvatarDescriptor>().Select(c => c.gameObject).ToArray();
+            GameObject[] avatars = FindObjectsOfType<VRC_AvatarDescriptor>().Select(c => c.gameObject).ToArray();
             if (avatars.Length == 0) return;
 
             _selectedAvatarIndex = Mathf.Clamp(_selectedAvatarIndex, 0, avatars.Length - 1);
-            _selectedAvatarIndex = EditorGUILayout.Popup(LocalizationManager.Get("editorwindow.componentmanager.avatar"), _selectedAvatarIndex, avatars.Select(a => a.name).ToArray());
+            _selectedAvatarIndex = EditorGUILayout.Popup(LocalizationUtils.Localize("EditorWindow.ComponentManager.Avatar"), _selectedAvatarIndex, avatars.Select(a => a.name).ToArray());
 
             if (_selectedAvatarIndex >= 0 && _selectedAvatarIndex < avatars.Length && avatars[_selectedAvatarIndex] != null)
             {
-                var selectedAvatar = avatars[_selectedAvatarIndex];
+                GameObject selectedAvatar = avatars[_selectedAvatarIndex];
 
-                var components = selectedAvatar.GetComponentsInChildren<ColorChangerForUnity>(true);
+                ColorChangerForUnity[] components = selectedAvatar.GetComponentsInChildren<ColorChangerForUnity>(true);
                 if (components == null) return;
 
-                var internalComponentsValues = new List<InternalColorChangerValues>();
-                foreach (var component in components)
+                List<InternalColorChangerValues> internalComponentsValues = new();
+                foreach (ColorChangerForUnity component in components)
                 {
-                    internalComponentsValues.Add(new InternalColorChangerValues(component, component.targetTexture, component.ComponentTexture, true));
-                    foreach (var otherTexture in component.SettingsInheritedTextures)
+                    internalComponentsValues.Add(new InternalColorChangerValues(component, component.TargetTexture, component.ComponentTexture, true));
+                    foreach (Texture2D otherTexture in component.SettingsInheritedTextures.Where(t => t != null))
                     {
                         internalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, otherTexture, false));
                     }
                 }
 
-                var groupedComponents = internalComponentsValues
+                IEnumerable<IGrouping<Texture2D, InternalColorChangerValues>> groupedComponents = internalComponentsValues
                     .Where(c => c.originalTexture != null)
                     .GroupBy(c => c.originalTexture);
 
-                foreach (var groupedComponent in groupedComponents)
+                foreach (IGrouping<Texture2D, InternalColorChangerValues> groupedComponent in groupedComponents)
                 {
                     EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -71,23 +70,23 @@ namespace net.puk06.ColorChanger
 
                     _foldoutStates[groupedComponent.Key].Main = EditorGUILayout.Foldout(
                         _foldoutStates[groupedComponent.Key].Main,
-                        LocalizationManager.Get("editorwindow.componentmanager.texture", groupedComponent.Key.name, groupedComponent.Count().ToString()),
+                        string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.Texture"), groupedComponent.Key.name, groupedComponent.Count().ToString()),
                         true,
-                        UnityUtils.TitleStyle
+                        UnityService.TitleStyle
                     );
 
                     EditorGUI.indentLevel = 2;
 
                     if (_foldoutStates[groupedComponent.Key].Main)
                     {
-                        var enabledComponents = groupedComponent.Where(x => ColorChangerUtils.IsEnabled(x.parentComponent));
-                        var disabledComponents = groupedComponent.Except(enabledComponents);
+                        IEnumerable<InternalColorChangerValues> enabledComponents = groupedComponent.Where(x => x.parentComponent.gameObject.activeSelf && x.parentComponent.Enabled);
+                        IEnumerable<InternalColorChangerValues> disabledComponents = groupedComponent.Except(enabledComponents);
 
                         _foldoutStates[groupedComponent.Key].Enabled = EditorGUILayout.Foldout(
                             _foldoutStates[groupedComponent.Key].Enabled,
-                            LocalizationManager.Get("editorwindow.componentmanager.enabledcomponents", enabledComponents.Count().ToString()),
+                            string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.EnabledComponent"), enabledComponents.Count().ToString()),
                             true,
-                            UnityUtils.SubTitleStyle
+                            UnityService.SubTitleStyle
                         );
 
                         if (_foldoutStates[groupedComponent.Key].Enabled)
@@ -102,9 +101,9 @@ namespace net.puk06.ColorChanger
 
                         _foldoutStates[groupedComponent.Key].Disabled = EditorGUILayout.Foldout(
                             _foldoutStates[groupedComponent.Key].Disabled,
-                            LocalizationManager.Get("editorwindow.componentmanager.disabledcomponents", disabledComponents.Count().ToString()),
+                            string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.DisabledComponent"), disabledComponents.Count().ToString()),
                             true,
-                            UnityUtils.SubTitleStyle
+                            UnityService.SubTitleStyle
                         );
 
                         if (_foldoutStates[groupedComponent.Key].Disabled)
@@ -123,8 +122,8 @@ namespace net.puk06.ColorChanger
                     EditorGUILayout.EndVertical();
                 }
 
-                var missingTextureComponents = components
-                    .Where(c => c.targetTexture == null)
+                List<ColorChangerForUnity> missingTextureComponents = components
+                    .Where(c => c.TargetTexture == null)
                     .ToList();
 
                 if (missingTextureComponents.Count > 0)
@@ -135,9 +134,9 @@ namespace net.puk06.ColorChanger
 
                     _showMissing = EditorGUILayout.Foldout(
                         _showMissing,
-                        LocalizationManager.Get("editorwindow.componentmanager.texture", LocalizationManager.Get("editorwindow.componentmanager.texturemissing"), missingTextureComponents.Count.ToString()),
+                        string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.Texture"), LocalizationUtils.Localize("EditorWindow.ComponentManager.MissingTexture"), missingTextureComponents.Count.ToString()),
                         true,
-                        UnityUtils.TitleStyle
+                        UnityService.TitleStyle
                     );
 
                     EditorGUI.indentLevel = 2;
@@ -145,7 +144,7 @@ namespace net.puk06.ColorChanger
                     if (_showMissing)
                     {
                         EditorGUI.indentLevel = 3;
-                        foreach (var component in missingTextureComponents)
+                        foreach (ColorChangerForUnity component in missingTextureComponents)
                         {
                             EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                         }

@@ -1,0 +1,111 @@
+{
+    "LanguageName": "en-US",
+    "LocalizedLanguageName": "English",
+
+    "Inspector.Warning.ChildObject": "This object must be placed as a child object of the avatar.",
+
+    "Inspector.Section.Script": "Script",
+    "Inspector.Script.Section.ScriptConfiguration": "Script Configuration",
+    "Inspector.Script.ScriptConfiguration.IsEnabled": "Enable Script",
+    "Inspector.Script.ScriptConfiguration.IsPreviewEnabled": "Enable Preview",
+
+    "Inspector.Section.Texture": "Texture",
+    "Inspector.Texture.Section.TextureConfiguration": "Texture Configuration",
+    "Inspector.Texture.TextureConfiguration.TargetTexture": "Texture",
+    "Inspector.Texture.TextureConfiguration.ShowPreview": "Show Texture Preview",
+
+    "Inspector.Texture.Section.SettingsInheritedTextures": "Settings Inherited Textures",
+    "Inspector.Texture.SettingsInheritedTextures.Description": "Applies this component's settings to all textures specified here. This is equivalent to having multiple components with the same settings.",
+    
+    "Inspector.Texture.Section.MaskTexture": "Mask Image Settings",
+    "Inspector.Texture.MaskTexture.Description": "Using a mask image allows color changes to be applied only to specific parts of the texture, leaving other parts unaffected.\nNote that this will not be reflected on textures that inherit settings.",
+    "Inspector.Texture.MaskTexture.Texture": "Mask Image",
+    "Inspector.TextureMaskTexture.ImageMaskSelectionType": "Selection Condition",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Description": "Only areas matching the specified condition will have their color changed.",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.None": "None",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Black": "Black",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.White": "White",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Opaque": "Opaque",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Transparent": "Transparent",
+    "Inspector.Texture.MaskTexture.ShowPreview": "Show Texture Preview",
+
+    "Inspector.Texture.Section.TexureReplacement": "Texture Replacement Settings",
+    "Inspector.Texture.TexureReplacement.Description": "Replaces the selected texture with the specified texture, then applies color change processing.",
+    "Inspector.Texture.TexureReplacement.TargetTexture": "Replacement Texture",
+
+    "Inspector.Section.Color": "Color",
+    "Inspector.Color.Section.ColorConfiguration": "Color Configuration",
+    "Inspector.Color.ColorConfiguration.SourceColor": "Source Color",
+    "Inspector.Color.ColorConfiguration.TargetColor": "Target Color",
+    
+    "Inspector.Color.Section.BalanceModeConfiguration": "Balance Mode Configuration",
+    "Inspector.Color.BalanceModeConfiguration": "Balance Mode",
+    "Inspector.Color.BalanceModeConfiguration.Description": "Switches the color change calculation formula to a format suited for texture modification.",
+
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion": "Balance Mode",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.None": "None",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V1": "Balance Mode V1",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V2": "Balance Mode V2",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V3": "Balance Mode V3",
+
+    "Inspector.Color.BalanceModeConfiguration.Section.V1": "Balance Mode V1",
+    "Inspector.Color.BalanceModeConfiguration.V1.Description": "Calculates the rate of change based on the distance between the selected color and each pixel's color, and the position along its extension.\nDisadvantage: Colors near the edges of RGB space will have smaller changes.",
+    "Inspector.Color.BalanceModeConfiguration.V1.Weight": "Change Rate Graph Weight",
+    "Inspector.Color.BalanceModeConfiguration.V1.Minimum": "Change Rate Graph Minimum",
+    
+    "Inspector.Color.BalanceModeConfiguration.Section.V2": "Balance Mode V2",
+    "Inspector.Color.BalanceModeConfiguration.V2.Description": "Calculates the rate of color change spherically around the selected color, using the radius position as a reference.\nDisadvantage: Not constrained by RGB space, but configuration is slightly more complex.",
+    "Inspector.Color.BalanceModeConfiguration.V2.Radius": "Maximum Sphere Radius",
+    "Inspector.Color.BalanceModeConfiguration.V2.Weight": "Change Rate Graph Weight",
+    "Inspector.Color.BalanceModeConfiguration.V2.Minimum": "Change Rate Graph Minimum",
+    "Inspector.Color.BalanceModeConfiguration.V2.IncludeOutside": "Apply Minimum Value Outside Range",
+    
+    "Inspector.Color.BalanceModeConfiguration.Section.V3": "Balance Mode V3",
+    "Inspector.Color.BalanceModeConfiguration.V3.Description": "Determines the rate of change from pixel brightness along the configured gradient.\nDisadvantage: Colors change uniformly, but unintended areas may also be affected.",
+    "Inspector.Color.BalanceModeConfiguration.V3.Gradient": "Gradient",
+    "Inspector.Color.BalanceModeConfiguration.V3.Section.LUTConfiguration": "LUT Configuration",
+    "Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Description": "Pre-generating the gradient LUT (Look-Up Table) significantly speeds up processing. However, lowering the LUT resolution too much may reduce color accuracy and gradient quality.",
+    "Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Resolution": "Resolution",
+
+    "Inspector.Color.Section.AdvancedColorConfiguration": "Advanced Color Settings",
+    "Inspector.Color.AdvancedColorConfiguration.IsEnabled": "Enabled",
+    "Inspector.Color.AdvancedColorConfiguration.Brightness": "Brightness",
+    "Inspector.Color.AdvancedColorConfiguration.Contrast": "Contrast",
+    "Inspector.Color.AdvancedColorConfiguration.Gamma": "Gamma",
+    "Inspector.Color.AdvancedColorConfiguration.Exposure": "Exposure",
+    "Inspector.Color.AdvancedColorConfiguration.Transparency": "Transparency",
+
+    "Inspector.Section.TextureOutput": "Manual Texture Output",
+    "Inspector.TextureOutput.Section.TextureOutputConfigurtion": "Manual Texture Output Settings",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Warning": "Textures are automatically created and applied non-destructively at build time.\nIf you need to make fine adjustments to the texture image, export the texture and edit it manually.",
+    
+    "Inspector.TextureOutput.TextureOutputConfigurtion.SelectTexure": "Select Output Texture",
+    
+    "Inspector.TextureOutput.TextureOutputConfigurtion.TextureType.OriginalTexture": "Original Texture",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.TextureType.SettingsInheritedTexture": "Settings Inherited Texture",
+
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Output": "Export Texture",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexture": "Target texture could not be found.",
+
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace": "Texture creation complete.\nWould you like to update the materials using this texture in the current scene?",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Confirm": "Confirm",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Yes": "Yes",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.No": "No",
+    
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Failed": "Texture processing failed: '{0}'\n{1}",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexturePath": "Could not retrieve the path of the original texture.",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Error.EncodeFailed": "Failed to encode PNG data.",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Save": "Texture saved: {0}",
+
+    "EditorWindow.ComponentManager.Avatar": "Avatar",
+    "EditorWindow.ComponentManager.Texture": "Texture: {0} ({1})",
+    "EditorWindow.ComponentManager.EnabledComponent": "Enabled Components ({0}) ",
+    "EditorWindow.ComponentManager.DisabledComponent": "Disabled Components ({0}) ",
+    "EditorWindow.ComponentManager.MissingTexture": "Unassigned",
+    
+    "NdmfBuild.Processing.Success": "Texture generation complete!\nComponent: {0}\nTexture: {1}",
+    "NdmfBuild.Processing.Success:description": "Associated components",
+    "NdmfBuild.Processing.Failed": "Texture generation failed.\nComponent: {0}\nTexture: {1}",
+    "NdmfBuild.Processing.Failed:description": "Texture generation failed for the following components",
+    "NdmfBuild.Processing.Failed:hint": "There may be another component assigned to the same texture, or no texture may be assigned at all!"
+}

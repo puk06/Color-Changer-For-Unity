@@ -1,37 +1,74 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
-using nadena.dev.ndmf.localization;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+using UnityEngine;
 
-namespace net.puk06.ColorChanger.Localization
+namespace net.puk06.ColorChanger.Editor.Localization
 {
-    public class ColorChangerLocalizer
+    internal class Localizer
     {
-        private static readonly Localizer _localizer;
+        private readonly Dictionary<string, Dictionary<string, string>> _map;
 
-        static ColorChangerLocalizer()
+        private readonly List<(string, string)> _languageMetaData = new();
+
+        internal static Localizer Instance { get; private set; } = new Localizer();
+
+        private Localizer()
         {
-            _localizer = new Localizer("en", () =>
-            {
-                var enDict = new Dictionary<string, string>
-                {
-                    { "colorchanger.process.success", "Texture Processing done\nComponent: {0}\nTexture: {1}\nProcessing time: {2} ms" },
-                    { "colorchanger.process.error", "Texture Processing Error. See the console for details.\nComponent: {0}\nTexture: {1}\nProcessing time: {2} ms" }
-                };
-
-                var jaDict = new Dictionary<string, string>
-                {
-                    { "colorchanger.process.success", "テクスチャ生成が完了しました\nコンポーネント: {0}\nテクスチャ: {1}\n処理時間: {2} ms" },
-                    { "colorchanger.process.error", "テクスチャ生成中にエラーが発生しました。詳細はコンソールをご覧ください\nコンポーネント: {0}\nテクスチャ: {1}\n処理時間: {2} ms" }
-                };
-
-                return new List<(string, Func<string, string>)>
-                {
-                    ("en", key => enDict.TryGetValue(key, out var val) ? val : null),
-                    ("ja", key => jaDict.TryGetValue(key, out var val) ? val : null)
-                };
-            });
+            _map = new();
+            LoadFromFolder("Packages/net.puk06.color-changer/Editor/Localization/locales");
         }
 
-        public static Localizer GetLocalizer() => _localizer;
+        private void LoadFromFolder(string path)
+        {
+            if (!Directory.Exists(path)) return;
+
+            foreach (string filePath in Directory.GetFiles(path).Where(i => i.EndsWith(".json")))
+            {
+                try
+                {
+                    Dictionary<string, string>? deserializeResult = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(filePath));
+
+                    if (deserializeResult == null)
+                    {
+                        Debug.LogError($"Failed to load language: '{Path.GetFileName(filePath)}'.");
+                    }
+                    else if (!deserializeResult.ContainsKey("LanguageName") || !deserializeResult.ContainsKey("LocalizedLanguageName"))
+                    {
+                        Debug.LogError($"Failed to load language: '{Path.GetFileName(filePath)}'. Couldn't get language name.");
+                    }
+                    else if (_map.ContainsKey(deserializeResult["LanguageName"]))
+                    {
+                        Debug.LogError($"Failed to load language: '{Path.GetFileName(filePath)}'. Already added language name: '{deserializeResult["LanguageName"]}'");
+                    }
+                    else
+                    {
+                        _map[deserializeResult["LanguageName"]] = deserializeResult;
+                        _languageMetaData.Add((deserializeResult["LanguageName"], deserializeResult["LocalizedLanguageName"]));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Failed to load language: '{Path.GetFileName(filePath)}'.\n{ex}");
+                }
+            }
+        }
+
+        internal List<(string, string)> Languages => _languageMetaData;
+
+        internal string? Get(string language, string localizationKey)
+        {
+            try
+            {
+                return _map[language][localizationKey];
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

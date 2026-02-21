@@ -1,0 +1,111 @@
+{
+    "LanguageName": "ja-JP",
+    "LocalizedLanguageName": "日本語",
+
+    "Inspector.Warning.ChildObject": "このオブジェクトはアバターの子オブジェクトとして配置する必要があります。",
+
+    "Inspector.Section.Script": "スクリプト本体",
+    "Inspector.Script.Section.ScriptConfiguration": "スクリプト設定",
+    "Inspector.Script.ScriptConfiguration.IsEnabled": "スクリプトの有効化",
+    "Inspector.Script.ScriptConfiguration.IsPreviewEnabled": "プレビューの有効化",
+
+    "Inspector.Section.Texture": "テクスチャ",
+    "Inspector.Texture.Section.TextureConfiguration": "テクスチャ設定",
+    "Inspector.Texture.TextureConfiguration.TargetTexture": "テクスチャ",
+    "Inspector.Texture.TextureConfiguration.ShowPreview": "テクスチャプレビューを表示する",
+
+    "Inspector.Texture.Section.SettingsInheritedTextures": "設定継承テクスチャ",
+    "Inspector.Texture.SettingsInheritedTextures.Description": "ここに設定されたテクスチャ全てにこのコンポーネントの設定を適用します。同じ設定のコンポーネントが複数ある状態と同じになります。",
+    
+    "Inspector.Texture.Section.MaskTexture": "マスク画像設定",
+    "Inspector.Texture.MaskTexture.Description": "マスク画像を使用すると、テクスチャの特定の部分にのみ色の変更を適用でき、他の部分には影響を与えません。\nただし、設定を継承したテクスチャには反映されないので注意してください。",
+    "Inspector.Texture.MaskTexture.Texture": "マスク画像",
+    "Inspector.TextureMaskTexture.ImageMaskSelectionType": "選択条件",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Description": "指定された条件に合う部分のみ色が変更されます。",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.None": "なし",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Black": "黒",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.White": "白",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Opaque": "不透明",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Transparent": "透明",
+    "Inspector.Texture.MaskTexture.ShowPreview": "テクスチャプレビューを表示する",
+
+    "Inspector.Texture.Section.TexureReplacement": "テクスチャ置き換え設定",
+    "Inspector.Texture.TexureReplacement.Description": "選択中のテクスチャを指定したテクスチャに置き換え、その後に色の変更処理を実行します。",
+    "Inspector.Texture.TexureReplacement.TargetTexture": "置き換え先のテクスチャ",
+
+    "Inspector.Section.Color": "色",
+    "Inspector.Color.Section.ColorConfiguration": "色設定",
+    "Inspector.Color.ColorConfiguration.SourceColor": "変更前の色",
+    "Inspector.Color.ColorConfiguration.TargetColor": "変更後の色",
+    
+    "Inspector.Color.Section.BalanceModeConfiguration": "バランスモード設定",
+    "Inspector.Color.BalanceModeConfiguration": "バランスモード",
+    "Inspector.Color.BalanceModeConfiguration.Description": "色変更の計算式を、テクスチャ改変に適した形式に切り替えます。",
+
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion": "バランスモード",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.None": "なし",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V1": "バランスモードV1",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V2": "バランスモードV2",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V3": "バランスモードV3",
+
+    "Inspector.Color.BalanceModeConfiguration.Section.V1": "バランスモードV1",
+    "Inspector.Color.BalanceModeConfiguration.V1.Description": "選んだ色と各ピクセルの色の距離、およびその延長線上の位置から変化率を計算します。\nデメリット: RGB空間の端に近い色は変化が小さくなります。",
+    "Inspector.Color.BalanceModeConfiguration.V1.Weight": "変化率グラフの重み",
+    "Inspector.Color.BalanceModeConfiguration.V1.Minimum": "変化率グラフの最低値",
+    
+    "Inspector.Color.BalanceModeConfiguration.Section.V2": "バランスモードV2",
+    "Inspector.Color.BalanceModeConfiguration.V2.Description": "選んだ色を中心に球状に色の変化率を計算し、半径の位置を基準とします。\nデメリット: RGB空間の制限を受けませんが、設定が少し複雑です。",
+    "Inspector.Color.BalanceModeConfiguration.V2.Radius": "球の半径の最大値",
+    "Inspector.Color.BalanceModeConfiguration.V2.Weight": "変化率グラフの重み",
+    "Inspector.Color.BalanceModeConfiguration.V2.Minimum": "変化率グラフの最低値",
+    "Inspector.Color.BalanceModeConfiguration.V2.IncludeOutside": "範囲外にも最低値を適用する",
+    
+    "Inspector.Color.BalanceModeConfiguration.Section.V3": "バランスモードV3",
+    "Inspector.Color.BalanceModeConfiguration.V3.Description": "設定されたグラデーションに沿って、ピクセルの明るさから変化率を決めます。\nデメリット: 色が均一に変わりますが、意図しない部分も変化する可能性があります。",
+    "Inspector.Color.BalanceModeConfiguration.V3.Gradient": "グラデーション",
+    "Inspector.Color.BalanceModeConfiguration.V3.Section.LUTConfiguration": "LUT設定",
+    "Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Description": "グラデーションのLUT（ルックアップテーブル）を事前生成することで処理を大幅に高速化します。ただし、LUTの解像度を下げすぎると色の精度やグラデーションの品質が低下する可能性があります。",
+    "Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Resolution": "解像度",
+
+    "Inspector.Color.Section.AdvancedColorConfiguration": "色の追加設定",
+    "Inspector.Color.AdvancedColorConfiguration.IsEnabled": "有効",
+    "Inspector.Color.AdvancedColorConfiguration.Brightness": "明るさ",
+    "Inspector.Color.AdvancedColorConfiguration.Contrast": "コントラスト",
+    "Inspector.Color.AdvancedColorConfiguration.Gamma": "ガンマ",
+    "Inspector.Color.AdvancedColorConfiguration.Exposure": "露出",
+    "Inspector.Color.AdvancedColorConfiguration.Transparency": "透明度",
+
+    "Inspector.Section.TextureOutput": "テクスチャ手動出力",
+    "Inspector.TextureOutput.Section.TextureOutputConfigurtion": "テクスチャ手動出力設定",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Warning": "テクスチャはビルド時に自動で非破壊で作成、適用されます。\nテクスチャ画像の細かな修正が必要な場合はテクスチャを出力して各自で編集してください。",
+    
+    "Inspector.TextureOutput.TextureOutputConfigurtion.SelectTexure": "出力テクスチャの選択",
+    
+    "Inspector.TextureOutput.TextureOutputConfigurtion.TextureType.OriginalTexture": "元テクスチャ",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.TextureType.SettingsInheritedTexture": "設定継承テクスチャ",
+
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Output": "テクスチャ出力",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexture": "ターゲットテクスチャが見つかりませんでした。",
+
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace": "テクスチャの作成が完了しました。\nこのテクスチャを使用しているマテリアルを、現在のシーン内で更新しますか？",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Confirm": "確認",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Yes": "はい",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.No": "いいえ",
+    
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Failed": "テクスチャ処理に失敗しました: '{0}'\n{1}",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexturePath": "元テクスチャのパスが取得できません",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Error.EncodeFailed": "PNGデータのエンコードに失敗しました",
+    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Save": "テクスチャを保存しました: {0}",
+
+    "EditorWindow.ComponentManager.Avatar": "アバター",
+    "EditorWindow.ComponentManager.Texture": "テクスチャ: {0} ({1})",
+    "EditorWindow.ComponentManager.EnabledComponent": "有効なコンポーネント ({0}) ",
+    "EditorWindow.ComponentManager.DisabledComponent": "無効なコンポーネント ({0}) ",
+    "EditorWindow.ComponentManager.MissingTexture": "未割り当て",
+    
+    "NdmfBuild.Processing.Success": "テクスチャ生成が完了しました！\nコンポーネント: {0}\nテクスチャ: {1}",
+    "NdmfBuild.Processing.Success:description": "関連するコンポーネント",
+    "NdmfBuild.Processing.Failed": "テクスチャ生成に失敗しました。\nコンポーネント: {0}\nテクスチャ: {1}",
+    "NdmfBuild.Processing.Failed:description": "以下のコンポーネントでテクスチャ生成に失敗しました",
+    "NdmfBuild.Processing.Failed:hint": "他に同じテクスチャを割り当てているコンポーネントがあるか、テクスチャがそもそも割り当てられていない可能性があります！"
+}
