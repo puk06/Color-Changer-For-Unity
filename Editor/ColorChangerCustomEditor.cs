@@ -573,20 +573,18 @@ namespace net.puk06.ColorChanger.Editor
 
             try
             {
-                Texture? processedTexture = TextureBuilder.Build(targetTexture, colorChangerComponent, useMask);
-                if (processedTexture == null)
+                ExtendedRenderTexture? processedRenderTexture = TextureBuilder.Build(targetTexture, colorChangerComponent, useMask);
+                if (processedRenderTexture == null)
                 {
                     LogUtils.LogError(string.Format(LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Failed"), colorChangerComponent.name));
                     return;
                 }
 
-                Texture2D? processedTexture2D = null;
+                Texture2D? processedTexture = processedRenderTexture.ToTexture2D();
+                processedRenderTexture.Dispose();
 
-                if (processedTexture is ExtendedRenderTexture extendedRenderTexture) processedTexture2D = extendedRenderTexture.ToTexture2D();
-                else processedTexture2D = (Texture2D)processedTexture;
-
-                string savedPath = SaveTexture(targetTexture, processedTexture2D);
-                DestroyImmediate(processedTexture);
+                string savedPath = SaveTexture(targetTexture, processedTexture);
+                DestroyImmediate(processedRenderTexture);
 
                 bool confirm = EditorUtility.DisplayDialog(
                     LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Confirm"),
