@@ -4,8 +4,7 @@
 
     "Inspector.Warning.ChildObject": "このオブジェクトはアバターの子オブジェクトとして配置する必要があります。",
 
-    "Inspector.Section.Script": "スクリプト本体",
-    "Inspector.Script.Section.ScriptConfiguration": "スクリプト設定",
+    "Inspector.Section.Script": "スクリプト",
     "Inspector.Script.ScriptConfiguration.IsEnabled": "スクリプトの有効化",
     "Inspector.Script.ScriptConfiguration.IsPreviewEnabled": "プレビューの有効化",
     "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Info": "TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、MultiLayerImageCanvasのレイヤーとして扱うことができます。",

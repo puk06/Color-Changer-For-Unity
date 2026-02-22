@@ -123,48 +123,34 @@ namespace net.puk06.ColorChanger.Editor
 
             EditorGUI.indentLevel = 1;
 
-            showColorChangerSettings = EditorGUILayout.Foldout(
-                showColorChangerSettings,
-                LocalizationUtils.Localize("Inspector.Script.Section.ScriptConfiguration"),
-                true,
-                UnityService.TitleStyle
-            );
-
-            if (showColorChangerSettings)
-            {
-                EditorGUI.indentLevel = 2;
-
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("Enabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsEnabled")));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("PreviewEnabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsPreviewEnabled")));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Enabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsEnabled")));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("PreviewEnabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsPreviewEnabled")));
 
 #if USE_TEXTRANSTOOL
-                var mlicComponent = colorChangerComponent.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>();
-                var etalComponent = colorChangerComponent.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>();
+            var mlicComponent = colorChangerComponent.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>();
+            var etalComponent = colorChangerComponent.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>();
 
-                if (mlicComponent && !etalComponent)
+            if (mlicComponent && !etalComponent)
+            {
+                EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Info"), MessageType.Info);
+                if (!etalComponent)
                 {
-                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Info"), MessageType.Info);
-                    if (!etalComponent)
+                    if (GUILayout.Button(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.AddComponent")))
                     {
-                        if (GUILayout.Button(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.AddComponent")))
-                        {
-                            Undo.AddComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>(colorChangerComponent.gameObject);
-                        }
+                        Undo.AddComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>(colorChangerComponent.gameObject);
                     }
                 }
-
-                if (!mlicComponent && etalComponent)
-                {
-                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Warning"), MessageType.Warning);
-                    if (GUILayout.Button(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.RemoveComponent")))
-                    {
-                        Undo.DestroyObjectImmediate(etalComponent);
-                    }
-                }
-#endif
-
-                EditorGUI.indentLevel = 1;
             }
+
+            if (!mlicComponent && etalComponent)
+            {
+                EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Warning"), MessageType.Warning);
+                if (GUILayout.Button(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.RemoveComponent")))
+                {
+                    Undo.DestroyObjectImmediate(etalComponent);
+                }
+            }
+#endif
 
             EditorGUI.indentLevel = 0;
 
