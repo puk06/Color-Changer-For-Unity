@@ -37,34 +37,26 @@
     "Inspector.Texture.TexureReplacement.Description": "Replaces the selected texture with the specified texture, then applies color change processing.",
     "Inspector.Texture.TexureReplacement.TargetTexture": "Replacement Texture",
 
-    "Inspector.Section.Color": "Color",
-    "Inspector.Color.Section.ColorConfiguration": "Color Configuration",
+    "Inspector.Section.Color": "Color Configuration",
     "Inspector.Color.ColorConfiguration.SourceColor": "Source Color",
     "Inspector.Color.ColorConfiguration.TargetColor": "Target Color",
     
-    "Inspector.Color.Section.BalanceModeConfiguration": "Balance Mode Configuration",
-    "Inspector.Color.BalanceModeConfiguration": "Balance Mode",
-    "Inspector.Color.BalanceModeConfiguration.Description": "Switches the color change calculation formula to a format suited for texture modification.",
-
-    "Inspector.Color.BalanceModeConfiguration.ModeVersion": "Balance Mode",
-    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.None": "None",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion": "Color Adjustment Mode",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.Normal": "Normal",
     "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V1": "Balance Mode V1",
     "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V2": "Balance Mode V2",
-    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V3": "Balance Mode V3",
+    "Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V3": "Balance Mode V3 (Recommended)",
 
-    "Inspector.Color.BalanceModeConfiguration.Section.V1": "Balance Mode V1",
     "Inspector.Color.BalanceModeConfiguration.V1.Description": "Calculates the rate of change based on the distance between the selected color and each pixel's color, and the position along its extension.\nDisadvantage: Colors near the edges of RGB space will have smaller changes.",
     "Inspector.Color.BalanceModeConfiguration.V1.Weight": "Change Rate Graph Weight",
     "Inspector.Color.BalanceModeConfiguration.V1.Minimum": "Change Rate Graph Minimum",
     
-    "Inspector.Color.BalanceModeConfiguration.Section.V2": "Balance Mode V2",
     "Inspector.Color.BalanceModeConfiguration.V2.Description": "Calculates the rate of color change spherically around the selected color, using the radius position as a reference.\nDisadvantage: Not constrained by RGB space, but configuration is slightly more complex.",
     "Inspector.Color.BalanceModeConfiguration.V2.Radius": "Maximum Sphere Radius",
     "Inspector.Color.BalanceModeConfiguration.V2.Weight": "Change Rate Graph Weight",
     "Inspector.Color.BalanceModeConfiguration.V2.Minimum": "Change Rate Graph Minimum",
     "Inspector.Color.BalanceModeConfiguration.V2.IncludeOutside": "Apply Minimum Value Outside Range",
     
-    "Inspector.Color.BalanceModeConfiguration.Section.V3": "Balance Mode V3",
     "Inspector.Color.BalanceModeConfiguration.V3.Description": "Determines the rate of change from pixel brightness along the configured gradient.\nDisadvantage: Colors change uniformly, but unintended areas may also be affected.",
     "Inspector.Color.BalanceModeConfiguration.V3.Gradient": "Gradient",
     "Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Resolution": "Resolution",

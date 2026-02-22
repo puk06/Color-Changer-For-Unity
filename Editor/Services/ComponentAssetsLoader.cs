@@ -1,3 +1,4 @@
+#nullable enable
 using UnityEditor;
 using UnityEngine;
 
@@ -5,8 +6,8 @@ namespace net.puk06.ColorChanger.Editor.Utils
 {
     internal static class ComponentAssetsLoader
     {
-        internal static readonly Texture2D Logo;
-        internal static readonly Texture2D Icon;
+        internal static readonly Texture2D? Logo;
+        internal static readonly Texture2D? Icon;
         
         static ComponentAssetsLoader()
         {
