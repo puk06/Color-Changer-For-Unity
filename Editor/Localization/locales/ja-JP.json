@@ -109,8 +109,5 @@
     "EditorWindow.ComponentManager.MissingTexture": "未割り当て",
     
     "NdmfBuild.Processing.Success": "テクスチャ生成が完了しました！\nコンポーネント: {0}\nテクスチャ: {1}",
-    "NdmfBuild.Processing.Success:description": "関連するコンポーネント",
-    "NdmfBuild.Processing.Failed": "テクスチャ生成に失敗しました。\nコンポーネント: {0}\nテクスチャ: {1}",
-    "NdmfBuild.Processing.Failed:description": "以下のコンポーネントでテクスチャ生成に失敗しました",
-    "NdmfBuild.Processing.Failed:hint": "他に同じテクスチャを割り当てているコンポーネントがあるか、テクスチャがそもそも割り当てられていない可能性があります！"
+    "NdmfBuild.Processing.Failed": "テクスチャ生成に失敗しました。\nコンポーネント: {0}\nテクスチャ: {1}\n\n他に同じテクスチャを割り当てているコンポーネントがあるか、テクスチャが割り当てられていない可能性があります。\nRenderTextureの作成に失敗した場合も同様です。グラフィックスデバイスが存在しない環境（サーバー・CI等）やVRAM不足が原因として考えられます。"
 }

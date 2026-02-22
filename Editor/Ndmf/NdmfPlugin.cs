@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using nadena.dev.ndmf;
+using nadena.dev.ndmf.util;
 using net.puk06.ColorChanger.Editor.Models;
 using net.puk06.ColorChanger.Editor.Ndmf;
 using UnityEngine;
@@ -46,12 +47,12 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 onSuccess: component =>
                 {
                     string textureName = component.TargetTexture == null ? "Unknown Texture" : component.TargetTexture.name;
-                    ErrorReport.ReportError(NdmfLocalizer.Localizer, ErrorSeverity.Information, "NdmfBuild.Processing.Success", component, textureName);
+                    ErrorReport.ReportError(NdmfLocalizer.Localizer, ErrorSeverity.Information, "NdmfBuild.Processing.Success", component.AvatarRootPath(), textureName);
                 },
                 onFailed: component =>
                 {
                     string textureName = component.TargetTexture == null ? "Unknown Texture" : component.TargetTexture.name;
-                    ErrorReport.ReportError(NdmfLocalizer.Localizer, ErrorSeverity.NonFatal, "NdmfBuild.Processing.Failed", component, textureName);
+                    ErrorReport.ReportError(NdmfLocalizer.Localizer, ErrorSeverity.NonFatal, "NdmfBuild.Processing.Failed", component.AvatarRootPath(), textureName);
                 }
             );
             IEnumerable<Renderer> renderers = avatar.GetComponentsInChildren<Renderer>().Where(r => r is MeshRenderer or SkinnedMeshRenderer);

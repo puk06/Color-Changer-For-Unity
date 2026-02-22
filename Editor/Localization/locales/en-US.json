@@ -109,8 +109,5 @@
     "EditorWindow.ComponentManager.MissingTexture": "Unassigned",
     
     "NdmfBuild.Processing.Success": "Texture generation complete!\nComponent: {0}\nTexture: {1}",
-    "NdmfBuild.Processing.Success:description": "Associated components",
-    "NdmfBuild.Processing.Failed": "Texture generation failed.\nComponent: {0}\nTexture: {1}",
-    "NdmfBuild.Processing.Failed:description": "Texture generation failed for the following components",
-    "NdmfBuild.Processing.Failed:hint": "There may be another component assigned to the same texture, or no texture may be assigned at all!"
+    "NdmfBuild.Processing.Failed": "Texture generation failed.\nComponent: {0}\nTexture: {1}\n\nThere may be another component assigned to the same texture, or no texture is assigned at all.\nThis can also occur if RenderTexture creation fails due to an unsupported graphics environment (e.g. server, CI) or insufficient VRAM."
 }
