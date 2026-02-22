@@ -12,7 +12,7 @@ using UnityEngine;
 namespace net.puk06.ColorChanger.Editor.Services
 {
     [InitializeOnLoad]
-    internal static class UpdateUtils
+    internal static class UpdateChecker
     {
         private static string _currentVersion = "";
         private static string _latestVersion = "";
@@ -21,7 +21,7 @@ namespace net.puk06.ColorChanger.Editor.Services
         private const string UpdateCheckURL = "https://update.pukosrv.net/check/colorchangerunity";
         private static readonly HttpClient _httpClient = new HttpClient();
 
-        static UpdateUtils()
+        static UpdateChecker()
         {
             CheckUpdate();
         }
@@ -41,23 +41,22 @@ namespace net.puk06.ColorChanger.Editor.Services
                 string response = await _httpClient.GetStringAsync(UpdateCheckURL);
                 if (response == null) return;
 
-                VersionData versionData = JsonUtility.FromJson<VersionData>(response);
-                if (versionData == null) return;
+                VersionRelease versionRelease = JsonUtility.FromJson<VersionRelease>(response);
+                if (versionRelease == null) return;
 
-                _latestVersion = versionData.LatestVersion;
+                _latestVersion = versionRelease.LatestVersion;
 
-                // ちょっと待機 (コンソールに埋まっちゃうのを防ぐため)
                 await Task.Delay(8000);
 
-                if (versionData.LatestVersion == version)
+                if (versionRelease.LatestVersion == version)
                 {
                     LogUtils.Log("Your Color Changer is up to date! Thank you for using this!");
                 }
                 else
                 {
                     LogUtils.Log(
-                        $"Update available: v{version} → v{versionData.LatestVersion}\n" +
-                        string.Join("\n", versionData.ChangeLog.Select(log => $"・{log}"))
+                        $"Update available: v{version} → v{versionRelease.LatestVersion}\n" +
+                        string.Join("\n", versionRelease.ChangeLog.Select(log => $"・{log}"))
                     );
                 }
             }

@@ -84,7 +84,7 @@ namespace net.puk06.ColorChanger.Editor
                 GUI.DrawTexture(rect, logoTexture, ScaleMode.ScaleToFit);
             }
 
-            UpdateUtils.GenerateVersionLabel();
+            UpdateChecker.GenerateVersionLabel();
             LocalizationUtils.DrawLanguageSelectionPopup();
 
             ColorChangerForUnity? comp = target as ColorChangerForUnity;
