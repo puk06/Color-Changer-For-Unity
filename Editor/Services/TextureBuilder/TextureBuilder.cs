@@ -18,7 +18,7 @@ namespace net.puk06.ColorChanger.Editor.Services
             try
             {
                 ExtendedRenderTexture originalRenderTexture = new ExtendedRenderTexture(sourceTexture).Create(sourceTexture);
-                ExtendedRenderTexture targetRenderTexture = new ExtendedRenderTexture(originalRenderTexture).Create(originalRenderTexture);
+                ExtendedRenderTexture targetRenderTexture = new ExtendedRenderTexture(originalRenderTexture).Create();
 
                 if (originalRenderTexture == null || targetRenderTexture == null)
                 {
