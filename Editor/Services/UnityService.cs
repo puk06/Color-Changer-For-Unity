@@ -1,4 +1,4 @@
-using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -18,7 +18,7 @@ namespace net.puk06.ColorChanger.Editor.Services
             fontSize = 12,
             fontStyle = FontStyle.Bold
         };
-        
+
         internal static void SelectAssetAtPath(string assetPath)
         {
             Object obj = AssetDatabase.LoadAssetAtPath<Object>(assetPath);

@@ -1,9 +1,9 @@
 #nullable enable
+using System;
 using net.puk06.ColorChanger.Editor.Extentions;
 using net.puk06.ColorChanger.Editor.Services;
+using net.puk06.ColorChanger.Editor.Utils;
 using net.puk06.ColorChanger.Models;
-using net.puk06.ColorChanger.Utils;
-using System;
 using UnityEngine;
 
 namespace net.puk06.ColorChanger.Editor.Service
@@ -13,34 +13,34 @@ namespace net.puk06.ColorChanger.Editor.Service
         private Color _sourceColor = Color.white;
         private Color _targetColor = Color.white;
 
-        private bool _isBalanceMode = false;
-        private BalanceModeConfiguration _balanceModeConfiguration = new();
+        private readonly bool _isBalanceMode = false;
+        private readonly BalanceModeConfiguration _balanceModeConfiguration = new();
 
-        private bool _isAdvancedColorMode = false;
-        private AdvancedColorConfiguration _advancedColorConfiguration = new();
+        private readonly bool _isAdvancedColorMode = false;
+        private readonly AdvancedColorConfiguration _advancedColorConfiguration = new();
 
         internal ImageProcessor(ColorChangerForUnity component)
         {
             _sourceColor = component.SourceColor;
             _targetColor = component.TargetColor;
+
+            if (component.BalanceModeConfiguration.ModeVersion != 0)
+            {
+                _isBalanceMode = true;
+                _balanceModeConfiguration = component.BalanceModeConfiguration;
+            }
+
+            if (component.AdvancedColorConfiguration.IsEnabled)
+            {
+                _isAdvancedColorMode = true;
+                _advancedColorConfiguration = component.AdvancedColorConfiguration;
+            }
         }
 
-        internal void SetBalanceSettings(BalanceModeConfiguration balanceModeConfiguration)
-        {
-            _balanceModeConfiguration = balanceModeConfiguration;
-            _isBalanceMode = true;
-        }
-
-        internal void SetColorSettings(AdvancedColorConfiguration advancedColorConfiguration)
-        {
-            _advancedColorConfiguration = advancedColorConfiguration;
-            _isAdvancedColorMode = true;
-        }
-
-        internal void ProcessRenderTexture(RenderTexture source, RenderTexture target, RenderTexture? mask, ImageMaskSelectionType imageMaskSelectionType = ImageMaskSelectionType.None)
+        internal void Process(RenderTexture source, RenderTexture target, RenderTexture? mask, ImageMaskSelectionType imageMaskSelectionType = ImageMaskSelectionType.None)
         {
             if (source == null || target == null) return;
-            
+
             Texture2D? gradientTexture = null;
 
             try

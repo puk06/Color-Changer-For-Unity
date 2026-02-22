@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using net.puk06.ColorChanger.Editor.Models;
 using net.puk06.ColorChanger.Editor.Services;
-using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Editor.Utils;
 using net.puk06.TextureReplacer;
 using UnityEditor;
 using UnityEngine;
@@ -38,7 +38,7 @@ namespace net.puk06.ColorChanger.Editor
 
             return TextureBuilder.Build(component.ComponentTexture, component, true);
         }
-        
+
         public void DisposeTexture()
         {
             if (_previewTexture != null) _previewTexture.Dispose();
@@ -221,7 +221,7 @@ namespace net.puk06.ColorChanger.Editor
 
             EditorGUILayout.EndVertical();
         }
-        
+
         private void DrawSettingsInheritedTexturesSettings()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -380,7 +380,7 @@ namespace net.puk06.ColorChanger.Editor
                 EditorGUI.indentLevel = 2;
 
                 EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.Description"), MessageType.Info);
-                
+
                 SerializedProperty BalanceModeConfigProp = serializedObject.FindProperty("BalanceModeConfiguration");
 
                 string[] balanceModeLabels =
@@ -470,7 +470,7 @@ namespace net.puk06.ColorChanger.Editor
         private void DrawTextureOutputGUI(ColorChangerForUnity colorChangerComponent)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            
+
             EditorGUI.indentLevel = 1;
 
             showTextureOutputGui = EditorGUILayout.Foldout(
@@ -558,7 +558,7 @@ namespace net.puk06.ColorChanger.Editor
 
                         // コンポーネントの追加 + テクスチャの割り当て
                         PukoTextureReplacer component = Undo.AddComponent<PukoTextureReplacer>(textureReplacerObject);
-            
+
                         textureReplacerObject.transform.SetParent(avatarObject.transform);
 
                         component.sourceTexture = colorChangerComponent.TargetTexture;

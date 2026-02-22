@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace net.puk06.ColorChanger.Utils
+namespace net.puk06.ColorChanger.Editor.Utils
 {
     internal static class DummyRenderTexture
     {
@@ -15,7 +15,7 @@ namespace net.puk06.ColorChanger.Utils
                     _instance.enableRandomWrite = true;
                     _instance.Create();
                 }
-                
+
                 return _instance;
             }
         }

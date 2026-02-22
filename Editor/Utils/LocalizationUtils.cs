@@ -1,10 +1,10 @@
 using System;
-using System.Linq;
-using UnityEditor;
-using net.puk06.ColorChanger.Editor.Localization;
 using System.Collections.Generic;
+using System.Linq;
+using net.puk06.ColorChanger.Editor.Localization;
+using UnityEditor;
 
-namespace net.puk06.ColorChanger.Utils
+namespace net.puk06.ColorChanger.Editor.Utils
 {
     internal static class LocalizationUtils
     {

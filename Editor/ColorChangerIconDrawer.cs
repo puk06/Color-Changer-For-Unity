@@ -1,4 +1,4 @@
-using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 

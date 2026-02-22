@@ -1,5 +1,6 @@
 #nullable enable
 using net.puk06.ColorChanger.Editor.Models;
+using net.puk06.ColorChanger.Editor.Service;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,20 +18,31 @@ namespace net.puk06.ColorChanger.Editor.Services
         {
             if (!component.Enabled) return;
 
-            ExtendedRenderTexture originalTexture = new ExtendedRenderTexture(targetTexture, RenderTextureReadWrite.Linear).Create(targetTexture);
-            ExtendedRenderTexture? maskTexture = component.MaskTexture != null ? new ExtendedRenderTexture(component.MaskTexture).Create(component.MaskTexture) : null;
+            if (!ExtendedRenderTexture.TryCreate(targetTexture.width, targetTexture.height, RenderTextureReadWrite.Linear, out ExtendedRenderTexture originalTexture))
+                return;
+            originalTexture.Copy(targetTexture);
 
-            TextureBuilder
-                .GetProcessor(component)
-                .ProcessRenderTexture(
-                    originalTexture,
-                    targetTexture,
-                    maskTexture,
-                    component.ImageMaskSelectionType
-                );
+            using (originalTexture)
+            {
+                ExtendedRenderTexture? maskTexture = null;
+                if (component.MaskTexture != null)
+                {
+                    if (!ExtendedRenderTexture.TryCreate(component.MaskTexture.width, component.MaskTexture.height, out maskTexture))
+                        return;
+                    maskTexture.Copy(component.MaskTexture);
+                }
 
-            originalTexture.Dispose();
-            if (maskTexture != null) maskTexture.Dispose();
+                using (maskTexture)
+                {
+                    new ImageProcessor(component)
+                        .Process(
+                            originalTexture,
+                            targetTexture,
+                            maskTexture,
+                            component.ImageMaskSelectionType
+                        );
+                }
+            }
         }
     }
 }

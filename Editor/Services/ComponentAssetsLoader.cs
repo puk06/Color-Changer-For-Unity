@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace net.puk06.ColorChanger.Utils
+namespace net.puk06.ColorChanger.Editor.Utils
 {
     internal static class ComponentAssetsLoader
     {

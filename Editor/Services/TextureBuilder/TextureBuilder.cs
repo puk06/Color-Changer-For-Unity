@@ -15,51 +15,40 @@ namespace net.puk06.ColorChanger.Editor.Services
 
         internal static ExtendedRenderTexture? Process(Texture2D sourceTexture, ColorChangerForUnity component, bool useMask)
         {
-            try
-            {
-                ExtendedRenderTexture originalRenderTexture = new ExtendedRenderTexture(sourceTexture).Create(sourceTexture);
-                ExtendedRenderTexture targetRenderTexture = new ExtendedRenderTexture(originalRenderTexture).Create();
+            if (!ExtendedRenderTexture.TryCreate(sourceTexture.width, sourceTexture.height, out ExtendedRenderTexture originalRenderTexture))
+                return null;
+            originalRenderTexture.Copy(sourceTexture);
 
-                if (originalRenderTexture == null || targetRenderTexture == null)
-                {
-                    if (originalRenderTexture != null) originalRenderTexture.Dispose();
-                    if (targetRenderTexture != null) targetRenderTexture.Dispose();
+            using (originalRenderTexture)
+            {
+                if (!ExtendedRenderTexture.TryCreate(sourceTexture.width, sourceTexture.height, out ExtendedRenderTexture targetRenderTexture))
                     return null;
+
+                ExtendedRenderTexture? maskRenderTexture = null;
+                if (useMask && component.MaskTexture != null)
+                {
+                    if (!ExtendedRenderTexture.TryCreate(component.MaskTexture.width, component.MaskTexture.height, out maskRenderTexture))
+                    {
+                        targetRenderTexture.Dispose();
+                        return null;
+                    }
+
+                    maskRenderTexture.Copy(component.MaskTexture);
                 }
 
-                ExtendedRenderTexture? maskRenderTexture = (useMask && component.MaskTexture != null) ? new ExtendedRenderTexture(component.MaskTexture).Create(component.MaskTexture) : null;
-
-                GetProcessor(component)
-                    .ProcessRenderTexture(
-                        originalRenderTexture,
-                        targetRenderTexture,
-                        maskRenderTexture,
-                        component.ImageMaskSelectionType
-                    );
-
-                
-                originalRenderTexture.Dispose();
-                if (maskRenderTexture != null) maskRenderTexture.Dispose();
+                using (maskRenderTexture)
+                {
+                    new ImageProcessor(component)
+                        .Process(
+                            originalRenderTexture,
+                            targetRenderTexture,
+                            maskRenderTexture,
+                            component.ImageMaskSelectionType
+                        );
+                }
 
                 return targetRenderTexture;
             }
-            catch
-            {
-                return null;
-            }
-        }
-
-        internal static ImageProcessor GetProcessor(ColorChangerForUnity colorChangerComponent)
-        {
-            ImageProcessor imageProcessor = new(colorChangerComponent);
-
-            if (colorChangerComponent.BalanceModeConfiguration.ModeVersion != 0)
-                imageProcessor.SetBalanceSettings(colorChangerComponent.BalanceModeConfiguration);
-
-            if (colorChangerComponent.AdvancedColorConfiguration.IsEnabled)
-                imageProcessor.SetColorSettings(colorChangerComponent.AdvancedColorConfiguration);
-
-            return imageProcessor;
         }
     }
 }

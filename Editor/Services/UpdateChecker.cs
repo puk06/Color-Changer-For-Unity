@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using net.puk06.ColorChanger.Editor.Models;
-using net.puk06.ColorChanger.Utils;
+using net.puk06.ColorChanger.Editor.Utils;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -89,7 +89,7 @@ namespace net.puk06.ColorChanger.Editor.Services
         internal static void GenerateVersionLabel()
         {
             if (_currentVersion == "") return;
-            
+
             GUIStyle versionLabel = new GUIStyle(EditorStyles.label)
             {
                 fontSize = 16,

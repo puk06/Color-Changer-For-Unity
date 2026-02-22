@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using net.puk06.ColorChanger.Editor.Services;
+using net.puk06.ColorChanger.Editor.Utils;
 using net.puk06.ColorChanger.Models;
-using net.puk06.ColorChanger.Utils;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
