@@ -23,13 +23,17 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     {
                         onFailed?.Invoke(component);
                     }
-                    else
+                    else if (component.ComponentTexture != null)
                     {
-                        ExtendedRenderTexture? processedTexture = TextureBuilder.Build(component.TargetTexture, component, component.MaskTexture != null);
-                        if (processedTexture != null && !result.ContainsKey(component.TargetTexture))
+                        ExtendedRenderTexture? processedTexture = TextureBuilder.Build(component.ComponentTexture, component, component.MaskTexture != null);
+                        if (processedTexture != null)
                         {
                             result.Add(component.TargetTexture, processedTexture);
                             onSuccess?.Invoke(component);
+                        }
+                        else
+                        {
+                            onFailed?.Invoke(component);
                         }
                     }
                 }
@@ -45,10 +49,14 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     else
                     {
                         ExtendedRenderTexture? processedTexture = TextureBuilder.Build(settingsInheritedTexture, component, false);
-                        if (processedTexture != null && !result.ContainsKey(settingsInheritedTexture))
+                        if (processedTexture != null)
                         {
                             result.Add(settingsInheritedTexture, processedTexture);
                             onSuccess?.Invoke(component);
+                        }
+                        else
+                        {
+                            onFailed?.Invoke(component);
                         }
                     }
                 }

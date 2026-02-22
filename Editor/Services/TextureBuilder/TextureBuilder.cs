@@ -11,7 +11,7 @@ namespace net.puk06.ColorChanger.Editor.Services
     {
         internal static ExtendedRenderTexture? Build(Texture2D sourceTexture, ColorChangerForUnity component, bool useMask)
         {
-            if (!component.gameObject.activeInHierarchy || component.ComponentTexture == null) return null;
+            if (!component.gameObject.activeInHierarchy) return null;
 
             if (!ExtendedRenderTexture.TryCreate(sourceTexture.width, sourceTexture.height, out ExtendedRenderTexture originalRenderTexture))
                 return null;
