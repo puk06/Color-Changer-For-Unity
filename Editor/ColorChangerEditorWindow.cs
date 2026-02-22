@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using net.puk06.ColorChanger.Editor.Services;
 using net.puk06.ColorChanger.Editor.Utils;
-using net.puk06.ColorChanger.Models;
+using net.puk06.ColorChanger.Editor.Models;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -57,8 +57,8 @@ namespace net.puk06.ColorChanger.Editor
                 }
 
                 IEnumerable<IGrouping<Texture2D, InternalColorChangerValues>> groupedComponents = internalComponentsValues
-                    .Where(c => c.originalTexture != null)
-                    .GroupBy(c => c.originalTexture);
+                    .Where(c => c.SourceTexture != null)
+                    .GroupBy(c => c.SourceTexture);
 
                 foreach (IGrouping<Texture2D, InternalColorChangerValues> groupedComponent in groupedComponents)
                 {
@@ -79,7 +79,7 @@ namespace net.puk06.ColorChanger.Editor
 
                     if (_foldoutStates[groupedComponent.Key].Main)
                     {
-                        IEnumerable<InternalColorChangerValues> enabledComponents = groupedComponent.Where(x => x.parentComponent.gameObject.activeSelf && x.parentComponent.Enabled);
+                        IEnumerable<InternalColorChangerValues> enabledComponents = groupedComponent.Where(x => x.ParentComponent.gameObject.activeSelf && x.ParentComponent.Enabled);
                         IEnumerable<InternalColorChangerValues> disabledComponents = groupedComponent.Except(enabledComponents);
 
                         _foldoutStates[groupedComponent.Key].Enabled = EditorGUILayout.Foldout(
@@ -94,7 +94,7 @@ namespace net.puk06.ColorChanger.Editor
                             EditorGUI.indentLevel = 3;
                             foreach (var component in enabledComponents)
                             {
-                                EditorGUILayout.ObjectField(component.parentComponent, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component.ParentComponent, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }
@@ -111,7 +111,7 @@ namespace net.puk06.ColorChanger.Editor
                             EditorGUI.indentLevel = 3;
                             foreach (var component in disabledComponents)
                             {
-                                EditorGUILayout.ObjectField(component.parentComponent, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component.ParentComponent, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }
