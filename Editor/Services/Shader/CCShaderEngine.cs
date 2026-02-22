@@ -10,7 +10,9 @@ namespace net.puk06.ColorChanger.Editor.Services
 
         internal static ComputeShader? TextureProcessorComputeShader { get; private set; }
 
-        static CCShaderEngine()
+        static CCShaderEngine() => LoadShaders();
+
+        internal static void LoadShaders()
         {
             TextureProcessorComputeShader = Load(TextureProcessorGuid);
         }

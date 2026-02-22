@@ -1,6 +1,5 @@
 #nullable enable
 using net.puk06.ColorChanger.Editor.Models;
-using net.puk06.ColorChanger.Editor.Service;
 using UnityEditor;
 using UnityEngine;
 
@@ -34,13 +33,11 @@ namespace net.puk06.ColorChanger.Editor.Services
 
                 using (maskTexture)
                 {
-                    new ImageProcessor(component)
-                        .Process(
-                            originalTexture,
-                            targetTexture,
-                            maskTexture,
-                            component.ImageMaskSelectionType
-                        );
+                    ExtendedRenderTexture? processedTexture = TextureBuilder.Process(component, originalTexture, maskTexture, component.ImageMaskSelectionType, RenderTextureReadWrite.Linear);
+                    if (processedTexture == null) return;
+
+                    Graphics.Blit(processedTexture, targetTexture);
+                    processedTexture.Dispose();
                 }
             }
         }

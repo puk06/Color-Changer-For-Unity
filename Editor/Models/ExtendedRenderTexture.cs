@@ -26,6 +26,7 @@ namespace net.puk06.ColorChanger.Editor.Models
             ExtendedRenderTexture texture = new(width, height);
             if (!texture.Create())
             {
+                LogUtils.LogError("Failed to create RenderTexture.");
                 texture.Dispose();
                 return false;
             }

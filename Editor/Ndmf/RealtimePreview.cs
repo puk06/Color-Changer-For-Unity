@@ -77,6 +77,9 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
         public Task<IRenderFilterNode> Instantiate(RenderGroup group, IEnumerable<(Renderer, Renderer)> proxyPairs, ComputeContext context)
         {
+            Dictionary<Texture2D, ExtendedRenderTexture>? processedTexturesDictionary = null;
+            Dictionary<Renderer, Material?[]>? processedMaterialDictionary = new();
+
             try
             {
                 ColorChangerForUnity[] components = group.GetData<ColorChangerForUnity[]>();
@@ -85,8 +88,6 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => context.ActiveInHierarchy(x.gameObject) && x.Enabled && x.PreviewEnabled);
                 Dictionary<Texture2D, ExtendedRenderTexture> processedTextures = CCProcessor.ProcessAllComponents(enabledComponents);
                 ObjectReferenceService.RegisterReplacements(processedTextures);
-
-                Dictionary<Renderer, Material?[]> processedMaterialDictionary = new();
 
                 foreach ((Renderer original, Renderer proxy) in proxyPairs)
                 {
@@ -98,14 +99,30 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
             catch (Exception ex)
             {
                 LogUtils.LogError($"Failed to instantiate.\n{ex}");
+                if (processedTexturesDictionary != null)
+                {
+                    foreach (ExtendedRenderTexture texture in processedTexturesDictionary.Values)
+                        texture.Dispose();
+                    processedTexturesDictionary.Clear();
+                    processedTexturesDictionary = null;
+                }
+
+                if (processedMaterialDictionary != null)
+                {
+                    foreach (Material?[] materials in processedMaterialDictionary.Values)
+                        foreach (Material? material in materials)
+                            if (material != null) Object.DestroyImmediate(material);
+                    processedMaterialDictionary.Clear();
+                    processedMaterialDictionary = null;
+                }
                 return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null, null));
             }
         }
 
         private class TextureReplacerNode : IRenderFilterNode, IDisposable
         {
-            private readonly IEnumerable<ExtendedRenderTexture>? _processedTextures;
-            private readonly Dictionary<Renderer, Material?[]>? _processedMaterialDictionary;
+            private IEnumerable<ExtendedRenderTexture>? _processedTextures;
+            private Dictionary<Renderer, Material?[]>? _processedMaterialDictionary;
 
             public RenderAspects WhatChanged { get; private set; } = RenderAspects.Texture & RenderAspects.Material;
 
@@ -136,6 +153,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 {
                     foreach (ExtendedRenderTexture texture in _processedTextures)
                         texture.Dispose();
+                    _processedTextures = null;
                 }
 
                 if (_processedMaterialDictionary != null)
@@ -143,6 +161,8 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     foreach (Material?[] materials in _processedMaterialDictionary.Values)
                         foreach (Material? material in materials)
                             if (material != null) Object.DestroyImmediate(material);
+                    _processedMaterialDictionary.Clear();
+                    _processedMaterialDictionary = null;
                 }
             }
         }

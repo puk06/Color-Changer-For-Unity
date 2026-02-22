@@ -16,7 +16,6 @@ int _MaskSelectionType;
 int4 _SourceColor;
 int4 _TargetColor;
 
-bool _BalanceModeEnabled;
 int _BalanceModeVersion;
 float _BalanceModeV1Weight;
 float _BalanceModeV1MinimumValue;
@@ -74,24 +73,31 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
     int3 colorOffset = (int3)_TargetColor - (int3)_SourceColor;
 
-    if (_BalanceModeEnabled)
+    if (_BalanceModeVersion == 0)
+    {
+        color.rgb += colorOffset;
+    }
+    else
     {
         color.rgb = BalanceColorAdjustment(
-            color.rgb, (int3)_SourceColor, colorOffset,
+            color.rgb,
+            
+            (int3)_SourceColor,
+            colorOffset,
+
             _BalanceModeVersion,
+
             _BalanceModeV1Weight,
             _BalanceModeV1MinimumValue,
+
             _BalanceModeV2Radius,
             _BalanceModeV2Weight,
             _BalanceModeV2MinimumValue,
             _BalanceModeV2IncludeOutside,
+            
             _BalanceModeV3Gradient,
             _BalanceModeV3GradientResolution
         );
-    }
-    else
-    {
-        color.rgb += colorOffset;
     }
 
     if (_AdvancedColorModeEnabled)
