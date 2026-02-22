@@ -43,7 +43,7 @@ bool IsMaskSelected(uint2 id)
     _MaskTex.GetDimensions(width, height);
 
     uint2 maskUv = id.xy * _MaskTexScale;
-    if (maskUv.x >= width || maskUv.y >= height) return false;
+    if (maskUv.x < 0 || maskUv.x >= width || maskUv.y < 0 || maskUv.y >= height) return false;
 
     int4 color = (int4)(_MaskTex[maskUv] * 255.0);
 
