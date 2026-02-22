@@ -43,7 +43,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 ;
 
             IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => x.gameObject.activeSelf && x.Enabled);
-            Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary = CCProcessor.ProcessAllComponents(enabledComponents,
+            Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary = NdmfProcessor.ProcessAllComponents(enabledComponents,
                 onSuccess: component =>
                 {
                     string textureName = component.TargetTexture == null ? "Unknown Texture" : component.TargetTexture.name;
@@ -56,7 +56,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 }
             );
             IEnumerable<Renderer> renderers = avatar.GetComponentsInChildren<Renderer>().Where(r => r is MeshRenderer or SkinnedMeshRenderer);
-            CCProcessor.ReplaceTexturesInRenderers(renderers, CCProcessor.ConvertToTexture2DDictionary(processedTexturesDictionary));
+            NdmfProcessor.ReplaceTexturesInRenderers(renderers, NdmfProcessor.ConvertToTexture2DDictionary(processedTexturesDictionary));
         }
     }
 

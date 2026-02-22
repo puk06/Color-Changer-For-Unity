@@ -33,7 +33,7 @@ namespace net.puk06.ColorChanger.Editor.Services
 
                 using (maskTexture)
                 {
-                    ExtendedRenderTexture? processedTexture = CCTextureBuilder.Process(component, originalTexture, maskTexture, component.ImageMaskSelectionType, RenderTextureReadWrite.Linear);
+                    ExtendedRenderTexture? processedTexture = TextureBuilder.Process(component, originalTexture, maskTexture, component.ImageMaskSelectionType, RenderTextureReadWrite.Linear);
                     if (processedTexture == null) return;
 
                     Graphics.Blit(processedTexture, targetTexture);

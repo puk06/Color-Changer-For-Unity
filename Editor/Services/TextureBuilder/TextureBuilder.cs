@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace net.puk06.ColorChanger.Editor.Services
 {
-    internal static class CCTextureBuilder
+    internal static class TextureBuilder
     {
         internal static ExtendedRenderTexture? Build(Texture2D sourceTexture, ColorChangerForUnity component, bool useMask)
         {

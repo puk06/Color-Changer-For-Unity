@@ -36,7 +36,7 @@ namespace net.puk06.ColorChanger.Editor
             ColorChangerForUnity? component = target as ColorChangerForUnity;
             if (component == null || component.ComponentTexture == null) return null;
 
-            return CCTextureBuilder.Build(component.ComponentTexture, component, true);
+            return TextureBuilder.Build(component.ComponentTexture, component, true);
         }
 
         public void DisposeTexture()
@@ -526,7 +526,7 @@ namespace net.puk06.ColorChanger.Editor
 
             try
             {
-                ExtendedRenderTexture? processedRenderTexture = CCTextureBuilder.Build(targetTexture, colorChangerComponent, useMask);
+                ExtendedRenderTexture? processedRenderTexture = TextureBuilder.Build(targetTexture, colorChangerComponent, useMask);
                 if (processedRenderTexture == null)
                 {
                     LogUtils.LogError(string.Format(LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Failed"), colorChangerComponent.name));
