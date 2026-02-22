@@ -1,23 +1,29 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using net.puk06.ColorChanger.Editor.Services;
 using net.puk06.ColorChanger.Editor.Utils;
-using net.puk06.ColorChanger.Editor.Models;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
 
 namespace net.puk06.ColorChanger.Editor
 {
-    public class FoldoutState
-    {
-        public bool Main;
-        public bool Enabled;
-        public bool Disabled;
-    }
-
     public class ColorChangerEditorWindow : EditorWindow
     {
+        private sealed class FoldoutState
+        {
+            public bool Main;
+            public bool Enabled;
+            public bool Disabled;
+        }
+        
+        private sealed class ComponentStates
+        {
+            internal List<ColorChangerForUnity> EnabledComponents = new();
+            internal List<ColorChangerForUnity> DisabledComponents = new();
+        }
+
         private int _selectedAvatarIndex;
         private readonly Dictionary<Texture, FoldoutState> _foldoutStates = new Dictionary<Texture, FoldoutState>();
 
@@ -46,72 +52,85 @@ namespace net.puk06.ColorChanger.Editor
                 ColorChangerForUnity[] components = selectedAvatar.GetComponentsInChildren<ColorChangerForUnity>(true);
                 if (components == null) return;
 
-                List<InternalColorChangerValues> internalComponentsValues = new();
+                Dictionary<Texture2D, ComponentStates> textureComponentDictionary = new();
+
                 foreach (ColorChangerForUnity component in components)
                 {
-                    internalComponentsValues.Add(new InternalColorChangerValues(component, component.TargetTexture, component.ComponentTexture, true));
-                    foreach (Texture2D otherTexture in component.SettingsInheritedTextures.Where(t => t != null))
+                    void Check(Texture2D texture)
                     {
-                        internalComponentsValues.Add(new InternalColorChangerValues(component, otherTexture, otherTexture, false));
+                        if (!textureComponentDictionary.ContainsKey(texture)) textureComponentDictionary[texture] = new();
+
+                        ComponentStates componentStates = textureComponentDictionary[texture];
+                        
+                        if (component.gameObject.activeSelf && component.Enabled)
+                        {
+                            componentStates.EnabledComponents.Add(component);
+                        }
+                        else
+                        {
+                            componentStates.DisabledComponents.Add(component);
+                        }
+                    }
+
+                    if (component.TargetTexture != null) Check(component.TargetTexture);
+
+                    foreach (Texture2D? settingsInheritedTexture in component.SettingsInheritedTextures)
+                    {
+                        if (settingsInheritedTexture == null) continue;
+                        Check(settingsInheritedTexture);
                     }
                 }
 
-                IEnumerable<IGrouping<Texture2D, InternalColorChangerValues>> groupedComponents = internalComponentsValues
-                    .Where(c => c.SourceTexture != null)
-                    .GroupBy(c => c.SourceTexture);
-
-                foreach (IGrouping<Texture2D, InternalColorChangerValues> groupedComponent in groupedComponents)
+                foreach (KeyValuePair<Texture2D, ComponentStates> textureComponent in textureComponentDictionary)
                 {
                     EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
                     EditorGUI.indentLevel = 1;
-                    if (!_foldoutStates.ContainsKey(groupedComponent.Key))
-                        _foldoutStates[groupedComponent.Key] = new FoldoutState();
+                    if (!_foldoutStates.ContainsKey(textureComponent.Key)) _foldoutStates[textureComponent.Key] = new FoldoutState();
 
-                    _foldoutStates[groupedComponent.Key].Main = EditorGUILayout.Foldout(
-                        _foldoutStates[groupedComponent.Key].Main,
-                        string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.Texture"), groupedComponent.Key.name, groupedComponent.Count().ToString()),
+                    int textureCount = textureComponent.Value.EnabledComponents.Count + textureComponent.Value.DisabledComponents.Count;
+
+                    _foldoutStates[textureComponent.Key].Main = EditorGUILayout.Foldout(
+                        _foldoutStates[textureComponent.Key].Main,
+                        string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.Texture"), textureComponent.Key.name, textureCount.ToString()),
                         true,
                         UnityService.TitleStyle
                     );
 
                     EditorGUI.indentLevel = 2;
 
-                    if (_foldoutStates[groupedComponent.Key].Main)
+                    if (_foldoutStates[textureComponent.Key].Main)
                     {
-                        IEnumerable<InternalColorChangerValues> enabledComponents = groupedComponent.Where(x => x.ParentComponent.gameObject.activeSelf && x.ParentComponent.Enabled);
-                        IEnumerable<InternalColorChangerValues> disabledComponents = groupedComponent.Except(enabledComponents);
-
-                        _foldoutStates[groupedComponent.Key].Enabled = EditorGUILayout.Foldout(
-                            _foldoutStates[groupedComponent.Key].Enabled,
-                            string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.EnabledComponent"), enabledComponents.Count().ToString()),
+                        _foldoutStates[textureComponent.Key].Enabled = EditorGUILayout.Foldout(
+                            _foldoutStates[textureComponent.Key].Enabled,
+                            string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.EnabledComponent"), textureComponent.Value.EnabledComponents.Count.ToString()),
                             true,
                             UnityService.SubTitleStyle
                         );
 
-                        if (_foldoutStates[groupedComponent.Key].Enabled)
+                        if (_foldoutStates[textureComponent.Key].Enabled)
                         {
                             EditorGUI.indentLevel = 3;
-                            foreach (var component in enabledComponents)
+                            foreach (ColorChangerForUnity component in textureComponent.Value.EnabledComponents)
                             {
-                                EditorGUILayout.ObjectField(component.ParentComponent, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }
 
-                        _foldoutStates[groupedComponent.Key].Disabled = EditorGUILayout.Foldout(
-                            _foldoutStates[groupedComponent.Key].Disabled,
-                            string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.DisabledComponent"), disabledComponents.Count().ToString()),
+                        _foldoutStates[textureComponent.Key].Disabled = EditorGUILayout.Foldout(
+                            _foldoutStates[textureComponent.Key].Disabled,
+                            string.Format(LocalizationUtils.Localize("EditorWindow.ComponentManager.DisabledComponent"), textureComponent.Value.DisabledComponents.Count.ToString()),
                             true,
                             UnityService.SubTitleStyle
                         );
 
-                        if (_foldoutStates[groupedComponent.Key].Disabled)
+                        if (_foldoutStates[textureComponent.Key].Disabled)
                         {
                             EditorGUI.indentLevel = 3;
-                            foreach (var component in disabledComponents)
+                            foreach (ColorChangerForUnity component in textureComponent.Value.DisabledComponents)
                             {
-                                EditorGUILayout.ObjectField(component.ParentComponent, typeof(ColorChangerForUnity), true);
+                                EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                             }
                             EditorGUI.indentLevel = 2;
                         }

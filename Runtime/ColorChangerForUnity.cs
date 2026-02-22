@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using System.Linq;
 using net.puk06.ColorChanger.Models;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -63,8 +62,5 @@ namespace net.puk06.ColorChanger
                 return ReplacementTexture == null ? TargetTexture : ReplacementTexture;
             }
         }
-
-        public Texture2D[] SafeSettingsInheritedTextures
-            => SettingsInheritedTextures.Where(t => t != null).ToArray()!;
     }
 }
