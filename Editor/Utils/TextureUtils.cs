@@ -15,22 +15,22 @@ namespace net.puk06.ColorChanger.Editor.Utils
         {
             if (gameObject == null) return null;
 
-            var renderers = gameObject.GetComponents<Renderer>();
+            Renderer[] renderers = gameObject.GetComponents<Renderer>();
             if (renderers == null || renderers.Length == 0) return null;
 
-            var renderer = renderers.FirstOrDefault();
+            Renderer renderer = renderers.FirstOrDefault();
             if (renderer == null) return null;
 
-            var materials = renderer.sharedMaterials;
+            Material[] materials = renderer.sharedMaterials;
             if (materials == null || materials.Length == 0) return null;
 
-            var mainMaterial = materials.FirstOrDefault();
+            Material mainMaterial = materials.FirstOrDefault();
             if (mainMaterial == null) return null;
 
             return mainMaterial.mainTexture;
         }
 
-        public static void ApplyStreamingMipmaps(Texture2D texture)
+        internal static void ApplyStreamingMipmaps(Texture2D texture)
         {
             UnityEditor.SerializedObject textureObject = new(texture);
             UnityEditor.SerializedProperty streamingMipmapsProperty = textureObject.FindProperty("m_StreamingMipmaps");
