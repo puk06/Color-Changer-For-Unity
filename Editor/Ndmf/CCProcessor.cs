@@ -12,7 +12,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 {
     internal class CCProcessor
     {
-        internal static Dictionary<Texture2D, ExtendedRenderTexture> ProcessAllTextures(IEnumerable<ColorChangerForUnity> components, Action<ColorChangerForUnity>? onSuccess = null, Action<ColorChangerForUnity>? onFailed = null)
+        internal static Dictionary<Texture2D, ExtendedRenderTexture> ProcessAllComponents(IEnumerable<ColorChangerForUnity> components, Action<ColorChangerForUnity>? onSuccess = null, Action<ColorChangerForUnity>? onFailed = null)
         {
             Dictionary<Texture2D, ExtendedRenderTexture> result = new();
 
@@ -35,8 +35,10 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     }
                 }
 
-                foreach (Texture2D settingsInheritedTexture in component.SettingsInheritedTextures.Where(t => t != null)!)
+                foreach (Texture2D? settingsInheritedTexture in component.SettingsInheritedTextures)
                 {
+                    if (settingsInheritedTexture == null) continue;
+                    
                     if (result.ContainsKey(settingsInheritedTexture))
                     {
                         onFailed?.Invoke(component);

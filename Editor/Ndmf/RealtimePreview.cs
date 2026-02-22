@@ -83,7 +83,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 foreach (ColorChangerForUnity component in components) context.Observe(component);
 
                 IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => context.ActiveInHierarchy(x.gameObject) && x.Enabled && x.PreviewEnabled);
-                Dictionary<Texture2D, ExtendedRenderTexture> processedTextures = CCProcessor.ProcessAllTextures(enabledComponents);
+                Dictionary<Texture2D, ExtendedRenderTexture> processedTextures = CCProcessor.ProcessAllComponents(enabledComponents);
                 ObjectReferenceService.RegisterReplacements(processedTextures);
 
                 Dictionary<Renderer, Material?[]> processedMaterialDictionary = new();
