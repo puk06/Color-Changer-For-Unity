@@ -104,6 +104,7 @@
 
     "EditorWindow.ComponentManager.Avatar": "アバター",
     "EditorWindow.ComponentManager.Texture": "テクスチャ: {0} ({1})",
+    "EditorWindow.ComponentManager.EnabledComponent.Info": "有効なコンポーネントのうち、ビルド時に適用されるのは最上位のものだけです。それ以降のコンポーネントは処理されず、エラーとして扱われます。",
     "EditorWindow.ComponentManager.EnabledComponent": "有効なコンポーネント ({0}) ",
     "EditorWindow.ComponentManager.DisabledComponent": "無効なコンポーネント ({0}) ",
     "EditorWindow.ComponentManager.MissingTexture": "未割り当て",

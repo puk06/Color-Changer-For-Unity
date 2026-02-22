@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace net.puk06.ColorChanger.Editor
 {
-    public static class CCContextMenu
+    internal static class CCContextMenu
     {
         private const int Pri = 20;
 

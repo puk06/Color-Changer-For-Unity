@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace net.puk06.ColorChanger.Editor.Extentions
+namespace net.puk06.ColorChanger.Editor.Extension
 {
     internal static class MaterialExtensions
     {

@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using nadena.dev.ndmf.preview;
-using net.puk06.ColorChanger.Editor.Extentions;
+using net.puk06.ColorChanger.Editor.Extension;
 using net.puk06.ColorChanger.Editor.Models;
 using net.puk06.ColorChanger.Editor.Utils;
 using net.puk06.ColorChanger.Services;

@@ -104,6 +104,7 @@
 
     "EditorWindow.ComponentManager.Avatar": "Avatar",
     "EditorWindow.ComponentManager.Texture": "Texture: {0} ({1})",
+    "EditorWindow.ComponentManager.EnabledComponent.Info": "Only the topmost enabled component is applied at build time. Any components below it will not be processed and will be treated as errors.",
     "EditorWindow.ComponentManager.EnabledComponent": "Enabled Components ({0}) ",
     "EditorWindow.ComponentManager.DisabledComponent": "Disabled Components ({0}) ",
     "EditorWindow.ComponentManager.MissingTexture": "Unassigned",

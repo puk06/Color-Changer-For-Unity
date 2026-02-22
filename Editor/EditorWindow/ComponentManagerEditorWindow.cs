@@ -9,7 +9,7 @@ using VRC.SDKBase;
 
 namespace net.puk06.ColorChanger.Editor
 {
-    public class ColorChangerEditorWindow : EditorWindow
+    internal class ComponentManagerEditorWindow : EditorWindow
     {
         private sealed class FoldoutState
         {
@@ -32,7 +32,7 @@ namespace net.puk06.ColorChanger.Editor
         [MenuItem("Tools/ぷこのつーる/Color Changer For Unity")]
         public static void ShowWindow()
         {
-            GetWindow<ColorChangerEditorWindow>("Color Changer For Unity");
+            GetWindow<ComponentManagerEditorWindow>("Color Changer For Unity");
         }
 
         private void OnGUI()
@@ -44,6 +44,8 @@ namespace net.puk06.ColorChanger.Editor
 
             _selectedAvatarIndex = Mathf.Clamp(_selectedAvatarIndex, 0, avatars.Length - 1);
             _selectedAvatarIndex = EditorGUILayout.Popup(LocalizationUtils.Localize("EditorWindow.ComponentManager.Avatar"), _selectedAvatarIndex, avatars.Select(a => a.name).ToArray());
+
+            EditorGUILayout.HelpBox(LocalizationUtils.Localize("EditorWindow.ComponentManager.EnabledComponent.Info"), MessageType.Info);
 
             if (_selectedAvatarIndex >= 0 && _selectedAvatarIndex < avatars.Length && avatars[_selectedAvatarIndex] != null)
             {

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace net.puk06.ColorChanger.Editor
 {
     [InitializeOnLoad]
-    public static class ColorChangerIconDrawer
+    internal static class ComponentIconDrawer
     {
-        static ColorChangerIconDrawer()
+        static ComponentIconDrawer()
         {
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
         }

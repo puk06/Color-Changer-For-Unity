@@ -1,5 +1,5 @@
 #nullable enable
-using net.puk06.ColorChanger.Editor.Extentions;
+using net.puk06.ColorChanger.Editor.Extension;
 using net.puk06.ColorChanger.Editor.Models;
 using net.puk06.ColorChanger.Editor.Utils;
 using net.puk06.ColorChanger.Models;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace net.puk06.ColorChanger.Editor.Services
 {
-    internal static class TextureBuilder
+    internal static class CCTextureBuilder
     {
         internal static ExtendedRenderTexture? Build(Texture2D sourceTexture, ColorChangerForUnity component, bool useMask)
         {

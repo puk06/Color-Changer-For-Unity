@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using nadena.dev.ndmf;
-using net.puk06.ColorChanger.Editor.Extentions;
+using net.puk06.ColorChanger.Editor.Extension;
 using net.puk06.ColorChanger.Editor.Models;
 using net.puk06.ColorChanger.Editor.Services;
 using UnityEngine;
@@ -25,7 +25,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     }
                     else
                     {
-                        ExtendedRenderTexture? processedTexture = TextureBuilder.Build(component.TargetTexture, component, component.MaskTexture != null);
+                        ExtendedRenderTexture? processedTexture = CCTextureBuilder.Build(component.TargetTexture, component, component.MaskTexture != null);
                         if (processedTexture != null && !result.ContainsKey(component.TargetTexture))
                         {
                             result.Add(component.TargetTexture, processedTexture);
@@ -44,7 +44,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     }
                     else
                     {
-                        ExtendedRenderTexture? processedTexture = TextureBuilder.Build(settingsInheritedTexture, component, false);
+                        ExtendedRenderTexture? processedTexture = CCTextureBuilder.Build(settingsInheritedTexture, component, false);
                         if (processedTexture != null && !result.ContainsKey(settingsInheritedTexture))
                         {
                             result.Add(settingsInheritedTexture, processedTexture);
