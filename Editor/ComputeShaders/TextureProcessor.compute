@@ -1,13 +1,13 @@
 #pragma kernel CSMain
 
 #include "GammaLinear.hlsl"
+#include "ColorConvert.hlsl"
 #include "BalanceModeShader.hlsl"
 #include "AdvancedColorShader.hlsl"
 
 RWTexture2D<float4> _SourceTex;
 RWTexture2D<float4> _TargetTex;
 
-// Mask Texture
 bool _UseMask;
 RWTexture2D<float4> _MaskTex;
 float2 _MaskTexScale;
@@ -16,7 +16,6 @@ int _MaskSelectionType;
 int4 _SourceColor;
 int4 _TargetColor;
 
-// Balance Mode
 bool _BalanceModeEnabled;
 int _BalanceModeVersion;
 float _BalanceModeV1Weight;
@@ -28,8 +27,10 @@ bool _BalanceModeV2IncludeOutside;
 Texture2D<float4> _BalanceModeV3Gradient;
 int _BalanceModeV3GradientResolution;
 
-// Advanced Color Settings
 bool _AdvancedColorModeEnabled;
+float _AdvancedColorSettingsHue;
+float _AdvancedColorSettingsSaturation;
+float _AdvancedColorSettingsValue;
 float _AdvancedColorSettingsBrightness;
 float _AdvancedColorSettingsContrast;
 float _AdvancedColorSettingsGamma;
@@ -46,6 +47,7 @@ bool IsMaskSelected(uint2 id)
 
     int4 color = (int4)(_MaskTex[maskUv] * 255.0);
 
+    if (_MaskSelectionType == 0) return true;
     if (_MaskSelectionType == 1) return color.r == 0 && color.g == 0 && color.b == 0 && color.a != 0;
     if (_MaskSelectionType == 2) return color.r == 255 && color.g == 255 && color.b == 255 && color.a != 0;
     if (_MaskSelectionType == 3) return color.a == 255;
@@ -58,10 +60,6 @@ bool IsMaskSelected(uint2 id)
 [numthreads(16, 16, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-    uint width, height;
-    _TargetTex.GetDimensions(width, height);
-    if (id.x >= width || id.y >= height) return;
-
     if (_UseMask && !IsMaskSelected(id.xy))
     {
         _TargetTex[id.xy] = _SourceTex[id.xy];
@@ -96,6 +94,9 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     {
         color = AdvancedColorAdjustment(
             color,
+            _AdvancedColorSettingsHue,
+            _AdvancedColorSettingsSaturation,
+            _AdvancedColorSettingsValue,
             _AdvancedColorSettingsBrightness,
             _AdvancedColorSettingsContrast,
             _AdvancedColorSettingsGamma,

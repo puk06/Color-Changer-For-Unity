@@ -59,10 +59,6 @@ namespace net.puk06.ColorChanger.Editor
         private bool showTextureReplacementSettings = false;
         private bool showColorSettings = true;
         private bool showBalanceModeSettings = true;
-        private bool showBalanceModeV1Settings = false;
-        private bool showBalanceModeV2Settings = false;
-        private bool showBalanceModeV3Settings = false;
-        private bool showBalanceModeV3LUTSettings = true;
         private bool showAdvancedColorSettings = false;
         private bool showTextureOutputGui = false;
         private int selectedTextureIndex = -1;
@@ -398,80 +394,34 @@ namespace net.puk06.ColorChanger.Editor
                 SerializedProperty modeProperty = BalanceModeConfigProp.FindPropertyRelative("ModeVersion");
                 modeProperty.intValue = EditorGUILayout.Popup(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.ModeVersion"), modeProperty.intValue, balanceModeLabels);
 
-                showBalanceModeV1Settings = EditorGUILayout.Foldout(
-                    showBalanceModeV1Settings,
-                    LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.Section.V1"),
-                    true,
-                    UnityService.SubTitleStyle
-                );
-
-                if (showBalanceModeV1Settings)
+                switch (modeProperty.intValue)
                 {
-                    EditorGUI.indentLevel = 3;
+                    case 1:
+                        {
+                            EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V1.Description"), MessageType.Info);
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V1Weight"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V1.Weight")));
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V1MinimumValue"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V1.Minimum")));
+                            break;
+                        }
 
-                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V1.Description"), MessageType.Info);
+                    case 2:
+                        {
+                            EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Description"), MessageType.Info);
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2Radius"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Radius")));
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2Weight"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Weight")));
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2MinimumValue"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Minimum")));
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2IncludeOutside"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.IncludeOutside")));
+                            break;
+                        }
 
-                    EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V1Weight"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V1.Weight")));
-                    EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V1MinimumValue"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V1.Minimum")));
+                    case 3:
+                        {
+                            EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.Description"), MessageType.Info);
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V3Gradient"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.Gradient")));
+                            EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V3GradientResolution"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Resolution")));
+                            break;
+                        }
 
-                    EditorGUI.indentLevel = 2;
-                }
-
-                showBalanceModeV2Settings = EditorGUILayout.Foldout(
-                    showBalanceModeV2Settings,
-                    LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.Section.V2"),
-                    true,
-                    UnityService.SubTitleStyle
-                );
-
-                if (showBalanceModeV2Settings)
-                {
-                    EditorGUI.indentLevel = 3;
-
-                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Description"), MessageType.Info);
-
-                    EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2Radius"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Radius")));
-                    EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2Weight"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Weight")));
-                    EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2MinimumValue"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.Minimum")));
-                    EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V2IncludeOutside"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V2.IncludeOutside")));
-
-                    EditorGUI.indentLevel = 2;
-                }
-
-                showBalanceModeV3Settings = EditorGUILayout.Foldout(
-                    showBalanceModeV3Settings,
-                    LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.Section.V3"),
-                    true,
-                    UnityService.SubTitleStyle
-                );
-
-                if (showBalanceModeV3Settings)
-                {
-                    EditorGUI.indentLevel = 3;
-
-                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.Description"), MessageType.Info);
-
-                    EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V3Gradient"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.Gradient")));
-
-                    showBalanceModeV3LUTSettings = EditorGUILayout.Foldout(
-                        showBalanceModeV3LUTSettings,
-                        LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.Section.LUTConfiguration"),
-                        true,
-                        UnityService.TitleStyle
-                    );
-
-                    if (showBalanceModeV3LUTSettings)
-                    {
-                        EditorGUI.indentLevel = 4;
-
-                        EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Description"), MessageType.Info);
-
-                        EditorGUILayout.PropertyField(BalanceModeConfigProp.FindPropertyRelative("V3GradientResolution"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Resolution")));
-
-                        EditorGUI.indentLevel = 3;
-                    }
-
-                    EditorGUI.indentLevel = 2;
                 }
             }
 
@@ -500,7 +450,10 @@ namespace net.puk06.ColorChanger.Editor
 
                 SerializedProperty AdvancedColorConfigProp = serializedObject.FindProperty("AdvancedColorConfiguration");
 
-                EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("Enabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.IsEnabled")));
+                EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("IsEnabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.IsEnabled")));
+                EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("Hue"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.Hue")));
+                EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("Saturation"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.Saturation")));
+                EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("Value"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.Value")));
                 EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("Brightness"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.Brightness")));
                 EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("Contrast"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.Contrast")));
                 EditorGUILayout.PropertyField(AdvancedColorConfigProp.FindPropertyRelative("Gamma"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.Gamma")));

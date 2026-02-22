@@ -56,7 +56,7 @@ namespace net.puk06.ColorChanger.Editor.Services
             if (colorChangerComponent.BalanceModeConfiguration.ModeVersion != 0)
                 imageProcessor.SetBalanceSettings(colorChangerComponent.BalanceModeConfiguration);
 
-            if (colorChangerComponent.AdvancedColorConfiguration.Enabled)
+            if (colorChangerComponent.AdvancedColorConfiguration.IsEnabled)
                 imageProcessor.SetColorSettings(colorChangerComponent.AdvancedColorConfiguration);
 
             return imageProcessor;

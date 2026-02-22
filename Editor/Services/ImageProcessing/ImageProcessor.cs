@@ -86,6 +86,9 @@ namespace net.puk06.ColorChanger.Editor.Service
 
                 // 追加設定
                 colorComputeShader.SetBool("_AdvancedColorModeEnabled", _isAdvancedColorMode);
+                colorComputeShader.SetFloat("_AdvancedColorSettingsHue", _advancedColorConfiguration.Hue / 360f);
+                colorComputeShader.SetFloat("_AdvancedColorSettingsSaturation", _advancedColorConfiguration.Saturation / 100f);
+                colorComputeShader.SetFloat("_AdvancedColorSettingsValue", _advancedColorConfiguration.Value / 100f);
                 colorComputeShader.SetFloat("_AdvancedColorSettingsBrightness", _advancedColorConfiguration.Brightness);
                 colorComputeShader.SetFloat("_AdvancedColorSettingsContrast", _advancedColorConfiguration.Contrast);
                 colorComputeShader.SetFloat("_AdvancedColorSettingsGamma", _advancedColorConfiguration.Gamma);

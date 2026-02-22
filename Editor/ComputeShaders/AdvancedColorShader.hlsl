@@ -29,6 +29,9 @@ int4 ApplyTransparency(int4 color, float transparency)
 
 int4 AdvancedColorAdjustment(
     int4 color,
+    float hue,
+    float saturation,
+    float value,
     float brightness,
     float contrast,
     float gamma,
@@ -36,6 +39,16 @@ int4 AdvancedColorAdjustment(
     float transparency
 )
 {
+    if (hue != 0.0 || saturation != 0.0 || value != 0.0)
+    {
+        float3 hsv = RGBtoHSV(float3(color.rgb / 255.0f));
+        if (hue != 0.0) hsv.x = frac(hsv.x + hue);
+        if (saturation != 0.0) hsv.y = saturate(hsv.y + saturation);
+        if (value != 0.0) hsv.z = saturate(hsv.z + value);
+        float3 result = HSVtoRGB(hsv);
+
+        color.rgb = (int3)(result * 255.0);
+    }
     if (brightness != 1.0)
         color = ApplyBrightness(color, brightness);
 
