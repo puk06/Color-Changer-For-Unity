@@ -8,6 +8,10 @@
     "Inspector.Script.Section.ScriptConfiguration": "スクリプト設定",
     "Inspector.Script.ScriptConfiguration.IsEnabled": "スクリプトの有効化",
     "Inspector.Script.ScriptConfiguration.IsPreviewEnabled": "プレビューの有効化",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Info": "TexTransToolのMultiLayerImageCanvasが親オブジェクトにあります。\nExternalToolAsLayerコンポーネントを追加することで、MultiLayerImageCanvasのレイヤーとして扱うことができます。",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Warning": "TexTransToolのMultiLayerImageCanvasが親オブジェクトにありません。\n通常通り動作するにはExternalToolAsLayerコンポーネントを外す必要があります。",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.AddComponent": "ExternalToolAsLayerコンポーネントを追加する",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.RemoveComponent": "ExternalToolAsLayerコンポーネントを削除する",
 
     "Inspector.Section.Texture": "テクスチャ",
     "Inspector.Texture.Section.TextureConfiguration": "テクスチャ設定",

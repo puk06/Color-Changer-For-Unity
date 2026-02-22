@@ -156,10 +156,10 @@ namespace net.puk06.ColorChanger.Editor
 
                 if (mlicComponent && !etalComponent)
                 {
-                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("editorwindow.scriptsettings.mlic.info"), MessageType.Info);
+                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Info"), MessageType.Info);
                     if (!etalComponent)
                     {
-                        if (GUILayout.Button(LocalizationUtils.Localize("editorwindow.scriptsettings.mlic.add")))
+                        if (GUILayout.Button(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.AddComponent")))
                         {
                             Undo.AddComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>(colorChangerComponent.gameObject);
                         }
@@ -168,8 +168,8 @@ namespace net.puk06.ColorChanger.Editor
 
                 if (!mlicComponent && etalComponent)
                 {
-                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("editorwindow.scriptsettings.mlic.warning"), MessageType.Warning);
-                    if (GUILayout.Button(LocalizationUtils.Localize("editorwindow.scriptsettings.mlic.remove")))
+                    EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Warning"), MessageType.Warning);
+                    if (GUILayout.Button(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.RemoveComponent")))
                     {
                         Undo.DestroyObjectImmediate(etalComponent);
                     }

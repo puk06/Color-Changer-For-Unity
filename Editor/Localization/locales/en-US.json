@@ -8,6 +8,10 @@
     "Inspector.Script.Section.ScriptConfiguration": "Script Configuration",
     "Inspector.Script.ScriptConfiguration.IsEnabled": "Enable Script",
     "Inspector.Script.ScriptConfiguration.IsPreviewEnabled": "Enable Preview",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Info": "MultiLayerImageCanvas of TexTransTool exists in the parent object.\nBy adding the ExternalToolAsLayer component, you can treat it as a layer of MultiLayerImageCanvas.",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.Warning": "MultiLayerImageCanvas of TexTransTool does not exist in the parent object.\nTo operate normally, you need to remove the ExternalToolAsLayer component.",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.AddComponent": "Add ExternalToolAsLayer Component",
+    "Inspector.Script.ScriptConfiguration.TexTransTool.MLIC.RemoveComponent": "Remove ExternalToolAsLayer Component",
 
     "Inspector.Section.Texture": "Texture",
     "Inspector.Texture.Section.TextureConfiguration": "Texture Configuration",
