@@ -40,10 +40,10 @@ namespace net.puk06.ColorChanger
         public Color TargetColor = Color.white;
 
         [FormerlySerializedAs("balanceModeConfiguration")]
-        public BalanceModeConfiguration BalanceModeConfiguration = new BalanceModeConfiguration();
+        public BalanceModeConfiguration BalanceModeConfiguration = new();
 
         [FormerlySerializedAs("advancedColorConfiguration")]
-        public AdvancedColorConfiguration AdvancedColorConfiguration = new AdvancedColorConfiguration();
+        public AdvancedColorConfiguration AdvancedColorConfiguration = new();
 
         /// <summary>
         /// TTTのExternalToolAsLayer用のものです。
