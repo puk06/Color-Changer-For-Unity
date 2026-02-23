@@ -26,6 +26,8 @@ namespace net.puk06.ColorChanger.Editor.Localization
         {
             if (!Directory.Exists(path)) return;
 
+            List<Dictionary<string, string>> rawMapData = new();
+
             foreach (string filePath in Directory.GetFiles(path).Where(i => i.EndsWith(".json")))
             {
                 try
@@ -46,14 +48,26 @@ namespace net.puk06.ColorChanger.Editor.Localization
                     }
                     else
                     {
-                        _map[deserializeResult["LanguageName"]] = deserializeResult;
-                        _languageMetaData.Add((deserializeResult["LanguageName"], deserializeResult["LocalizedLanguageName"]));
+                        rawMapData.Add(deserializeResult);
                     }
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"Failed to load language: '{Path.GetFileName(filePath)}'.\n{ex}");
                 }
+            }
+
+            static int TryGetInt(string? value, int defaultValue = 0)
+            {
+                if (string.IsNullOrEmpty(value)) return defaultValue;
+                return int.TryParse(value, out int v) ? v : defaultValue;
+            }
+
+            List<Dictionary<string, string>> sortedMaps = rawMapData.OrderBy(i => TryGetInt(i.TryGetValue("LanguagePriority", out string? value) ? value : string.Empty, int.MaxValue)).ToList();
+            foreach (Dictionary<string, string> languageData in sortedMaps)
+            {
+                _map[languageData["LanguageName"]] = languageData;
+                _languageMetaData.Add((languageData["LanguageName"], languageData["LocalizedLanguageName"]));
             }
         }
 

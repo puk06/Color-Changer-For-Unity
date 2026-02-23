@@ -1,6 +1,7 @@
 {
     "LanguageName": "ja-JP",
     "LocalizedLanguageName": "日本語",
+    "LanguagePriority": "0",
 
     "Inspector.Warning.ChildObject": "このオブジェクトはアバターの子オブジェクトとして配置する必要があります。",
 
