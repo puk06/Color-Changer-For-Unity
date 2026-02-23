@@ -6,7 +6,6 @@ using System.Linq;
 using net.puk06.ColorChanger.Editor.Models;
 using net.puk06.ColorChanger.Editor.Services;
 using net.puk06.ColorChanger.Editor.Utils;
-using net.puk06.TextureReplacer;
 using UnityEditor;
 using UnityEngine;
 using VRC.SDKBase;
@@ -49,7 +48,7 @@ namespace net.puk06.ColorChanger.Editor
             DisposeTexture();
             _previewTexture = GeneratePreview();
         }
-        
+
         private bool showTargetTexturePreview = false;
         private bool showSettingsInheritedTextureSettings = false;
         private bool showMaskTextureSettings = false;
@@ -469,37 +468,6 @@ namespace net.puk06.ColorChanger.Editor
 
                 string savedPath = SaveTexture(targetTexture, processedTexture);
                 DestroyImmediate(processedRenderTexture);
-
-                bool confirm = EditorUtility.DisplayDialog(
-                    LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Confirm"),
-                    LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace"),
-                    LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Yes"),
-                    LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.No")
-                );
-
-                if (string.IsNullOrEmpty(savedPath)) return;
-
-                if (confirm)
-                {
-                    var avatarObject = colorChangerComponent.GetComponentInParent<VRC_AvatarDescriptor>().gameObject;
-                    if (avatarObject != null)
-                    {
-                        GameObject textureReplacerObject = new("Puko's Texture Replacer");
-                        Undo.RegisterCreatedObjectUndo(textureReplacerObject, "Create Puko's Texture Replacer Object");
-
-                        // コンポーネントの追加 + テクスチャの割り当て
-                        PukoTextureReplacer component = Undo.AddComponent<PukoTextureReplacer>(textureReplacerObject);
-
-                        textureReplacerObject.transform.SetParent(avatarObject.transform);
-
-                        component.sourceTexture = colorChangerComponent.TargetTexture;
-                        component.destinationTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(savedPath);
-                    }
-                    else
-                    {
-                        LogUtils.LogError("Couldn't find VRC Avatar Descriptor in Parent Objects.");
-                    }
-                }
 
                 UnityService.SelectAssetAtPath(savedPath);
             }

@@ -82,11 +82,6 @@
 
     "Inspector.TextureOutput.TextureOutputConfigurtion.Output": "テクスチャ出力",
     "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexture": "ターゲットテクスチャが見つかりませんでした。",
-
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace": "テクスチャの作成が完了しました。\nこのテクスチャを使用しているマテリアルを、現在のシーン内で更新しますか？",
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Confirm": "確認",
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Yes": "はい",
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.No": "いいえ",
     
     "Inspector.TextureOutput.TextureOutputConfigurtion.Failed": "テクスチャ処理に失敗しました: '{0}'\n{1}",
     "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexturePath": "元テクスチャのパスが取得できません",

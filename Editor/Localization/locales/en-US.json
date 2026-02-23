@@ -82,11 +82,6 @@
 
     "Inspector.TextureOutput.TextureOutputConfigurtion.Output": "Export Texture",
     "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexture": "Target texture could not be found.",
-
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace": "Texture creation complete.\nWould you like to update the materials using this texture in the current scene?",
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Confirm": "Confirm",
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.Yes": "Yes",
-    "Inspector.TextureOutput.TextureOutputConfigurtion.Success.Replace.No": "No",
     
     "Inspector.TextureOutput.TextureOutputConfigurtion.Failed": "Texture processing failed: '{0}'\n{1}",
     "Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexturePath": "Could not retrieve the path of the original texture.",

@@ -4,8 +4,7 @@
     "version": "2.0.0",
     "vpmDependencies": {
         "nadena.dev.ndmf": ">=1.5.0",
-        "com.vrchat.base": ">=3.5.0",
-        "net.puk06.texture-replacer": ">=1.0.0"
+        "com.vrchat.base": ">=3.5.0"
     },
     "author": {
         "name": "Pukorufu",
