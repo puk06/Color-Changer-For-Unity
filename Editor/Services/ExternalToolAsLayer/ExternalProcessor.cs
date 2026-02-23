@@ -15,7 +15,7 @@ namespace net.puk06.ColorChanger.Editor.Services
 
         private static void ProcessTexture(RenderTexture targetTexture, ColorChangerForUnity component)
         {
-            if (!component.Enabled) return;
+            if (!component.IsEnabled) return;
 
             if (!ExtendedRenderTexture.TryCreate(targetTexture.width, targetTexture.height, RenderTextureReadWrite.Linear, out ExtendedRenderTexture originalTexture))
                 return;

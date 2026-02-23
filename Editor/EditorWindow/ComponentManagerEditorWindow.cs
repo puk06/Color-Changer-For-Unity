@@ -64,7 +64,7 @@ namespace net.puk06.ColorChanger.Editor
 
                         ComponentStates componentStates = textureComponentDictionary[texture];
                         
-                        if (component.gameObject.activeInHierarchy && component.Enabled)
+                        if (component.gameObject.activeInHierarchy && component.IsEnabled)
                         {
                             componentStates.EnabledComponents.Add(component);
                         }

@@ -42,7 +42,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 #endif
                 ;
 
-            IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => x.gameObject.activeInHierarchy && x.Enabled);
+            IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => x.gameObject.activeInHierarchy && x.IsEnabled);
             Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary = NdmfProcessor.ProcessAllComponents(enabledComponents,
                 onSuccess: component =>
                 {

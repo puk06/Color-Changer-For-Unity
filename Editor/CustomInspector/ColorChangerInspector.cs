@@ -123,8 +123,8 @@ namespace net.puk06.ColorChanger.Editor
 
             EditorGUI.indentLevel = 1;
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("Enabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsEnabled")));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("PreviewEnabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsPreviewEnabled")));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("IsEnabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsEnabled")));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("IsPreviewEnabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Script.ScriptConfiguration.IsPreviewEnabled")));
 
 #if USE_TEXTRANSTOOL
             var mlicComponent = colorChangerComponent.GetComponentInParent<rs64.TexTransTool.MultiLayerImage.MultiLayerImageCanvas>();

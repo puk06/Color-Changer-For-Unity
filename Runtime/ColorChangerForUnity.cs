@@ -12,9 +12,11 @@ namespace net.puk06.ColorChanger
         , net.rs64.TexTransTool.MultiLayerImage.IExternalToolCanBehaveAsGrabLayerV1
 #endif
     {
-        public bool Enabled = true;
+        [FormerlySerializedAs("Enabled")]
+        public bool IsEnabled = true;
 
-        public bool PreviewEnabled = true;
+        [FormerlySerializedAs("PreviewEnabled")]
+        public bool IsPreviewEnabled = true;
 
         [FormerlySerializedAs("targetTexture")]
         public Texture2D? TargetTexture = null;
