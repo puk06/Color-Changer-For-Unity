@@ -50,7 +50,6 @@ namespace net.puk06.ColorChanger.Editor.Models
             return true;
         }
 
-
         public Texture2D ToTexture2D()
         {
             Texture2D texture = new(width, height, TextureFormat.RGBA32, false, false); // sRGBテクスチャを出力する
