@@ -49,8 +49,7 @@ namespace net.puk06.ColorChanger.Editor
             DisposeTexture();
             _previewTexture = GeneratePreview();
         }
-
-        private bool showColorChangerSettings = false;
+        
         private bool showTargetTexturePreview = false;
         private bool showSettingsInheritedTextureSettings = false;
         private bool showMaskTextureSettings = false;
