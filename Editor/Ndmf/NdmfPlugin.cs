@@ -35,14 +35,14 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
         protected override void Execute(BuildContext context)
         {
             GameObject avatar = context.AvatarRootObject;
-            ColorChangerForUnity[] components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true)
+            ColorChangerForUnity[] components = avatar.GetComponentsInChildren<ColorChangerForUnity>(false)
 #if USE_TEXTRANSTOOL
                 .Where(component => !component.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
                 .ToArray()
 #endif
                 ;
 
-            IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => x.gameObject.activeSelf && x.Enabled);
+            IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => x.gameObject.activeInHierarchy && x.Enabled);
             Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary = NdmfProcessor.ProcessAllComponents(enabledComponents,
                 onSuccess: component =>
                 {
