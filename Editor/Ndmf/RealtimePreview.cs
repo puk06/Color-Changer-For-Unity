@@ -99,7 +99,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 {
                     processedMaterialDictionary[original] = proxy.sharedMaterials.Select(mat => {
                         Material? newMaterial = NdmfProcessor.GetProcessedMaterial(mat, processedTextures);
-                        ObjectRegistry.RegisterReplacedObject(mat, newMaterial);
+                        if (mat != null && newMaterial != null) ObjectRegistry.RegisterReplacedObject(mat, newMaterial);
                         return newMaterial;
                     }).ToArray();
                 }
