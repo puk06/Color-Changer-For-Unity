@@ -20,7 +20,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
     {
         public ImmutableList<RenderGroup> GetTargetGroups(ComputeContext context)
         {
-            ImmutableList<GameObject> avatars = context.GetAvatarRoots();
+            IEnumerable<GameObject> avatars = context.GetAvatarRoots().Distinct();
 
             List<RenderGroup> targetRenderGroups = new List<RenderGroup>();
 
