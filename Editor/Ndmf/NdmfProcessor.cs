@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using nadena.dev.ndmf;
 using net.puk06.ColorChanger.Editor.Extension;
 using net.puk06.ColorChanger.Editor.Models;
@@ -82,23 +83,33 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
         internal static void ReplaceTexturesInRenderers(IEnumerable<Renderer> renderers, Dictionary<Texture2D, Texture2D> processedTexturesDictionary)
         {
+            var materialMap = new Dictionary<Material, Material>();
             foreach (Renderer renderer in renderers)
             {
                 Material?[] materials = renderer.sharedMaterials;
-                Material?[] newMaterials = new Material[materials.Length];
 
-                for (int i = 0; i < materials.Length; i++)
+                foreach (ref var material in materials.AsSpan())
                 {
-                    if (materials[i] == null) continue;
-                    newMaterials[i] = GetProcessedMaterial(materials[i], processedTexturesDictionary);
+                    if (material == null) continue;
+                    if (materialMap.TryGetValue(material, out var cloned))
+                    {
+                        material = cloned;
+                    }
+                    else
+                    {
+                        var newMaterial = GetProcessedMaterial(material, processedTexturesDictionary);
 
-                    ObjectRegistry.RegisterReplacedObject(materials[i], newMaterials[i]);
+                        ObjectRegistry.RegisterReplacedObject(material, newMaterial);
+                        materialMap.Add(material, newMaterial);
+                        material = newMaterial;
+                    }
                 }
 
-                renderer.sharedMaterials = newMaterials;
+                renderer.sharedMaterials = materials;
             }
         }
 
+        [return:NotNullIfNotNull("material")]
         internal static Material? GetProcessedMaterial<T>(Material? material, Dictionary<Texture2D, T> processedTextures)
             where T : Texture
         {
