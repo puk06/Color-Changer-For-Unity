@@ -83,21 +83,22 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
         internal static void ReplaceTexturesInRenderers(IEnumerable<Renderer> renderers, Dictionary<Texture2D, Texture2D> processedTexturesDictionary)
         {
-            var materialMap = new Dictionary<Material, Material>();
+            Dictionary<Material, Material> materialMap = new();
+            
             foreach (Renderer renderer in renderers)
             {
                 Material?[] materials = renderer.sharedMaterials;
 
-                foreach (ref var material in materials.AsSpan())
+                foreach (ref Material? material in materials.AsSpan())
                 {
                     if (material == null) continue;
-                    if (materialMap.TryGetValue(material, out var cloned))
+                    if (materialMap.TryGetValue(material, out Material? cloned))
                     {
                         material = cloned;
                     }
                     else
                     {
-                        var newMaterial = GetProcessedMaterial(material, processedTexturesDictionary);
+                        Material newMaterial = GetProcessedMaterial(material, processedTexturesDictionary);
 
                         ObjectRegistry.RegisterReplacedObject(material, newMaterial);
                         materialMap.Add(material, newMaterial);
