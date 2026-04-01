@@ -21,6 +21,11 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 .AfterPlugin("net.rs64.tex-trans-tool")
                 .AfterPlugin("nadena.dev.modular-avatar")
                 .Run(BuildTextures.Instance)
+#if LLC_2_4_0_OR_NEWER
+                .BeforePass("io.github.azukimochi.light-limit-changer.normalize-materials")
+#else
+                .BeforePlugin("io.github.azukimochi.light-limit-changer")
+#endif
                 .PreviewingWith(new RealtimePreview());
 
             InPhase(BuildPhase.Optimizing)
