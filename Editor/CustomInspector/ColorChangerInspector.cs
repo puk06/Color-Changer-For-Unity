@@ -13,7 +13,6 @@ using VRC.SDKBase;
 namespace net.puk06.ColorChanger.Editor
 {
     [CustomEditor(typeof(ColorChangerForUnity))]
-    [CanEditMultipleObjects]
     internal class ColorChangerInspector : UnityEditor.Editor
     {
         private ExtendedRenderTexture? _previewTexture;
