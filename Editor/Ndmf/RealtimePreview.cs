@@ -94,6 +94,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 GameObject root = group.GetData<GameObject>();
 
                 ColorChangerForUnity[] components = root.GetComponentsInChildren<ColorChangerForUnity>(true);
+                if (components.Length == 0) return Task.FromResult<IRenderFilterNode>(new EmptyNode());
                 foreach (ColorChangerForUnity component in components) context.Observe(component);
 
                 Dictionary<Texture2D, ExtendedRenderTexture> processedTextures = NdmfProcessor.ProcessAllComponents(components, isPreview: true);
@@ -130,7 +131,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     processedMaterialDictionary.Clear();
                     processedMaterialDictionary = null;
                 }
-                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(null));
+                return Task.FromResult<IRenderFilterNode>(new EmptyNode());
             }
         }
 
@@ -173,6 +174,14 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
             }
         }
 
+        public class EmptyNode : IRenderFilterNode
+        {
+            public RenderAspects WhatChanged { get; private set; } = 0;
 
+            public void OnFrame(Renderer original, Renderer proxy)
+            {
+                // Do nothing
+            }
+        }
     }
 }
