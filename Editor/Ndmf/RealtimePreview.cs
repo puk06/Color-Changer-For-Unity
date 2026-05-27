@@ -36,10 +36,13 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     ;
                     if (components.Length == 0) continue;
 
-                    List<Texture2D> targetTextures = new();
+                    HashSet<Texture2D> targetTextures = new();
 
                     foreach (ColorChangerForUnity component in components)
                     {
+                        context.ActiveInHierarchy(component.gameObject);
+                        context.Observe(component.gameObject, go => go.tag);
+
                         if (component.TargetTexture != null)
                         {
                             if (component.TargetTexture != null && !targetTextures.Contains(component.TargetTexture))
@@ -51,7 +54,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                         foreach (Texture2D? settingsInheritedTexture in component.SettingsInheritedTextures)
                         {
                             if (settingsInheritedTexture == null || targetTextures.Contains(settingsInheritedTexture)) continue;
-                            targetTextures.Add(context.Observe(settingsInheritedTexture!));
+                            targetTextures.Add(context.Observe(settingsInheritedTexture));
                         }
                     }
 
@@ -69,7 +72,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
                     if (targetRenderers.Count > 0)
                     {
-                        targetRenderGroups.Add(RenderGroup.For(targetRenderers).WithData(components));
+                        targetRenderGroups.Add(RenderGroup.For(targetRenderers).WithData(avatar));
                     }
                 }
                 catch (Exception ex)
@@ -88,13 +91,14 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
             try
             {
-                ColorChangerForUnity[] components = group.GetData<ColorChangerForUnity[]>();
+                GameObject root = group.GetData<GameObject>();
+
+                ColorChangerForUnity[] components = root.GetComponentsInChildren<ColorChangerForUnity>(true);
                 foreach (ColorChangerForUnity component in components) context.Observe(component);
 
-                IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => context.ActiveInHierarchy(x.gameObject) && x.IsEnabled && x.IsPreviewEnabled);
-                Dictionary<Texture2D, ExtendedRenderTexture> processedTextures = NdmfProcessor.ProcessAllComponents(enabledComponents);
-                ObjectReferenceService.RegisterReplacements(processedTextures);
+                Dictionary<Texture2D, ExtendedRenderTexture> processedTextures = NdmfProcessor.ProcessAllComponents(components, isPreview: true);
                 processedTexturesDictionary = NdmfProcessor.ConvertToTexture2DDictionary(processedTextures);
+                ObjectReferenceService.RegisterReplacements(processedTexturesDictionary);
 
                 foreach ((Renderer original, Renderer proxy) in proxyPairs)
                 {
@@ -168,5 +172,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                 }
             }
         }
+
+
     }
 }

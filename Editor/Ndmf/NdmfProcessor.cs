@@ -12,12 +12,14 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 {
     internal class NdmfProcessor
     {
-        internal static Dictionary<Texture2D, ExtendedRenderTexture> ProcessAllComponents(IEnumerable<ColorChangerForUnity> components, Action<ColorChangerForUnity>? onSuccess = null, Action<ColorChangerForUnity>? onFailed = null)
+        internal static Dictionary<Texture2D, ExtendedRenderTexture> ProcessAllComponents(IEnumerable<ColorChangerForUnity> components, Action<ColorChangerForUnity>? onSuccess = null, Action<ColorChangerForUnity>? onFailed = null, bool isPreview = false)
         {
             Dictionary<Texture2D, ExtendedRenderTexture> result = new();
 
             foreach (ColorChangerForUnity component in components)
             {
+                if (!component.IsActiveCCComponent(isPreview: isPreview)) continue;
+
                 if (component.TargetTexture != null)
                 {
                     if (result.ContainsKey(component.TargetTexture))
