@@ -45,8 +45,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 #endif
                 ;
 
-            IEnumerable<ColorChangerForUnity> enabledComponents = components.Where(x => x.gameObject.activeInHierarchy && x.IsEnabled);
-            Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary = NdmfProcessor.ProcessAllComponents(enabledComponents,
+            Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary = NdmfProcessor.ProcessAllComponents(components,
                 onSuccess: component =>
                 {
                     string textureName = component.TargetTexture == null ? "Unknown Texture" : component.TargetTexture.name;
