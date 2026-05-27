@@ -40,9 +40,6 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
                     foreach (ColorChangerForUnity component in components)
                     {
-                        context.ActiveInHierarchy(component.gameObject);
-                        context.Observe(component.gameObject, go => go.tag);
-
                         if (component.TargetTexture != null)
                         {
                             if (component.TargetTexture != null && !targetTextures.Contains(component.TargetTexture))
@@ -95,7 +92,12 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
                 ColorChangerForUnity[] components = root.GetComponentsInChildren<ColorChangerForUnity>(true);
                 if (components.Length == 0) return Task.FromResult<IRenderFilterNode>(new EmptyNode());
-                foreach (ColorChangerForUnity component in components) context.Observe(component);
+                foreach (ColorChangerForUnity component in components)
+                {
+                    context.Observe(component);
+                    context.ActiveInHierarchy(component.gameObject);
+                    context.Observe(component.gameObject, go => go.tag);
+                }
 
                 Dictionary<Texture2D, ExtendedRenderTexture> processedTextures = NdmfProcessor.ProcessAllComponents(components, isPreview: true);
                 processedTexturesDictionary = NdmfProcessor.ConvertToTexture2DDictionary(processedTextures);
