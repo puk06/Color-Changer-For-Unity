@@ -40,18 +40,21 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
                     foreach (ColorChangerForUnity component in components)
                     {
+                        context.Observe(component, c => c.TargetTexture);
+                        context.Observe(component, c => new List<Texture2D?>(c.SettingsInheritedTextures), (a, b) => a.SequenceEqual(b));
+
                         if (component.TargetTexture != null)
                         {
                             if (component.TargetTexture != null && !targetTextures.Contains(component.TargetTexture))
                             {
-                                targetTextures.Add(context.Observe(component.TargetTexture));
+                                targetTextures.Add(component.TargetTexture);
                             }
                         }
 
                         foreach (Texture2D? settingsInheritedTexture in component.SettingsInheritedTextures)
                         {
                             if (settingsInheritedTexture == null || targetTextures.Contains(settingsInheritedTexture)) continue;
-                            targetTextures.Add(context.Observe(settingsInheritedTexture));
+                            targetTextures.Add(settingsInheritedTexture);
                         }
                     }
 
