@@ -80,8 +80,8 @@ namespace net.puk06.ColorChanger.Editor.Services
 
             processorShader.SetBool("_AdvancedColorModeEnabled", component.AdvancedColorConfiguration.IsEnabled);
             processorShader.SetFloat("_AdvancedColorSettingsHue", component.AdvancedColorConfiguration.Hue / 360f);
-            processorShader.SetFloat("_AdvancedColorSettingsSaturation", component.AdvancedColorConfiguration.Saturation / 100f);
-            processorShader.SetFloat("_AdvancedColorSettingsValue", component.AdvancedColorConfiguration.Value / 100f);
+            processorShader.SetFloat("_AdvancedColorSettingsSaturation", component.AdvancedColorConfiguration.Saturation);
+            processorShader.SetFloat("_AdvancedColorSettingsValue", component.AdvancedColorConfiguration.Value);
             processorShader.SetFloat("_AdvancedColorSettingsBrightness", component.AdvancedColorConfiguration.Brightness);
             processorShader.SetFloat("_AdvancedColorSettingsContrast", component.AdvancedColorConfiguration.Contrast);
             processorShader.SetFloat("_AdvancedColorSettingsGamma", component.AdvancedColorConfiguration.Gamma);
