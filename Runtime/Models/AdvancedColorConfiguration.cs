@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 namespace net.puk06.ColorChanger.Models
 {
     [Serializable]
-    public class AdvancedColorConfiguration
+    public class AdvancedColorConfiguration : ISerializationCallbackReceiver
     {
         private const int CurrentSerializationVersion = 1;
         [SerializeField] private int SerializationVersion = 0;
