@@ -59,8 +59,9 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     }
 
                     List<Renderer> targetRenderers = new();
-                    foreach (Renderer avatarRenderer in avatar.GetComponentsInChildren<Renderer>(true).Where(r => r is MeshRenderer or SkinnedMeshRenderer))
+                    foreach (Renderer avatarRenderer in context.GetComponentsInChildren<Renderer>(avatar, true).Where(r => r is MeshRenderer or SkinnedMeshRenderer))
                     {
+                        context.Observe(avatarRenderer);
                         Material[] materials = avatarRenderer.sharedMaterials;
                         if (materials == null) continue;
 
