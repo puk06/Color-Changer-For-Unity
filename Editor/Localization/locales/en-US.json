@@ -31,8 +31,6 @@
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.White": "White",
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Opaque": "Opaque",
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Transparent": "Transparent",
-    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.BlackGlayScale": "Black (Grayscale)",
-    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.WhiteGlayScale": "White (Grayscale)",
     "Inspector.Texture.MaskTexture.ShowPreview": "Show Texture Preview",
 
     "Inspector.Texture.Section.TexureReplacement": "Texture Replacement Settings",

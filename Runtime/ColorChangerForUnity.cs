@@ -7,11 +7,14 @@ using UnityEngine.Serialization;
 namespace net.puk06.ColorChanger
 {
     [Serializable]
-    public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly
+    public class ColorChangerForUnity : MonoBehaviour, VRC.SDKBase.IEditorOnly, ISerializationCallbackReceiver
 #if USE_TEXTRANSTOOL
         , net.rs64.TexTransTool.MultiLayerImage.IExternalToolCanBehaveAsGrabLayerV1
 #endif
     {
+        private const int CurrentSerializationVersion = 1;
+        [SerializeField] private int SerializationVersion = 0;
+
         [FormerlySerializedAs("Enabled")]
         public bool IsEnabled = true;
 
@@ -63,6 +66,24 @@ namespace net.puk06.ColorChanger
                 if (TargetTexture == null) return null;
                 return ReplacementTexture == null ? TargetTexture : ReplacementTexture;
             }
+        }
+
+        public void OnBeforeSerialize()
+        {
+            SerializationVersion = CurrentSerializationVersion;
+        }
+
+        public void OnAfterDeserialize()
+        {
+            if (SerializationVersion >= CurrentSerializationVersion) return;
+
+            if (SerializationVersion == 0)
+            {
+                if ((int)ImageMaskSelectionType == 6) ImageMaskSelectionType = ImageMaskSelectionType.Black;
+                else if ((int)ImageMaskSelectionType == 7) ImageMaskSelectionType = ImageMaskSelectionType.White;
+            }
+
+            SerializationVersion = CurrentSerializationVersion;
         }
     }
 }

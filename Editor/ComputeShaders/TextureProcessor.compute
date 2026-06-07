@@ -62,32 +62,7 @@ int4 ApplyMask(int4 source, int4 color, uint2 id)
         return color;
     }
 
-    if (_MaskSelectionType == 1)
-    {
-        return (maskColor.r <= 5 && maskColor.g <= 5 && maskColor.b <= 5) ? color : backgroundColor;
-    }
-
-    if (_MaskSelectionType == 2)
-    {
-        return (maskColor.r >= 250 && maskColor.g >= 250 && maskColor.b >= 250 && maskColor.a != 0) ? color : backgroundColor;
-    }
-
-    if (_MaskSelectionType == 3)
-    {
-        return (maskColor.a == 255) ? color : backgroundColor;
-    }
-
-    if (_MaskSelectionType == 4)
-    {
-        return (maskColor.a != 0) ? color : backgroundColor;
-    }
-
-    if (_MaskSelectionType == 5)
-    {
-        return (maskColor.a == 0) ? color : backgroundColor;
-    }
-
-    if (_MaskSelectionType == 6 || _MaskSelectionType == 7) // GrayScale Mask
+    if (_MaskSelectionType == 1 || _MaskSelectionType == 2) // GrayScale Mask
     {
         const float grayScaleWeightR = 0.299;
         const float grayScaleWeightG = 0.587;
@@ -99,7 +74,7 @@ int4 ApplyMask(int4 source, int4 color, uint2 id)
             grayScaleWeightB * (maskColor.b / 255.0)
         );
 
-        if (_MaskSelectionType == 6) // GrayScale Mask (Black)
+        if (_MaskSelectionType == 1) // GrayScale Mask (Black)
         {
             float alpha = 1 - grayScale;
             return int4(
@@ -119,6 +94,21 @@ int4 ApplyMask(int4 source, int4 color, uint2 id)
                 255
             );
         }
+    }
+
+    if (_MaskSelectionType == 3)
+    {
+        return (maskColor.a == 255) ? color : backgroundColor;
+    }
+
+    if (_MaskSelectionType == 4)
+    {
+        return (maskColor.a != 0) ? color : backgroundColor;
+    }
+
+    if (_MaskSelectionType == 5)
+    {
+        return (maskColor.a == 0) ? color : backgroundColor;
     }
 
     return backgroundColor;

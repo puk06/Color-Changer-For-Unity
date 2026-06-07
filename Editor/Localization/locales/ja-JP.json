@@ -31,8 +31,6 @@
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.White": "白",
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Opaque": "不透明",
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Transparent": "透明",
-    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.BlackGlayScale": "黒（グレースケール）",
-    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.WhiteGlayScale": "白（グレースケール）",
     "Inspector.Texture.MaskTexture.ShowPreview": "テクスチャプレビューを表示する",
 
     "Inspector.Texture.Section.TexureReplacement": "テクスチャ置き換え設定",

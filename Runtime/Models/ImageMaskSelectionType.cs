@@ -7,8 +7,6 @@ namespace net.puk06.ColorChanger.Models
         White,
         Opaque,
         Opaque1,
-        Transparent,
-        BlackGlayScale,
-        WhiteGlayScale
+        Transparent
     }
 }

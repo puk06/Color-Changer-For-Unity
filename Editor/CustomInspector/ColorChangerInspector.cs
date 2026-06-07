@@ -237,8 +237,6 @@ namespace net.puk06.ColorChanger.Editor
                     string.Format("{0} (A = 255)", LocalizationUtils.Localize("Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Opaque")),
                     string.Format("{0} (A ≠ 0)", LocalizationUtils.Localize("Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Opaque")),
                     string.Format("{0} (A = 0)", LocalizationUtils.Localize("Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Transparent")),
-                    LocalizationUtils.Localize("Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.BlackGlayScale"),
-                    LocalizationUtils.Localize("Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.WhiteGlayScale")
                 };
 
                 SerializedProperty MaskSelectionTypeTextureProp = serializedObject.FindProperty("ImageMaskSelectionType");
