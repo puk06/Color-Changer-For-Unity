@@ -36,6 +36,94 @@ float _AdvancedColorSettingsGamma;
 float _AdvancedColorSettingsExposure;
 float _AdvancedColorSettingsTransparency;
 
+int4 MaskColor(uint2 id)
+{
+    uint width, height;
+    _MaskTex.GetDimensions(width, height);
+
+    uint2 maskUv = id.xy * _MaskTexScale;
+    if (maskUv.x < 0 || maskUv.x >= width || maskUv.y < 0 || maskUv.y >= height) return int4(0, 0, 0, 0);
+
+    int4 color = (int4)(_MaskTex[maskUv] * 255.0);
+
+    return color;
+}
+
+int4 ApplyMask(int4 source, int4 color, uint2 id)
+{
+    if (!_UseMask) return color;
+
+    int4 maskColor = MaskColor(id);
+
+    int4 backgroundColor = source;
+
+    if (_MaskSelectionType == 0)
+    {
+        return color;
+    }
+
+    if (_MaskSelectionType == 1)
+    {
+        return (maskColor.r <= 5 && maskColor.g <= 5 && maskColor.b <= 5) ? color : backgroundColor;
+    }
+
+    if (_MaskSelectionType == 2)
+    {
+        return (maskColor.r >= 250 && maskColor.g >= 250 && maskColor.b >= 250 && maskColor.a != 0) ? color : backgroundColor;
+    }
+
+    if (_MaskSelectionType == 3)
+    {
+        return (maskColor.a == 255) ? color : backgroundColor;
+    }
+
+    if (_MaskSelectionType == 4)
+    {
+        return (maskColor.a != 0) ? color : backgroundColor;
+    }
+
+    if (_MaskSelectionType == 5)
+    {
+        return (maskColor.a == 0) ? color : backgroundColor;
+    }
+
+    if (_MaskSelectionType == 6 || _MaskSelectionType == 7) // GrayScale Mask
+    {
+        const float grayScaleWeightR = 0.299;
+        const float grayScaleWeightG = 0.587;
+        const float grayScaleWeightB = 0.114;
+
+        float grayScale = (
+            grayScaleWeightR * (maskColor.r / 255.0) +
+            grayScaleWeightG * (maskColor.g / 255.0) +
+            grayScaleWeightB * (maskColor.b / 255.0)
+        );
+
+        if (_MaskSelectionType == 6) // GrayScale Mask (Black)
+        {
+            float alpha = 1 - grayScale;
+            return int4(
+                (color.r * alpha + backgroundColor.r * (1 - alpha)),
+                (color.g * alpha + backgroundColor.g * (1 - alpha)),
+                (color.b * alpha + backgroundColor.b * (1 - alpha)),
+                255
+            );
+        }
+        else // GrayScale Mask (White)
+        {
+            float alpha = grayScale;
+            return int4(
+                (color.r * alpha + backgroundColor.r * (1 - alpha)),
+                (color.g * alpha + backgroundColor.g * (1 - alpha)),
+                (color.b * alpha + backgroundColor.b * (1 - alpha)),
+                255
+            );
+        }
+    }
+
+    return backgroundColor;
+}
+
 bool IsMaskSelected(uint2 id)
 {
     uint width, height;
@@ -63,13 +151,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     _TargetTex.GetDimensions(width, height);
     if (id.x >= width || id.y >= height) return;
 
-    if (_UseMask && !IsMaskSelected(id.xy))
-    {
-        _TargetTex[id.xy] = _SourceTex[id.xy];
-        return;
-    }
-
-    int4 color = (int4)(_SourceTex[id.xy] * 255.0);
+    int4 sourceColor = (int4)(_SourceTex[id.xy] * 255.0);
+    int4 color = sourceColor;
 
     int3 colorOffset = (int3)_TargetColor - (int3)_SourceColor;
 
@@ -115,5 +198,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
         );
     }
     
+    color = ApplyMask(sourceColor, color, id.xy);
     _TargetTex[id.xy] = saturate(color / 255.0);
 }
