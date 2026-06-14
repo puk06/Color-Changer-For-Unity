@@ -40,7 +40,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
                     foreach (ColorChangerForUnity component in components)
                     {
-                        context.Observe(component, c => c.TargetTexture);
+                        context.Observe(component, c => c.TargetTexture, (a, b) => a == b);
                         context.Observe(component, c => new List<Texture2D?>(c.SettingsInheritedTextures), (a, b) => a.SequenceEqual(b));
 
                         if (component.TargetTexture != null)
@@ -61,8 +61,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     List<Renderer> targetRenderers = new();
                     foreach (Renderer avatarRenderer in context.GetComponentsInChildren<Renderer>(avatar, true).Where(r => r is MeshRenderer or SkinnedMeshRenderer))
                     {
-                        context.Observe(avatarRenderer);
-                        Material[] materials = avatarRenderer.sharedMaterials;
+                        Material[] materials = context.Observe(avatarRenderer, i => i.sharedMaterials, (a, b) => a != null && b != null && a.SequenceEqual(b));
                         if (materials == null) continue;
 
                         if (materials.Any(material => targetTextures.Any(targetTexture => targetTexture != null && material.HasTexture(targetTexture))))
