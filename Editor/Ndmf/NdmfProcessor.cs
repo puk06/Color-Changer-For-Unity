@@ -14,9 +14,9 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
     {
         internal static Dictionary<Texture2D, ExtendedRenderTexture> ProcessAllComponents(IEnumerable<ColorChangerForUnity> components, Action<ColorChangerForUnity>? onSuccess = null, Action<ColorChangerForUnity>? onFailed = null, bool isPreview = false)
         {
-            Dictionary<Texture2D, ExtendedRenderTexture> result = new();
+            var result = new Dictionary<Texture2D, ExtendedRenderTexture>();
 
-            foreach (ColorChangerForUnity component in components)
+            foreach (var component in components)
             {
                 if (!component.IsActiveCCComponent(isPreview: isPreview)) continue;
 
@@ -28,7 +28,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     }
                     else if (component.ComponentTexture != null)
                     {
-                        ExtendedRenderTexture? processedTexture = TextureBuilder.Build(component.ComponentTexture, component, component.MaskTexture != null);
+                        var processedTexture = TextureBuilder.Build(component.ComponentTexture, component, component.MaskTexture != null);
                         if (processedTexture != null)
                         {
                             result.Add(component.TargetTexture, processedTexture);
@@ -41,7 +41,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     }
                 }
 
-                foreach (Texture2D? settingsInheritedTexture in component.SettingsInheritedTextures)
+                foreach (var settingsInheritedTexture in component.SettingsInheritedTextures)
                 {
                     if (settingsInheritedTexture == null) continue;
                     
@@ -51,7 +51,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     }
                     else
                     {
-                        ExtendedRenderTexture? processedTexture = TextureBuilder.Build(settingsInheritedTexture, component, false);
+                        var processedTexture = TextureBuilder.Build(settingsInheritedTexture, component, false);
                         if (processedTexture != null)
                         {
                             result.Add(settingsInheritedTexture, processedTexture);
@@ -70,11 +70,11 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
         internal static Dictionary<Texture2D, Texture2D> ConvertToTexture2DDictionary(Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary)
         {
-            Dictionary<Texture2D, Texture2D> result = new();
+            var result = new Dictionary<Texture2D, Texture2D>();
 
-            foreach (KeyValuePair<Texture2D, ExtendedRenderTexture> processedKpv in processedTexturesDictionary)
+            foreach (var processedKpv in processedTexturesDictionary)
             {
-                Texture2D convertedTexture = processedKpv.Value.ToTexture2D();
+                var convertedTexture = processedKpv.Value.ToTexture2D();
                 processedKpv.Value.Dispose();
 
                 result.Add(processedKpv.Key, convertedTexture);
@@ -85,30 +85,36 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
         internal static void ReplaceTexturesInRenderers(IEnumerable<Renderer> renderers, Dictionary<Texture2D, Texture2D> processedTexturesDictionary)
         {
-            Dictionary<Material, Material> materialMap = new();
+            if (processedTexturesDictionary.Count == 0) return;
+
+            var materialMap = new Dictionary<Material, Material>();
             
-            foreach (Renderer renderer in renderers)
+            foreach (var renderer in renderers)
             {
                 Material?[] materials = renderer.sharedMaterials;
+                bool changed = false;
 
-                foreach (ref Material? material in materials.AsSpan())
+                foreach (ref var material in materials.AsSpan())
                 {
                     if (material == null) continue;
                     if (materialMap.TryGetValue(material, out Material? cloned))
                     {
                         material = cloned;
+                        changed = true;
                     }
                     else
                     {
-                        Material newMaterial = GetProcessedMaterial(material, processedTexturesDictionary);
+                        var newMaterial = GetProcessedMaterial(material, processedTexturesDictionary);
+                        if (newMaterial == material) continue;
 
-                        ObjectRegistry.RegisterReplacedObject(material, newMaterial);
-                        materialMap.Add(material, newMaterial);
+                        ObjectRegistry.RegisterReplacedObject(material, newMaterial!);
+                        materialMap.Add(material, newMaterial!);
                         material = newMaterial;
+                        changed = true;
                     }
                 }
 
-                renderer.sharedMaterials = materials;
+                if (changed) renderer.sharedMaterials = materials;
             }
         }
 
@@ -118,15 +124,17 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
         {
             if (material == null) return null;
 
-            Material newMaterial = UnityEngine.Object.Instantiate(material);
+            Material? newMaterial = null;
 
-            newMaterial.ForEachTexture((texture, propName) =>
+            material.ForEachTexture((texture, propName) =>
             {
                 if (texture is not Texture2D originalTexture || !processedTextures.TryGetValue(originalTexture, out T processedTexture)) return;
+                if (newMaterial == null) newMaterial = UnityEngine.Object.Instantiate(material);
                 newMaterial.SetTexture(propName, processedTexture);
             });
 
-            return newMaterial;
+            if (newMaterial != null) return newMaterial;
+            return material;
         }
     }
 }
