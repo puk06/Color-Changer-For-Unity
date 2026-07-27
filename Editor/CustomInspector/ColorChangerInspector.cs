@@ -465,7 +465,7 @@ namespace net.puk06.ColorChanger.Editor
                 processedRenderTexture.Dispose();
 
                 var savedPath = SaveTexture(targetTexture, processedTexture);
-                DestroyImmediate(processedRenderTexture);
+                DestroyImmediate(processedTexture);
 
                 UnityService.SelectAssetAtPath(savedPath);
             }

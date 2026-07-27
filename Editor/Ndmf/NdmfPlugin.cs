@@ -1,9 +1,7 @@
 #nullable enable
-using System.Collections.Generic;
 using System.Linq;
 using nadena.dev.ndmf;
 using nadena.dev.ndmf.util;
-using net.puk06.ColorChanger.Editor.Models;
 using net.puk06.ColorChanger.Editor.Ndmf;
 using UnityEngine;
 
@@ -37,15 +35,15 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
     {
         protected override void Execute(BuildContext context)
         {
-            GameObject avatar = context.AvatarRootObject;
-            ColorChangerForUnity[] components = avatar.GetComponentsInChildren<ColorChangerForUnity>(false)
+            var avatar = context.AvatarRootObject;
+            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(false)
 #if USE_TEXTRANSTOOL
                 .Where(component => !component.GetComponent<rs64.TexTransTool.MultiLayerImage.ExternalToolAsLayer>())
                 .ToArray()
 #endif
                 ;
 
-            Dictionary<Texture2D, ExtendedRenderTexture> processedTexturesDictionary = NdmfProcessor.ProcessAllComponents(components,
+            var processedTexturesDictionary = NdmfProcessor.ProcessAllComponents(components,
                 onSuccess: component =>
                 {
                     string textureName = component.TargetTexture == null ? "Unknown Texture" : component.TargetTexture.name;
@@ -57,8 +55,12 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                     ErrorReport.ReportError(NdmfLocalizer.Localizer, ErrorSeverity.NonFatal, "NdmfBuild.Processing.Failed", component.AvatarRootPath(), textureName);
                 }
             );
-            IEnumerable<Renderer> renderers = avatar.GetComponentsInChildren<Renderer>(true).Where(r => r is MeshRenderer or SkinnedMeshRenderer);
-            NdmfProcessor.ReplaceTexturesInRenderers(renderers, NdmfProcessor.ConvertToTexture2DDictionary(processedTexturesDictionary));
+            var renderers = avatar.GetComponentsInChildren<Renderer>(true).Where(r => r is MeshRenderer or SkinnedMeshRenderer);
+            var texture2DDictionary = NdmfProcessor.ConvertToTexture2DDictionary(processedTexturesDictionary);
+            NdmfProcessor.ReplaceTexturesInRenderers(renderers, texture2DDictionary);
+
+            foreach (var texture in texture2DDictionary.Values)
+                context.AssetSaver.SaveAsset(texture);
         }
     }
 
@@ -66,15 +68,15 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
     {
         protected override void Execute(BuildContext buildContext)
         {
-            GameObject avatar = buildContext.AvatarRootObject;
+            var avatar = buildContext.AvatarRootObject;
 
-            ColorChangerForUnity[] components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
+            var components = avatar.GetComponentsInChildren<ColorChangerForUnity>(true);
             DeleteAllComponents(components);
         }
 
         private void DeleteAllComponents(ColorChangerForUnity[] components)
         {
-            foreach (ColorChangerForUnity component in components)
+            foreach (var component in components)
             {
                 if (component == null) continue;
                 Object.DestroyImmediate(component);

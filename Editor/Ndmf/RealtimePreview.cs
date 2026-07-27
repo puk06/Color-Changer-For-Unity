@@ -138,7 +138,7 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                         processedMaterialDictionary[original] = newMaterials;
                 }
 
-                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterialDictionary, materialMap.Values));
+                return Task.FromResult<IRenderFilterNode>(new TextureReplacerNode(processedMaterialDictionary, materialMap.Values, processedTexturesDictionary));
             }
             catch (Exception ex)
             {
@@ -169,13 +169,15 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
         {
             private Dictionary<Renderer, Material?[]>? _processedMaterialDictionary;
             private IEnumerable<Material>? _createdMaterials;
+            private Dictionary<Texture2D, Texture2D>? _processedTexturesDictionary;
 
             public RenderAspects WhatChanged { get; private set; } = RenderAspects.Texture | RenderAspects.Material;
 
-            public TextureReplacerNode(Dictionary<Renderer, Material?[]>? processedMaterialDictionary, IEnumerable<Material>? createdMaterials)
+            public TextureReplacerNode(Dictionary<Renderer, Material?[]>? processedMaterialDictionary, IEnumerable<Material>? createdMaterials, Dictionary<Texture2D, Texture2D>? processedTexturesDictionary)
             {
                 _processedMaterialDictionary = processedMaterialDictionary;
                 _createdMaterials = createdMaterials;
+                _processedTexturesDictionary = processedTexturesDictionary;
             }
 
             public void OnFrame(Renderer original, Renderer proxy)
@@ -195,6 +197,14 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
 
             public void Dispose()
             {
+                if (_processedTexturesDictionary != null)
+                {
+                    foreach (var texture in _processedTexturesDictionary.Values)
+                        Object.DestroyImmediate(texture);
+                    _processedTexturesDictionary.Clear();
+                    _processedTexturesDictionary = null;
+                }
+
                 if (_createdMaterials != null)
                 {
                     foreach (var material in _createdMaterials)
