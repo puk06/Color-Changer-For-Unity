@@ -26,13 +26,13 @@ namespace net.puk06.ColorChanger.Editor.Localization
         {
             if (!Directory.Exists(path)) return;
 
-            List<Dictionary<string, string>> rawMapData = new();
+            var rawMapData = new List<Dictionary<string, string>>();
 
-            foreach (string filePath in Directory.GetFiles(path).Where(i => i.EndsWith(".json")))
+            foreach (var filePath in Directory.GetFiles(path).Where(i => i.EndsWith(".json")))
             {
                 try
                 {
-                    Dictionary<string, string>? deserializeResult = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(filePath));
+                    var deserializeResult = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(filePath));
 
                     if (deserializeResult == null)
                     {
@@ -63,8 +63,8 @@ namespace net.puk06.ColorChanger.Editor.Localization
                 return int.TryParse(value, out int v) ? v : defaultValue;
             }
 
-            List<Dictionary<string, string>> sortedMaps = rawMapData.OrderBy(i => TryGetInt(i.TryGetValue("LanguagePriority", out string? value) ? value : string.Empty, int.MaxValue)).ToList();
-            foreach (Dictionary<string, string> languageData in sortedMaps)
+            var sortedMaps = rawMapData.OrderBy(i => TryGetInt(i.TryGetValue("LanguagePriority", out string? value) ? value : string.Empty, int.MaxValue)).ToList();
+            foreach (var languageData in sortedMaps)
             {
                 _map[languageData["LanguageName"]] = languageData;
                 _languageMetaData.Add((languageData["LanguageName"], languageData["LocalizedLanguageName"]));

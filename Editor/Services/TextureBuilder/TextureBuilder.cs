@@ -36,7 +36,7 @@ namespace net.puk06.ColorChanger.Editor.Services
 
         internal static ExtendedRenderTexture? Process(ColorChangerForUnity component, RenderTexture sourceTexture, RenderTexture? maskTexture, ImageMaskSelectionType imageMaskSelectionType = ImageMaskSelectionType.None, RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB)
         {
-            ComputeShader? processorShader = CCShaderEngine.TextureProcessorComputeShader;
+            var processorShader = CCShaderEngine.TextureProcessorComputeShader;
             if (processorShader == null) CCShaderEngine.LoadShaders();
 
             if (processorShader == null)
@@ -59,7 +59,7 @@ namespace net.puk06.ColorChanger.Editor.Services
             processorShader.SetBool("_UseMask", maskTexture != null && imageMaskSelectionType != ImageMaskSelectionType.None);
             processorShader.SetTexture(kernel, "_MaskTex", maskTexture != null ? maskTexture : DummyRenderTexture.Instance);
 
-            Vector2 maskScale = maskTexture == null ? new() : new Vector2((float)maskTexture.width / sourceTexture.width, (float)maskTexture.height / sourceTexture.height);
+            var maskScale = maskTexture == null ? new Vector2() : new Vector2((float)maskTexture.width / sourceTexture.width, (float)maskTexture.height / sourceTexture.height);
             processorShader.SetVector("_MaskTexScale", maskScale);
             processorShader.SetInt("_MaskSelectionType", (int)imageMaskSelectionType);
 
@@ -74,7 +74,7 @@ namespace net.puk06.ColorChanger.Editor.Services
             processorShader.SetFloat("_BalanceModeV2MinimumValue", component.BalanceModeConfiguration.V2MinimumValue);
             processorShader.SetBool("_BalanceModeV2IncludeOutside", component.BalanceModeConfiguration.V2IncludeOutside);
 
-            Texture2D v3GradientTexture = component.BalanceModeConfiguration.V3Gradient.ToTexture(component.BalanceModeConfiguration.V3GradientResolution);
+            var v3GradientTexture = component.BalanceModeConfiguration.V3Gradient.ToTexture(component.BalanceModeConfiguration.V3GradientResolution);
             processorShader.SetTexture(kernel, "_BalanceModeV3Gradient", v3GradientTexture);
             processorShader.SetInt("_BalanceModeV3GradientResolution", component.BalanceModeConfiguration.V3GradientResolution);
 

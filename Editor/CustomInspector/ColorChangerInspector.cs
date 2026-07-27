@@ -31,7 +31,7 @@ namespace net.puk06.ColorChanger.Editor
 
         public ExtendedRenderTexture? GeneratePreview()
         {
-            ColorChangerForUnity? component = target as ColorChangerForUnity;
+            var component = target as ColorChangerForUnity;
             if (component == null || component.ComponentTexture == null) return null;
 
             return TextureBuilder.Build(component.ComponentTexture, component, true);
@@ -61,19 +61,19 @@ namespace net.puk06.ColorChanger.Editor
         {
             serializedObject.UpdateIfRequiredOrScript();
 
-            Texture2D? logoTexture = ComponentAssetsLoader.Logo;
+            var logoTexture = ComponentAssetsLoader.Logo;
             if (logoTexture != null)
             {
                 float imgWidth = logoTexture.width;
                 float imgHeight = logoTexture.height;
 
-                float viewWidth = EditorGUIUtility.currentViewWidth;
+                var viewWidth = EditorGUIUtility.currentViewWidth;
 
-                float aspectRatio = imgHeight / imgWidth;
-                float displayWidth = viewWidth;
-                float displayHeight = displayWidth * aspectRatio;
+                var aspectRatio = imgHeight / imgWidth;
+                var displayWidth = viewWidth;
+                var displayHeight = displayWidth * aspectRatio;
 
-                Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(true));
+                var rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(true));
 
                 GUI.DrawTexture(rect, logoTexture, ScaleMode.ScaleToFit);
             }
@@ -81,10 +81,10 @@ namespace net.puk06.ColorChanger.Editor
             UpdateChecker.GenerateVersionLabel();
             LocalizationUtils.DrawLanguageSelectionPopup();
 
-            ColorChangerForUnity? comp = target as ColorChangerForUnity;
+            var comp = target as ColorChangerForUnity;
             if (comp == null) return;
 
-            Texture2D? componentIcon = ComponentAssetsLoader.Icon;
+            var componentIcon = ComponentAssetsLoader.Icon;
             if (componentIcon != null) EditorGUIUtility.SetIconForObject(comp, componentIcon);
 
             if (comp.GetComponentInParent<VRC_AvatarDescriptor>() == null)
@@ -160,18 +160,18 @@ namespace net.puk06.ColorChanger.Editor
 
             EditorGUI.indentLevel = 1;
 
-            SerializedProperty targetTextureProp = serializedObject.FindProperty("TargetTexture");
+            var targetTextureProp = serializedObject.FindProperty("TargetTexture");
 
             targetTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationUtils.Localize("Inspector.Texture.TextureConfiguration.TargetTexture"), (Texture2D)targetTextureProp.objectReferenceValue, typeof(Texture2D), true);
             showTargetTexturePreview = EditorGUILayout.Toggle(LocalizationUtils.Localize("Inspector.Texture.TextureConfiguration.ShowPreview"), showTargetTexturePreview);
 
             if (showTargetTexturePreview && colorChangerComponent.TargetTexture != null)
             {
-                float displayWidth = EditorGUIUtility.currentViewWidth - 40;
-                float aspect = (float)colorChangerComponent.TargetTexture.height / colorChangerComponent.TargetTexture.width;
-                float displayHeight = displayWidth * aspect;
+                var displayWidth = EditorGUIUtility.currentViewWidth - 40;
+                var aspect = (float)colorChangerComponent.TargetTexture.height / colorChangerComponent.TargetTexture.width;
+                var displayHeight = displayWidth * aspect;
 
-                Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
+                var rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
                 rect.x = ((EditorGUIUtility.currentViewWidth - rect.width) / 2) + 5;
 
                 GUI.DrawTexture(rect, colorChangerComponent.TargetTexture, ScaleMode.ScaleToFit);
@@ -223,7 +223,7 @@ namespace net.puk06.ColorChanger.Editor
                 UnityService.TitleStyle
             );
 
-            SerializedProperty maskTextureProp = serializedObject.FindProperty("MaskTexture");
+            var maskTextureProp = serializedObject.FindProperty("MaskTexture");
 
             if (showMaskTextureSettings)
             {
@@ -239,7 +239,7 @@ namespace net.puk06.ColorChanger.Editor
                     string.Format("{0} (A = 0)", LocalizationUtils.Localize("Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Transparent")),
                 };
 
-                SerializedProperty MaskSelectionTypeTextureProp = serializedObject.FindProperty("ImageMaskSelectionType");
+                var MaskSelectionTypeTextureProp = serializedObject.FindProperty("ImageMaskSelectionType");
 
                 MaskSelectionTypeTextureProp.enumValueIndex = EditorGUILayout.Popup(
                     new GUIContent(
@@ -253,11 +253,11 @@ namespace net.puk06.ColorChanger.Editor
 
                 if (showMaskTexturePreview && colorChangerComponent.MaskTexture != null)
                 {
-                    float displayWidth = EditorGUIUtility.currentViewWidth - 40;
-                    float aspect = (float)colorChangerComponent.MaskTexture.height / colorChangerComponent.MaskTexture.width;
-                    float displayHeight = displayWidth * aspect;
+                    var displayWidth = EditorGUIUtility.currentViewWidth - 40;
+                    var aspect = (float)colorChangerComponent.MaskTexture.height / colorChangerComponent.MaskTexture.width;
+                    var displayHeight = displayWidth * aspect;
 
-                    Rect rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
+                    var rect = GUILayoutUtility.GetRect(displayWidth, displayHeight, GUILayout.ExpandWidth(false));
                     rect.x = ((EditorGUIUtility.currentViewWidth - rect.width) / 2) + 5;
 
                     GUI.DrawTexture(rect, colorChangerComponent.MaskTexture, ScaleMode.ScaleToFit);
@@ -284,7 +284,7 @@ namespace net.puk06.ColorChanger.Editor
 
             if (showTextureReplacementSettings)
             {
-                SerializedProperty replacementTextureProp = serializedObject.FindProperty("ReplacementTexture");
+                var replacementTextureProp = serializedObject.FindProperty("ReplacementTexture");
                 EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.Texture.TexureReplacement.Description"), MessageType.Info);
                 replacementTextureProp.objectReferenceValue = (Texture2D)EditorGUILayout.ObjectField(LocalizationUtils.Localize("Inspector.Texture.TexureReplacement.TargetTexture"), (Texture2D)replacementTextureProp.objectReferenceValue, typeof(Texture2D), true);
             }
@@ -308,10 +308,9 @@ namespace net.puk06.ColorChanger.Editor
                 LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.ModeVersion.Options.V3"),
             };
             
-            
-            SerializedProperty balanceModeConfigProp = serializedObject.FindProperty("BalanceModeConfiguration");
+            var balanceModeConfigProp = serializedObject.FindProperty("BalanceModeConfiguration");
 
-            SerializedProperty modeProperty = balanceModeConfigProp.FindPropertyRelative("ModeVersion");
+            var modeProperty = balanceModeConfigProp.FindPropertyRelative("ModeVersion");
             modeProperty.intValue = EditorGUILayout.Popup(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.ModeVersion"), modeProperty.intValue, colorAdjustmentModeLabels);
 
             switch (modeProperty.intValue)
@@ -377,7 +376,7 @@ namespace net.puk06.ColorChanger.Editor
             {
                 EditorGUI.indentLevel = 2;
 
-                SerializedProperty advancedColorConfigProp = serializedObject.FindProperty("AdvancedColorConfiguration");
+                var advancedColorConfigProp = serializedObject.FindProperty("AdvancedColorConfiguration");
 
                 EditorGUILayout.PropertyField(advancedColorConfigProp.FindPropertyRelative("IsEnabled"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.IsEnabled")));
                 EditorGUILayout.PropertyField(advancedColorConfigProp.FindPropertyRelative("Hue"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.AdvancedColorConfiguration.Hue")));
@@ -415,11 +414,11 @@ namespace net.puk06.ColorChanger.Editor
 
                 EditorGUILayout.HelpBox(LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Warning"), MessageType.Warning);
 
-                List<string> textureNames = new();
+                var textureNames = new List<string>();
                 if (colorChangerComponent.TargetTexture != null) textureNames.Add($"{colorChangerComponent.TargetTexture.name} - {LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.TextureType.OriginalTexture")}");
                 textureNames.AddRange(colorChangerComponent.SettingsInheritedTextures.Where(t => t != null).Select(x => $"{x!.name} - {LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.TextureType.SettingsInheritedTexture")}"));
 
-                List<Texture2D?> textures = new();
+                var textures = new List<Texture2D?>();
                 if (colorChangerComponent.ComponentTexture != null) textures.Add(colorChangerComponent.ComponentTexture);
                 textures.AddRange(colorChangerComponent.SettingsInheritedTextures.Where(t => t != null));
 
@@ -455,17 +454,17 @@ namespace net.puk06.ColorChanger.Editor
 
             try
             {
-                ExtendedRenderTexture? processedRenderTexture = TextureBuilder.Build(targetTexture, colorChangerComponent, useMask);
+                var processedRenderTexture = TextureBuilder.Build(targetTexture, colorChangerComponent, useMask);
                 if (processedRenderTexture == null)
                 {
                     LogUtils.LogError(string.Format(LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Failed"), colorChangerComponent.name));
                     return;
                 }
 
-                Texture2D? processedTexture = processedRenderTexture.ToTexture2D();
+                var processedTexture = processedRenderTexture.ToTexture2D();
                 processedRenderTexture.Dispose();
 
-                string savedPath = SaveTexture(targetTexture, processedTexture);
+                var savedPath = SaveTexture(targetTexture, processedTexture);
                 DestroyImmediate(processedRenderTexture);
 
                 UnityService.SelectAssetAtPath(savedPath);
@@ -478,27 +477,27 @@ namespace net.puk06.ColorChanger.Editor
 
         private string SaveTexture(Texture2D originalTexture, Texture2D newTexture)
         {
-            string originalPath = AssetDatabase.GetAssetPath(originalTexture);
+            var originalPath = AssetDatabase.GetAssetPath(originalTexture);
             if (string.IsNullOrEmpty(originalPath))
             {
                 LogUtils.LogError(LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Error.MissingTexturePath"));
                 return string.Empty;
             }
 
-            string directory = Path.GetDirectoryName(originalPath);
-            string originalFileName = Path.GetFileNameWithoutExtension(originalPath);
-            string extension = ".png";
+            var directory = Path.GetDirectoryName(originalPath);
+            var originalFileName = Path.GetFileNameWithoutExtension(originalPath);
+            var extension = ".png";
 
             int index = 1;
             string savePath;
             do
             {
-                string fileName = $"{originalFileName} {index}{extension}";
+                var fileName = $"{originalFileName} {index}{extension}";
                 savePath = Path.Combine(directory, fileName);
                 index++;
             } while (File.Exists(savePath));
 
-            byte[] pngData = newTexture.EncodeToPNG();
+            var pngData = newTexture.EncodeToPNG();
             if (pngData == null)
             {
                 LogUtils.LogError(LocalizationUtils.Localize("Inspector.TextureOutput.TextureOutputConfigurtion.Error.EncodeFailed"));

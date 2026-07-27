@@ -23,7 +23,7 @@ namespace net.puk06.ColorChanger.Editor.Models
         {
             result = null!;
 
-            ExtendedRenderTexture texture = new(width, height);
+            var texture = new ExtendedRenderTexture(width, height);
             if (!texture.Create())
             {
                 LogUtils.LogError("Failed to create RenderTexture.");
@@ -39,7 +39,7 @@ namespace net.puk06.ColorChanger.Editor.Models
         {
             result = null!;
 
-            ExtendedRenderTexture texture = new(width, height, readWrite);
+            var texture = new ExtendedRenderTexture(width, height, readWrite);
             if (!texture.Create())
             {
                 texture.Dispose();
@@ -52,7 +52,7 @@ namespace net.puk06.ColorChanger.Editor.Models
 
         public Texture2D ToTexture2D()
         {
-            Texture2D texture = new(width, height, TextureFormat.RGBA32, false, false); // sRGBテクスチャを出力する
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false, false); // sRGBテクスチャを出力する
             TextureUtils.ApplyStreamingMipmaps(texture);
 
             ProcessTemporary(width, height, RenderTextureReadWrite.sRGB, (renderTexture) =>
@@ -68,11 +68,11 @@ namespace net.puk06.ColorChanger.Editor.Models
 
         public static void ProcessTemporary(int width, int height, RenderTextureReadWrite readWrite, Action<RenderTexture> action)
         {
-            RenderTexture temporaryRenderTexture = GetTemporary(width, height, 0, RenderTextureFormat.ARGB32, readWrite);
+            var temporaryRenderTexture = GetTemporary(width, height, 0, RenderTextureFormat.ARGB32, readWrite);
             temporaryRenderTexture.filterMode = FilterMode.Bilinear;
             temporaryRenderTexture.wrapMode = TextureWrapMode.Clamp;
 
-            RenderTexture previousActiveRenderTexture = active;
+            var previousActiveRenderTexture = active;
             active = temporaryRenderTexture;
 
             action(temporaryRenderTexture);

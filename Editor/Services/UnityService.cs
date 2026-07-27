@@ -21,7 +21,7 @@ namespace net.puk06.ColorChanger.Editor.Services
 
         internal static void SelectAssetAtPath(string assetPath)
         {
-            Object obj = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+            var obj = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
             if (obj != null)
             {
                 Selection.activeObject = obj;
@@ -37,13 +37,13 @@ namespace net.puk06.ColorChanger.Editor.Services
         {
             EditorGUILayout.Space(10);
 
-            Rect rect = EditorGUILayout.GetControlRect(false, 20f);
+            var rect = EditorGUILayout.GetControlRect(false, 20f);
 
-            GUIStyle style = EditorStyles.boldLabel;
+            var style = EditorStyles.boldLabel;
             style.fontSize = 15;
             EditorGUI.LabelField(rect, title, style);
 
-            Vector2 titleSize = style.CalcSize(new GUIContent(title));
+            var titleSize = style.CalcSize(new GUIContent(title));
 
             float lineX = rect.x + titleSize.x + 8f;
             float lineY = rect.y + rect.height / 2f;

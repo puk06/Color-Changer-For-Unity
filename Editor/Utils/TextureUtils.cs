@@ -15,16 +15,16 @@ namespace net.puk06.ColorChanger.Editor.Utils
         {
             if (gameObject == null) return null;
 
-            Renderer[] renderers = gameObject.GetComponents<Renderer>();
+            var renderers = gameObject.GetComponents<Renderer>();
             if (renderers == null || renderers.Length == 0) return null;
 
-            Renderer renderer = renderers.FirstOrDefault();
+            var renderer = renderers.FirstOrDefault();
             if (renderer == null) return null;
 
-            Material[] materials = renderer.sharedMaterials;
+            var materials = renderer.sharedMaterials;
             if (materials == null || materials.Length == 0) return null;
 
-            Material mainMaterial = materials.FirstOrDefault();
+            var mainMaterial = materials.FirstOrDefault();
             if (mainMaterial == null) return null;
 
             return mainMaterial.mainTexture;
@@ -32,8 +32,8 @@ namespace net.puk06.ColorChanger.Editor.Utils
 
         internal static void ApplyStreamingMipmaps(Texture2D texture)
         {
-            UnityEditor.SerializedObject textureObject = new(texture);
-            UnityEditor.SerializedProperty streamingMipmapsProperty = textureObject.FindProperty("m_StreamingMipmaps");
+            var textureObject = new UnityEditor.SerializedObject(texture);
+            var streamingMipmapsProperty = textureObject.FindProperty("m_StreamingMipmaps");
             if (streamingMipmapsProperty != null) streamingMipmapsProperty.boolValue = true;
             textureObject.ApplyModifiedPropertiesWithoutUndo();
         }

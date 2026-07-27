@@ -10,7 +10,7 @@ namespace net.puk06.ColorChanger.Editor.Utils
     {
         internal static void DrawLanguageSelectionPopup()
         {
-            List<(string, string)> languages = Localizer.Instance.Languages;
+            var languages = Localizer.Instance.Languages;
 
             int currentIndex = Array.IndexOf(languages.Select(lang => lang.Item1).ToArray(), LocalizationManager.CurrentLanguage);
             int newIndex = EditorGUILayout.Popup("Language", currentIndex, languages.Select(lang => lang.Item2).ToArray());

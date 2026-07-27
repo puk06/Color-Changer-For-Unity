@@ -39,7 +39,7 @@ namespace net.puk06.ColorChanger.Editor
         {
             LocalizationUtils.DrawLanguageSelectionPopup();
 
-            GameObject[] avatars = FindObjectsOfType<VRC_AvatarDescriptor>().Select(c => c.gameObject).ToArray();
+            var avatars = FindObjectsOfType<VRC_AvatarDescriptor>().Select(c => c.gameObject).ToArray();
             if (avatars.Length == 0) return;
 
             _selectedAvatarIndex = Mathf.Clamp(_selectedAvatarIndex, 0, avatars.Length - 1);
@@ -49,20 +49,20 @@ namespace net.puk06.ColorChanger.Editor
 
             if (_selectedAvatarIndex >= 0 && _selectedAvatarIndex < avatars.Length && avatars[_selectedAvatarIndex] != null)
             {
-                GameObject selectedAvatar = avatars[_selectedAvatarIndex];
+                var selectedAvatar = avatars[_selectedAvatarIndex];
 
-                ColorChangerForUnity[] components = selectedAvatar.GetComponentsInChildren<ColorChangerForUnity>(true);
+                var components = selectedAvatar.GetComponentsInChildren<ColorChangerForUnity>(true);
                 if (components == null) return;
 
-                Dictionary<Texture2D, ComponentStates> textureComponentDictionary = new();
+                var textureComponentDictionary = new Dictionary<Texture2D, ComponentStates> ();
 
-                foreach (ColorChangerForUnity component in components)
+                foreach (var component in components)
                 {
                     void Check(Texture2D texture)
                     {
                         if (!textureComponentDictionary.ContainsKey(texture)) textureComponentDictionary[texture] = new();
 
-                        ComponentStates componentStates = textureComponentDictionary[texture];
+                        var componentStates = textureComponentDictionary[texture];
                         
                         if (component.gameObject.activeInHierarchy && component.IsEnabled)
                         {
@@ -76,14 +76,14 @@ namespace net.puk06.ColorChanger.Editor
 
                     if (component.TargetTexture != null) Check(component.TargetTexture);
 
-                    foreach (Texture2D? settingsInheritedTexture in component.SettingsInheritedTextures)
+                    foreach (var settingsInheritedTexture in component.SettingsInheritedTextures)
                     {
                         if (settingsInheritedTexture == null) continue;
                         Check(settingsInheritedTexture);
                     }
                 }
 
-                foreach (KeyValuePair<Texture2D, ComponentStates> textureComponent in textureComponentDictionary)
+                foreach (var textureComponent in textureComponentDictionary)
                 {
                     EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -113,7 +113,7 @@ namespace net.puk06.ColorChanger.Editor
                         if (_foldoutStates[textureComponent.Key].Enabled)
                         {
                             EditorGUI.indentLevel = 3;
-                            foreach (ColorChangerForUnity component in textureComponent.Value.EnabledComponents)
+                            foreach (var component in textureComponent.Value.EnabledComponents)
                             {
                                 EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                             }
@@ -130,7 +130,7 @@ namespace net.puk06.ColorChanger.Editor
                         if (_foldoutStates[textureComponent.Key].Disabled)
                         {
                             EditorGUI.indentLevel = 3;
-                            foreach (ColorChangerForUnity component in textureComponent.Value.DisabledComponents)
+                            foreach (var component in textureComponent.Value.DisabledComponents)
                             {
                                 EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                             }
@@ -143,7 +143,7 @@ namespace net.puk06.ColorChanger.Editor
                     EditorGUILayout.EndVertical();
                 }
 
-                List<ColorChangerForUnity> missingTextureComponents = components
+                var missingTextureComponents = components
                     .Where(c => c.TargetTexture == null)
                     .ToList();
 
@@ -165,7 +165,7 @@ namespace net.puk06.ColorChanger.Editor
                     if (_showMissing)
                     {
                         EditorGUI.indentLevel = 3;
-                        foreach (ColorChangerForUnity component in missingTextureComponents)
+                        foreach (var component in missingTextureComponents)
                         {
                             EditorGUILayout.ObjectField(component, typeof(ColorChangerForUnity), true);
                         }

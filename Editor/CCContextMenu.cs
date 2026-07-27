@@ -18,11 +18,11 @@ namespace net.puk06.ColorChanger.Editor
 
         private static void AddColorChanger(bool useTextureFromActive)
         {
-            GameObject activeObject = Selection.activeGameObject;
+            var activeObject = Selection.activeGameObject;
 
-            string objectName = activeObject != null ? $"Color Changer For {activeObject.name}" : "Color Changer For Unity";
+            var objectName = activeObject != null ? $"Color Changer For {activeObject.name}" : "Color Changer For Unity";
 
-            GameObject colorChangerObject = new(objectName);
+            var colorChangerObject = new GameObject(objectName);
             if (activeObject != null) colorChangerObject.transform.SetParent(activeObject.transform);
 
             Undo.RegisterCreatedObjectUndo(colorChangerObject, "Create Color Changer Object");

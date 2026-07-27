@@ -38,10 +38,10 @@ namespace net.puk06.ColorChanger.Editor.Services
 
                 _currentVersion = version;
 
-                string response = await _httpClient.GetStringAsync(UpdateCheckURL);
+                var response = await _httpClient.GetStringAsync(UpdateCheckURL);
                 if (response == null) return;
 
-                VersionRelease versionRelease = JsonUtility.FromJson<VersionRelease>(response);
+                var versionRelease = JsonUtility.FromJson<VersionRelease>(response);
                 if (versionRelease == null) return;
 
                 _latestVersion = versionRelease.LatestVersion;
@@ -89,7 +89,7 @@ namespace net.puk06.ColorChanger.Editor.Services
         {
             if (_currentVersion == "") return;
 
-            GUIStyle versionLabel = new GUIStyle(EditorStyles.label)
+            var versionLabel = new GUIStyle(EditorStyles.label)
             {
                 fontSize = 16,
                 fontStyle = FontStyle.Bold,

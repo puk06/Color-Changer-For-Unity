@@ -20,7 +20,7 @@ namespace net.puk06.ColorChanger.Editor.Extension
         {
             if (material == null || action == null) return;
 
-            Shader shader = material.shader;
+            var shader = material.shader;
             if (shader == null) return;
 
             int propertyCount = ShaderUtil.GetPropertyCount(shader);
@@ -28,10 +28,10 @@ namespace net.puk06.ColorChanger.Editor.Extension
             {
                 if (!shader.IsTexture(i)) continue;
 
-                string propName = ShaderUtil.GetPropertyName(shader, i);
+                var propName = ShaderUtil.GetPropertyName(shader, i);
                 if (propName == null) continue;
 
-                Texture materialTexture = material.GetTexture(propName);
+                var materialTexture = material.GetTexture(propName);
                 if (materialTexture == null) continue;
 
                 action(materialTexture, propName);
