@@ -350,7 +350,6 @@ namespace net.puk06.ColorChanger.Editor
                         EditorGUILayout.PropertyField(balanceModeConfigProp.FindPropertyRelative("V3GradientResolution"), new GUIContent(LocalizationUtils.Localize("Inspector.Color.BalanceModeConfiguration.V3.LUTConfiguration.Resolution")));
                         break;
                     }
-
             }
 
             EditorGUI.indentLevel = 0;

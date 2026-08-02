@@ -51,7 +51,7 @@ namespace net.puk06.ColorChanger.Models
 
         public static float ConvertLegacyStrengthToCurrent(float legacyValue)
         {
-            return 1f + legacyValue / 100f;
+            return 1f + (legacyValue / 100f);
         }
     }
 }
