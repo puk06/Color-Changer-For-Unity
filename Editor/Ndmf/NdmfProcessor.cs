@@ -107,8 +107,8 @@ namespace net.puk06.ColorChanger.Editor.Ndmf
                         var newMaterial = GetProcessedMaterial(material, processedTexturesDictionary);
                         if (newMaterial == material) continue;
 
-                        ObjectRegistry.RegisterReplacedObject(material, newMaterial!);
-                        materialMap.Add(material, newMaterial!);
+                        ObjectRegistry.RegisterReplacedObject(material, newMaterial);
+                        materialMap.Add(material, newMaterial);
                         material = newMaterial;
                         changed = true;
                     }
