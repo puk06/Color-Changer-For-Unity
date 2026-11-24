@@ -79,6 +79,7 @@ namespace net.puk06.ColorChanger
 
             if (SerializationVersion == 0)
             {
+                // 旧バージョンの 6/7 は BlackGlayScale/WhiteGlayScale だったため、現在の 6/7 (Alpha/AlphaInverse) とは別物として扱う
                 if ((int)ImageMaskSelectionType == 6) ImageMaskSelectionType = ImageMaskSelectionType.Black;
                 else if ((int)ImageMaskSelectionType == 7) ImageMaskSelectionType = ImageMaskSelectionType.White;
             }

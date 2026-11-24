@@ -96,6 +96,19 @@ int4 ApplyMask(int4 source, int4 color, uint2 id)
         }
     }
 
+    if (_MaskSelectionType == 6 || _MaskSelectionType == 7) // Alpha Mask
+    {
+        float coverage = maskColor.a / 255.0;
+        if (_MaskSelectionType == 7) coverage = 1 - coverage; // Alpha Mask (Inverted)
+
+        return int4(
+            round(color.r * coverage + backgroundColor.r * (1 - coverage)),
+            round(color.g * coverage + backgroundColor.g * (1 - coverage)),
+            round(color.b * coverage + backgroundColor.b * (1 - coverage)),
+            round(color.a * coverage + backgroundColor.a * (1 - coverage))
+        );
+    }
+
     if (_MaskSelectionType == 3)
     {
         return (maskColor.a == 255) ? color : backgroundColor;
@@ -130,6 +143,8 @@ bool IsMaskSelected(uint2 id)
     if (_MaskSelectionType == 3) return color.a == 255;
     if (_MaskSelectionType == 4) return color.a != 0;
     if (_MaskSelectionType == 5) return color.a == 0;
+    if (_MaskSelectionType == 6) return color.a != 0;
+    if (_MaskSelectionType == 7) return color.a != 255;
 
     return false;
 }

@@ -31,6 +31,8 @@
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.White": "White",
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Opaque": "Opaque",
     "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Transparent": "Transparent",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.Alpha": "Alpha (A Value)",
+    "Inspector.Texture.MaskTexture.ImageMaskSelectionType.Options.AlphaInverse": "Alpha (A Value, Inverted)",
     "Inspector.Texture.MaskTexture.ShowPreview": "Show Texture Preview",
 
     "Inspector.Texture.Section.TexureReplacement": "Texture Replacement Settings",
